@@ -12,38 +12,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Cache Flutter packages
-        id: cache-flutter-sdk
+      - name: Cache packages
         uses: actions/cache@v2
         with:
           path: ~/.pub-cache
           key: ${{ runner.os }}-pub-cache-${{ hashFiles('**/pubspec.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pub-cache-
-      
-      - uses: actions/cache@v2
-        id: cache-simulator
-        with:
-          path: Frontend/.dart_tool
-          key: ${{ runner.os }}-dart-tool-${{ hashFiles('**/pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-dart-tool-
 
-      - uses: actions/cache@v2
-        id: cache-flutter-actions
-        with:
-          path: Frontend/.dart_tool
-          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-flutter-
+      - name: Install dependencies
+        run: |
+          cd Frontend
+          flutter pub get
 
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
+      - name: Analyze code
+        run: |
+          cd Frontend
+          flutter analyze
 
-      - uses: futureware-tech/simulator-action@v3
-        with:
-          model: 'iPhone 14'
-
-      - run: cd Frontend && flutter pub get
-      - run: cd Frontend && flutter analyze
