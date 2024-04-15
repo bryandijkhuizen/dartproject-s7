@@ -1,4 +1,4 @@
-name: flutter-test
+name: Flutter Test 
 
 # This specifies that the action should trigger on push events to the main branch.
 on:
