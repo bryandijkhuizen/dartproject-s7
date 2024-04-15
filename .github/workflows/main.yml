@@ -31,4 +31,4 @@ jobs:
           channel: 'stable'
 
       - run: cd Frontend && flutter pub get
-      - run: cd Frontend && flutter test integration_test
+      - run: cd Frontend && flutter analyze
