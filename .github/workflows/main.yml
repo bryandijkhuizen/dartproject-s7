@@ -26,9 +26,25 @@ jobs:
         with:
           model: 'iPhone 14'
 
+      - uses: actions/cache@v2
+        id: cache-simulator
+        with:
+          path: Frontend/.dart_tool
+          key: ${{ runner.os }}-dart-tool-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-dart-tool-
+
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+
+      - uses: actions/cache@v2
+        id: cache-flutter-actions
+        with:
+          path: Frontend/.dart_tool
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
 
       - run: cd Frontend && flutter pub get
       - run: cd Frontend && flutter analyze
