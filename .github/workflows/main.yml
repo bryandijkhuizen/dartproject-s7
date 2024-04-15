@@ -12,23 +12,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/cache@v3
+      - name: Cache Flutter packages
+        id: cache-flutter-sdk
+        uses: actions/cache@v2
         with:
           path: ~/.pub-cache
           key: ${{ runner.os }}-pub-cache-${{ hashFiles('**/pubspec.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pub-cache-
-
-        # use flutter cache or download flutter if not cached
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '2.8.0'
-
-      - run: cd Frontend && flutter doctor
+        
 
       - uses: futureware-tech/simulator-action@v3
         with:
           model: 'iPhone 14'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
 
       - run: cd Frontend && flutter pub get
       - run: cd Frontend && flutter analyze
