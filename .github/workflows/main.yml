@@ -24,7 +24,7 @@ jobs:
         with:
           flutter-version: '2.8.0'
 
-      - run: flutter doctor
+      - run: cd Frontend && flutter doctor
 
       - uses: futureware-tech/simulator-action@v3
         with:
