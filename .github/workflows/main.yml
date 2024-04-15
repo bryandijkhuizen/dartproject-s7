@@ -20,15 +20,24 @@ jobs:
           key: ${{ runner.os }}-pub-cache-${{ hashFiles('**/pubspec.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pub-cache-
-        
 
-      - uses: futureware-tech/simulator-action@v3
+      - name: Cache Flutter action
+        id: cache-flutter-action
+        uses: actions/cache@v2
         with:
-          model: 'iPhone 14'
+          path: ~/.flutter
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
 
-      - uses: subosito/flutter-action@v2
+      - name: Cache simulator
+        id: cache-simulator
+        uses: actions/cache@v2
         with:
-          channel: 'stable'
+          path: ~/Library/Developer/CoreSimulator/Devices
+          key: ${{ runner.os }}-simulator-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-simulator-
 
       - run: cd Frontend && flutter pub get
       - run: cd Frontend && flutter analyze
