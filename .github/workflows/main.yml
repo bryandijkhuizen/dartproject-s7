@@ -1,6 +1,5 @@
 name: flutter-test
 
-# This specifies that the action should trigger on push events to the main branch.
 on:
   push:
     branches:
@@ -12,37 +11,24 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        # Checks out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
 
       - name: Cache Flutter packages
+        id: cache-flutter-sdk
         uses: actions/cache@v2
         with:
           path: ~/.pub-cache
-          # Caches the Flutter packages to speed up installs in subsequent runs.
           key: ${{ runner.os }}-pub-cache-${{ hashFiles('**/pubspec.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pub-cache-
+        
 
-      - name: Cache Flutter action
-        uses: actions/cache@v2
+      - uses: futureware-tech/simulator-action@v3
         with:
-          path: ~/.flutter
-          # Caches the installed Flutter SDK.
-          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-flutter-
+          model: 'iPhone 14'
 
-      - name: Cache simulator
-        uses: actions/cache@v2
+      - uses: subosito/flutter-action@v2
         with:
-          path: ~/Library/Developer/CoreSimulator/Devices
-          # Caches the simulator data to speed up simulator startups.
-          key: ${{ runner.os }}-simulator-${{ hashFiles('**/pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-simulator-
+          channel: 'stable'
 
       - run: cd Frontend && flutter pub get
-        # Gets all the dependencies in your Flutter project.
-
       - run: cd Frontend && flutter analyze
-        # Analyzes the project's Dart code for potential errors.
