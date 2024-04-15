@@ -1,5 +1,6 @@
 name: flutter-test
 
+# This specifies that the action should trigger on push events to the main branch.
 on:
   push:
     branches:
@@ -7,13 +8,12 @@ on:
 
 jobs:
   test:
-    runs-on: macOS-latest
+    runs-on: macOS-latest, ubuntu-latest, windows-latest
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Cache Flutter packages
-        id: cache-flutter-sdk
         uses: actions/cache@v2
         with:
           path: ~/.pub-cache
@@ -21,8 +21,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pub-cache-
 
-      - name: Cache Flutter action
-        id: cache-flutter-action
+      - name: Cache Flutter SDK
         uses: actions/cache@v2
         with:
           path: ~/.flutter
@@ -30,8 +29,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-flutter-
 
+      - name: Install Flutter SDK
+        run: |
+          if [ ! -d "$HOME/.flutter" ]; then
+            git clone https://github.com/flutter/flutter.git -b stable $HOME/.flutter
+          fi
+          echo "$HOME/.flutter/bin" >> $GITHUB_PATH
+
       - name: Cache simulator
-        id: cache-simulator
         uses: actions/cache@v2
         with:
           path: ~/Library/Developer/CoreSimulator/Devices
