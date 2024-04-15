@@ -10,3 +10,4 @@ Frontend/windows/flutter/generated_plugins.cmake
 .vscode/settings.json
 /supabase
 Frontend/pubspec.lock
+gitflow.png
