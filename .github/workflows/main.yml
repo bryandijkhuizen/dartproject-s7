@@ -1,4 +1,4 @@
-name: Flutter Test 
+name: flutter-test
 
 # This specifies that the action should trigger on push events to the main branch.
 on:
@@ -7,42 +7,42 @@ on:
       - main
 
 jobs:
-  flutter-test:
-    runs-on: self-hosted
+  test:
+    runs-on: macOS-latest
 
     steps:
       - uses: actions/checkout@v4
+        # Checks out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
 
       - name: Cache Flutter packages
         uses: actions/cache@v2
         with:
           path: ~/.pub-cache
+          # Caches the Flutter packages to speed up installs in subsequent runs.
           key: ${{ runner.os }}-pub-cache-${{ hashFiles('**/pubspec.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pub-cache-
 
-      - name: Cache Flutter SDK
+      - name: Cache Flutter action
         uses: actions/cache@v2
         with:
           path: ~/.flutter
+          # Caches the installed Flutter SDK.
           key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
           restore-keys: |
             ${{ runner.os }}-flutter-
-
-      - name: Install Flutter SDK
-        run: |
-          if [ ! -d "$HOME/.flutter" ]; then
-            git clone https://github.com/flutter/flutter.git -b stable $HOME/.flutter
-          fi
-          echo "$HOME/.flutter/bin" >> $GITHUB_PATH
 
       - name: Cache simulator
         uses: actions/cache@v2
         with:
           path: ~/Library/Developer/CoreSimulator/Devices
+          # Caches the simulator data to speed up simulator startups.
           key: ${{ runner.os }}-simulator-${{ hashFiles('**/pubspec.yaml') }}
           restore-keys: |
             ${{ runner.os }}-simulator-
 
       - run: cd Frontend && flutter pub get
+        # Gets all the dependencies in your Flutter project.
+
       - run: cd Frontend && flutter analyze
+        # Analyzes the project's Dart code for potential errors.
