@@ -1,5 +1,5 @@
-# dartproject-s7
-## developer set-up
+# Dartproject-s7
+## Developer set-up
 1. To get all used packages use the following command in the terminal: 
 ```
 flutter pub get
@@ -24,3 +24,7 @@ supabase start
 supabase link
 ```
 6. In the terminal after supabase link choose Dartmasters - dev as youre project. 
+
+## Gitflow
+In this project the following gitflow is used:
+![](gitflow.png)
