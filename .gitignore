@@ -11,3 +11,8 @@ Frontend/windows/flutter/generated_plugins.cmake
 /supabase
 Frontend/pubspec.lock
 gitflow.png
+Frontend/macos/Podfile
+Frontend/macos/Podfile.lock
+Frontend/macos/Runner.xcodeproj/project.pbxproj
+Frontend/macos/Runner.xcworkspace/contents.xcworkspacedata
+Frontend/macos/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
