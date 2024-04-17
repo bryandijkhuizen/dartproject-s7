@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:darts_application/components/scaffolding.dart';
+import 'package:darts_application/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,8 +22,6 @@ Widget getPlaceholderComponent(
     ),
   );
 }
-
-final bool isMobile = Platform.isAndroid || Platform.isIOS;
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -173,17 +172,32 @@ final router = GoRouter(
                 ],
               ),
 
+              // Desktop statistics
+              StatefulShellBranch(
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: '/matches',
+                    builder: (context, state) {
+                      // Ignore this for now
+                      return getPlaceholderComponent(
+                          '/matches',
+                          [
+                            '/',
+                            '/matches',
+                            '/settings',
+                          ],
+                          context);
+                    },
+                  ),
+                ],
+              ),
+
               // Branch for user management
               StatefulShellBranch(
                 routes: <RouteBase>[
                   GoRoute(
                     path: '/user-management',
                     builder: (context, state) {
-                      // if mobile
-                      // return UnsupportedPlatform();
-
-                      // return UserManagementWidget();
-
                       // Ignore this for now
                       return getPlaceholderComponent(
                           '/user-management',
@@ -202,16 +216,11 @@ final router = GoRouter(
               StatefulShellBranch(
                 routes: <RouteBase>[
                   GoRoute(
-                    path: '/user-management',
+                    path: '/club-management',
                     builder: (context, state) {
-                      // if mobile
-                      // return UnsupportedPlatform();
-
-                      // return ClubManagementWidget();
-
                       // Ignore this for now
                       return getPlaceholderComponent(
-                          '/user-management',
+                          '/club-management',
                           [
                             '/',
                             '/statistics',
