@@ -1,5 +1,6 @@
 # Dartproject-s7
 ## Developer set-up
+The code bellow need to be executed in the terminal while in the frontend folder.
 1. To get all used packages use the following command in the terminal: 
 ```
 flutter pub get
