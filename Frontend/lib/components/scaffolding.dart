@@ -1,4 +1,6 @@
+import 'package:darts_application/components/desktop_nav_bar.dart';
 import 'package:darts_application/components/mobile_nav_bar.dart';
+import 'package:darts_application/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,19 +13,16 @@ class Scaffolding extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: shell,
-      appBar: AppBar(
-        title: Text('Some title'),
-        centerTitle: true,
-        leading: InkWell(
-          child: const Icon(Icons.arrow_back),
-          onTap: () {
-            print('back button pressed');
-          },
-        ),
-      ),
-      bottomNavigationBar: MobileNavBar(
-        currentShell: shell,
-      ),
+      appBar: !isMobile
+          ? DesktopNavBar(
+              currentShell: shell,
+            )
+          : null,
+      bottomNavigationBar: isMobile
+          ? MobileNavBar(
+              currentShell: shell,
+            )
+          : null,
     );
   }
 }
