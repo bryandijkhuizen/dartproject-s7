@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class NavigationItem extends StatelessWidget {
-  NavigationItem({
+  const NavigationItem({
     super.key,
     required this.label,
     required this.location,
@@ -11,7 +11,7 @@ class NavigationItem extends StatelessWidget {
 
   final String label;
   final String location;
-  bool active;
+  final bool active;
 
   @override
   Widget build(BuildContext context) {
