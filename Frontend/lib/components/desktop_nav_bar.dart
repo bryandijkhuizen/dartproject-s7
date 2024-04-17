@@ -20,30 +20,37 @@ class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     var navigationItems = [
-      NavigationItem(
+      const NavigationItem(
         label: 'Home',
         location: '/',
       ),
-      NavigationItem(
+      const NavigationItem(
         label: 'Statistics',
         location: '/statistics',
       ),
-      NavigationItem(
+      const NavigationItem(
         label: 'Matches',
         location: '/matches',
       ),
-      NavigationItem(
+      const NavigationItem(
         label: 'User management',
         location: '/user-management',
       ),
-      NavigationItem(
+      const NavigationItem(
         label: 'Club management',
         location: '/club-management',
       ),
     ];
 
-    // Set currentIndex as active
-    navigationItems[currentShell.currentIndex].active = true;
+    // Get current navigationItem (synced with router's branches)
+    var currentItem = navigationItems[currentShell.currentIndex];
+
+    // Replace navigationItem to make it active (Replace because its immutable)
+    navigationItems[currentShell.currentIndex] = NavigationItem(
+      label: currentItem.label,
+      location: currentItem.location,
+      active: true,
+    );
 
     return Container(
       color: theme.colorScheme.primary,
