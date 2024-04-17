@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:darts_application/components/scaffolding.dart';
 import 'package:darts_application/helpers.dart';
 import 'package:flutter/material.dart';
