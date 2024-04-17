@@ -1,8 +1,11 @@
 import 'package:darts_application/router.dart';
 import 'package:flutter/material.dart';
+import './join_match.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MaterialApp(
+    home: JoinMatch(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
