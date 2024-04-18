@@ -1,7 +1,7 @@
 import 'package:darts_application/components/scaffolding.dart';
 import 'package:darts_application/features/app_router/app_router_redirect.dart';
 import 'package:darts_application/features/auth/auth_notifier.dart';
-import 'package:darts_application/features/auth/login_screen.dart';
+import 'package:darts_application/features/auth/auth_view.dart';
 import 'package:darts_application/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -36,7 +36,7 @@ final router = GoRouter(
     GoRoute(
       path: '/auth',
       builder: (context, state) {
-        return const AuthScreen();
+        return const AuthView();
       },
     ),
 
