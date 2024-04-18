@@ -28,6 +28,7 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 
 final router = GoRouter(
+  refreshListenable: AuthNotifier(),
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/auth',
   redirect: appRouterRedirect,
@@ -36,7 +37,7 @@ final router = GoRouter(
     GoRoute(
       path: '/auth',
       builder: (context, state) {
-        return const AuthView();
+        return const AuthScreen();
       },
     ),
 
