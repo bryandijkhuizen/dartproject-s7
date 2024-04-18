@@ -3,8 +3,8 @@ import 'package:darts_application/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'pages/start_match.dart';
-import '../components/start_match/match_list_widget.dart';
+import 'features/start_match/start_match.dart';
+import 'features/start_match/match_list_widget.dart';
 
 Widget getPlaceholderComponent(
     String currentRoute, List<String> routes, BuildContext context) {
@@ -101,7 +101,6 @@ final router = GoRouter(
                         path: ':matchId',
                         builder: (context, state) {
                           final matchId = state.pathParameters['matchId']!;
-                          // Ignore this for now
                           return StartMatch(matchId: matchId);
                         },
                       ),
