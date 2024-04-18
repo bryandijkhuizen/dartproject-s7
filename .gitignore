@@ -8,6 +8,7 @@ Frontend/windows/flutter/generated_plugin_registrant.h
 Frontend/windows/flutter/generated_plugins.cmake
 .vscode/extensions.json
 .vscode/settings.json
+.vscode/launch.json
 /supabase
 Frontend/pubspec.lock
 gitflow.png
