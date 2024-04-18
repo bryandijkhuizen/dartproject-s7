@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
-class JoinMatch extends StatefulWidget {
-  const JoinMatch({Key? key}) : super(key: key);
+class StartMatch extends StatefulWidget {
+  final String matchId;
+  const StartMatch({Key? key, required this.matchId}) : super(key: key);
 
   @override
-  State<JoinMatch> createState() => _JoinMatchState();
+  State<StartMatch> createState() => _StartMatchState();
 }
 
-class _JoinMatchState extends State<JoinMatch> {
+class _StartMatchState extends State<StartMatch> {
   bool player1Joined = false;
   bool player2Joined = false;
   bool markerJoined = false;
@@ -58,6 +59,15 @@ class _JoinMatchState extends State<JoinMatch> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               SizedBox(height: buttonHeight * 0.2), // Top padding
+              Text(
+                'Match ID: ${widget.matchId}', // Display the match ID on the screen
+                style: TextStyle(
+                  fontSize: 24, // Adjust the font size as needed
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(height: buttonHeight * 0.15), // Space below the match ID
               ElevatedButton(
                 style: buttonStyles[player1Joined ? 'joined' : 'notJoined'],
                 onPressed: () {
