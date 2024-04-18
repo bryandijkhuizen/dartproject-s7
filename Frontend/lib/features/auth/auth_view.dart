@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 import 'package:form_validator/form_validator.dart';
 
-class AuthView extends StatelessWidget {
-  const AuthView({super.key});
+class AuthScreen extends StatelessWidget {
+  const AuthScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
