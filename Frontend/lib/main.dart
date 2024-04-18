@@ -1,14 +1,8 @@
-import 'package:darts_application/constants.dart';
 import 'package:darts_application/features/app_router/app_router.dart';
 import 'package:darts_application/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
-  Supabase.initialize(
-    url: Constants.supabaseUrl,
-    anonKey: Constants.supabaseAnonKey,
-  );
   runApp(const MyApp());
 }
 
