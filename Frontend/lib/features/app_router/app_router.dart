@@ -1,4 +1,5 @@
 import 'package:darts_application/components/scaffolding.dart';
+import 'package:darts_application/features/app_router/app_router_redirect.dart';
 import 'package:darts_application/features/auth/auth_notifier.dart';
 import 'package:darts_application/features/auth/auth_view.dart';
 import 'package:darts_application/helpers.dart';
@@ -30,6 +31,7 @@ final router = GoRouter(
   refreshListenable: AuthNotifier(),
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/auth',
+  redirect: appRouterRedirect,
   routes: <RouteBase>[
     // Auth route
     GoRoute(
