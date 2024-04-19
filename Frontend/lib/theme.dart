@@ -15,18 +15,16 @@ ThemeData darkTheme = ThemeData(
     onSurface: Colors.white,
   ),
   inputDecorationTheme: InputDecorationTheme(
-    filled: true,
-    fillColor: const Color(0xFFFFFFFF),
     floatingLabelBehavior: FloatingLabelBehavior.never,
     labelStyle: const TextStyle(
-      color: Color(0xFF6B6B6B),
+      color: Color(0xFF6F6F6F),
     ),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
     ),
-    iconColor: Colors.black,
-    prefixIconColor: Colors.black,
-    suffixIconColor: Colors.black,
+    iconColor: Colors.white,
+    prefixIconColor: Colors.white,
+    suffixIconColor: Colors.white,
   ),
   textTheme: TextTheme(
     displayLarge: GoogleFonts.poppins(
