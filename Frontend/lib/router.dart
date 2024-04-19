@@ -25,19 +25,21 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 
 final router = GoRouter(
-  refreshListenable: AuthNotifier(),
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/auth',
-  routes: <RouteBase>[
-    // Auth route
-    GoRoute(
-      path: '/auth',
-      builder: (context, state) {
-        return const AuthScreen();
-      },
-    ),
+  initialLocation: '/',
+  redirect: (BuildContext context, GoRouterState state) {
+    // TODO: Redirect user to login page when they're not signed in
 
-    // App routes (After authentication)
+    // TODO: Redirect user to homepage if they are logged in
+    // (The user could go to /register or /login manually if we release a browser version)
+
+    // TODO: Redirect user to previous page if they navigate to a page
+    // on which they're not authorized
+
+    // No redirect necessary
+    return null;
+  },
+  routes: <RouteBase>[
     StatefulShellRoute.indexedStack(
       // Builder for the scaffold including the bottomNavbar
       builder: (context, state, navigationShell) {
