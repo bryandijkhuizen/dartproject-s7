@@ -1,4 +1,6 @@
 import 'package:darts_application/components/scaffolding.dart';
+import 'package:darts_application/features/auth/auth_notifier.dart';
+import 'package:darts_application/features/auth/auth_view.dart';
 import 'package:darts_application/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
