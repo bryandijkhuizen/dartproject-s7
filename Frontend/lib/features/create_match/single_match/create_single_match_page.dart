@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:darts_application/components/input_fields/time_picker.dart';
+import 'package:darts_application/components/input_fields/date_picker.dart';
+
 class CreateSingleMatchPage extends StatefulWidget {
   const CreateSingleMatchPage({super.key});
 
@@ -41,6 +44,20 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                 border: OutlineInputBorder(),
               ),
             ),
+            const SizedBox(height: 20),
+            const Text(
+              'Date',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            const DatePicker(),
+            const SizedBox(height: 20),
+            const Text(
+              'Time',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            const TimePicker(),
             const SizedBox(height: 20),
             const Text(
               'Location',
