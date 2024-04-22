@@ -10,7 +10,8 @@ class AuthNotifier extends ChangeNotifier {
       final AuthChangeEvent event = data.event;
       if (event == AuthChangeEvent.signedIn ||
           event == AuthChangeEvent.signedOut ||
-          event == AuthChangeEvent.userDeleted) {
+          event == AuthChangeEvent.userDeleted ||
+          event == AuthChangeEvent.initialSession) {
         notifyListeners();
       }
     });
