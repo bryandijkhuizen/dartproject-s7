@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'select_starting_widget.dart';
+import 'select_starting_player.dart';
 
 class StartMatch extends StatefulWidget {
   final String matchId;
@@ -16,14 +17,13 @@ class _StartMatchState extends State<StartMatch> {
   bool player2Joined = false;
   bool markerJoined = false;
 
-  bool allPlayersJoined() {
-    return player1Joined && player2Joined && markerJoined;
-  }
+  Map<String, dynamic> matchDetails = {};
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
+    fetchMatchDetails();
   }
 
   @override
@@ -32,20 +32,59 @@ class _StartMatchState extends State<StartMatch> {
     super.dispose();
   }
 
-  // buttonstyle
+  Future<void> fetchMatchDetails() async {
+    try {
+      final matchResponse = await Supabase.instance.client
+          .from('match')
+          .select()
+          .eq('id', widget.matchId)
+          .single();
+
+      List<String> playerIds = [
+        matchResponse['player_1_id'],
+        matchResponse['player_2_id']
+      ];
+
+      final userResponse = await Supabase.instance.client.from('user').select();
+
+      Map<String, String> players = {};
+      for (var user in userResponse) {
+        players[user['id'].toString()] = user['last_name'];
+      }
+
+      setState(() {
+        matchDetails = {
+          'id': matchResponse['id'],
+          'player_1_last_name':
+              players[matchResponse['player_1_id'].toString()],
+          'player_2_last_name':
+              players[matchResponse['player_2_id'].toString()],
+          'set_target': matchResponse['set_target'],
+          'leg_target': matchResponse['leg_target'],
+        };
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  bool allPlayersJoined() {
+    return player1Joined && player2Joined && markerJoined;
+  }
+
   var buttonStyles = {
     'notJoined': ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFFCD0612),
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10), // Adjust the radius as needed
+        borderRadius: BorderRadius.circular(10),
       ),
     ),
     'joined': ElevatedButton.styleFrom(
       backgroundColor: Colors.grey,
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10), // Adjust the radius as needed
+        borderRadius: BorderRadius.circular(10),
       ),
     ),
   };
@@ -92,8 +131,9 @@ class _StartMatchState extends State<StartMatch> {
             SizedBox(height: buttonHeight * 0.2), // Top padding
             Text(
               'Match ID: ${widget.matchId}', // Display the match ID on the screen
+
               style: TextStyle(
-                fontSize: 24, // Adjust the font size as needed
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
@@ -106,7 +146,9 @@ class _StartMatchState extends State<StartMatch> {
                   player1Joined = true;
                 });
               },
-              child: const Text('Join as Player 1'),
+              child: Text(player1Joined
+                  ? 'Joined as ${matchDetails['player_1_last_name']}'
+                  : 'Join as ${matchDetails['player_1_last_name']}'),
             ),
             SizedBox(height: buttonHeight * 0.15), // Space between buttons
             ElevatedButton(
@@ -116,7 +158,9 @@ class _StartMatchState extends State<StartMatch> {
                   player2Joined = true;
                 });
               },
-              child: const Text('Join as Player 2'),
+              child: Text(player2Joined
+                  ? 'Joined as ${matchDetails['player_2_last_name']}'
+                  : 'Join as ${matchDetails['player_2_last_name']}'),
             ),
             SizedBox(height: buttonHeight * 0.15), // Space between buttons
             ElevatedButton(
@@ -136,7 +180,6 @@ class _StartMatchState extends State<StartMatch> {
               ElevatedButton(
                 style: buttonStyles['notJoined'],
                 onPressed: () {
-                  // Switch to the next page
                   _pageController.nextPage(
                     duration: Duration(milliseconds: 500),
                     curve: Curves.easeInOut,
