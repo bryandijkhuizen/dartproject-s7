@@ -4,7 +4,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MatchListWidget extends StatelessWidget {
   Future<List<dynamic>> fetchMatches() async {
-    final matchResponse = await Supabase.instance.client.from('match').select();
+    // filter on data
+    final matchResponse = await Supabase.instance.client
+        .from('match')
+        .select()
+        .order('date', ascending: true);
 
     List<String> playerIds = [];
     for (var match in matchResponse) {

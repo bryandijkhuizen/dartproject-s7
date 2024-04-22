@@ -89,6 +89,13 @@ class _StartMatchState extends State<StartMatch> {
         borderRadius: BorderRadius.circular(10),
       ),
     ),
+    'random': ElevatedButton.styleFrom(
+      backgroundColor: const Color(0xFF2C4789),
+      foregroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+    ),
   };
 
   @override

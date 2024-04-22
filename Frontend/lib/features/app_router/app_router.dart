@@ -3,8 +3,8 @@ import 'package:darts_application/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../start_match/start_match.dart';
-import '../start_match/match_list_widget.dart';
+import '../setup_match/start_match.dart';
+import '../setup_match/match_list_widget.dart';
 
 Widget getPlaceholderComponent(
     String currentRoute, List<String> routes, BuildContext context) {
@@ -29,7 +29,7 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
 
 final router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/auth',
+  initialLocation: '/',
   routes: <RouteBase>[
     // Auth route
     GoRoute(
