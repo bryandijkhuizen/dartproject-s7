@@ -198,7 +198,6 @@ final router = GoRouter(
                   GoRoute(
                     path: '/tournament_bracket',
                     builder: (context, state) {
-                      // Ignore this for now
                       return TournamentBracketScreen();
                     },
                   ),
