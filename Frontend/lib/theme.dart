@@ -3,27 +3,28 @@ import 'package:google_fonts/google_fonts.dart';
 
 ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
-  colorScheme: ColorScheme.fromSeed(
+colorScheme: ColorScheme.fromSeed(
     seedColor: const Color(0xFFCD0612),
   )
       // Overwrite the seeded colors with copyWith
       .copyWith(
     brightness: Brightness.dark,
     secondary: const Color(0xFF2C4789),
-    background: const Color(0xFF060606),
+    background: const Color(0xFF101010),
+    surface: const Color(0xFF101010),
+    onSurface: Colors.white,
   ),
   inputDecorationTheme: InputDecorationTheme(
-    filled: true,
-    fillColor: const Color(0xFFF9F9F9),
     floatingLabelBehavior: FloatingLabelBehavior.never,
+    labelStyle: const TextStyle(
+      color: Color(0xFF6F6F6F),
+    ),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
     ),
-    iconColor: Colors.black,
-    prefixIconColor: Colors.black,
-    labelStyle: const TextStyle(
-      color: Color(0xFF6B6B6B),
-    ),
+    iconColor: Colors.white,
+    prefixIconColor: Colors.white,
+    suffixIconColor: Colors.white,
   ),
   textTheme: TextTheme(
     displayLarge: GoogleFonts.poppins(
