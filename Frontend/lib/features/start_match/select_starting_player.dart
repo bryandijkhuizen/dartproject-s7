@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SelectStartingPlayerPageWidget extends StatefulWidget {
   final double buttonHeight;
   final double startMatchPosition;
   final Map<String, ButtonStyle> buttonStyles;
+  final Map<String, dynamic> matchDetails;
 
   const SelectStartingPlayerPageWidget({
     required this.buttonHeight,
     required this.startMatchPosition,
     required this.buttonStyles,
+    required this.matchDetails,
   });
 
   @override
@@ -52,7 +55,7 @@ class _SelectStartingPlayerPageWidgetState
                   player2Selected = false;
                 });
               },
-              child: const Text('Player 1'),
+              child: Text(widget.matchDetails['player_1_last_name']),
               style: player1Selected
                   ? widget.buttonStyles['joined']
                   : widget.buttonStyles['notJoined'],
@@ -66,7 +69,7 @@ class _SelectStartingPlayerPageWidgetState
                   player2Selected = true;
                 });
               },
-              child: const Text('Player 2'),
+              child: Text(widget.matchDetails['player_2_last_name']),
               style: player2Selected
                   ? widget.buttonStyles['joined']
                   : widget.buttonStyles['notJoined'],
@@ -77,12 +80,27 @@ class _SelectStartingPlayerPageWidgetState
               height: widget.startMatchPosition - (3 * widget.buttonHeight),
             ), // Space to push buttons to 3/4 of the page
             ElevatedButton(
-              onPressed: () {
-                // Add logic to confirm selection and proceed
+              onPressed: () async {
+                final playerId = player1Selected
+                    ? widget.matchDetails['player_1_id']
+                    : widget.matchDetails['player_2_id'];
+
+                await Supabase.instance.client
+                    .from('match')
+                    .update({'starting_player_id': playerId}).match(
+                        {'id': widget.matchDetails['id']});
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Starting player selected: ${player1Selected ? widget.matchDetails['player_1_last_name'] : widget.matchDetails['player_2_last_name']}',
+                    ),
+                  ),
+                );
               },
               child: const Text('Confirm'),
               style: widget.buttonStyles['notJoined'],
-            ),
+            )
           ],
         ),
       ),

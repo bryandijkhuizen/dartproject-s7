@@ -59,6 +59,8 @@ class _StartMatchState extends State<StartMatch> {
               players[matchResponse['player_1_id'].toString()],
           'player_2_last_name':
               players[matchResponse['player_2_id'].toString()],
+          'player_1_id': matchResponse['player_1_id'],
+          'player_2_id': matchResponse['player_2_id'],
           'set_target': matchResponse['set_target'],
           'leg_target': matchResponse['leg_target'],
         };
@@ -109,6 +111,7 @@ class _StartMatchState extends State<StartMatch> {
             buttonHeight: buttonHeight,
             startMatchPosition: startMatchPosition,
             buttonStyles: buttonStyles,
+            matchDetails: matchDetails,
           ),
         ],
       ),
