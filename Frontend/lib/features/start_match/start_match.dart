@@ -133,7 +133,7 @@ class _StartMatchState extends State<StartMatch> {
               'Match ID: ${widget.matchId}', // Display the match ID on the screen
 
               style: TextStyle(
-                fontSize: 24, // Adjust the font size as needed
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
