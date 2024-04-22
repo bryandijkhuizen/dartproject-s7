@@ -12,8 +12,7 @@ class MatchListWidget extends StatelessWidget {
       playerIds.add(match['player_2_id']);
     }
 
-    // fetch all users from the 'user' table and then filter by player IDs
-    final userResponse = await Supabase.instance.client.from('user').select();
+    final userResponse = await Supabase.instance.client.rpc('get_all_users');
 
     // Map player IDs to last names for easy access
     Map<String, String> players = {};
