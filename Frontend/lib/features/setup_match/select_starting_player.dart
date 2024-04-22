@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:math';
 
 class SelectStartingPlayerPageWidget extends StatefulWidget {
   final double buttonHeight;
@@ -74,11 +75,44 @@ class _SelectStartingPlayerPageWidgetState
                   ? widget.buttonStyles['joined']
                   : widget.buttonStyles['notJoined'],
             ),
+            SizedBox(height: widget.buttonHeight * 0.15), // Space
+            ElevatedButton(
+              onPressed: () async {
+                // Randomly select a player
+                final random = new Random();
+
+                final playerId = random.nextBool()
+                    ? widget.matchDetails['player_1_id']
+                    : widget.matchDetails['player_2_id'];
+
+                // get the according player name with the id
+                final playerName =
+                    playerId == widget.matchDetails['player_1_id']
+                        ? widget.matchDetails['player_1_last_name']
+                        : widget.matchDetails['player_2_last_name'];
+
+                await Supabase.instance.client
+                    .from('match')
+                    .update({'starting_player_id': playerId}).match(
+                        {'id': widget.matchDetails['id']});
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Starting player selected: $playerName',
+                    ),
+                  ),
+                );
+              },
+              child: const Text('Random'),
+              style: widget.buttonStyles['random'],
+            ),
             SizedBox(
                 height: widget.buttonHeight * 0.15), // Space between buttons
             SizedBox(
               height: widget.startMatchPosition - (3 * widget.buttonHeight),
-            ), // Space to push buttons to 3/4 of the page
+            ),
+
             ElevatedButton(
               onPressed: () async {
                 final playerId = player1Selected
@@ -100,7 +134,7 @@ class _SelectStartingPlayerPageWidgetState
               },
               child: const Text('Confirm'),
               style: widget.buttonStyles['notJoined'],
-            )
+            ),
           ],
         ),
       ),
