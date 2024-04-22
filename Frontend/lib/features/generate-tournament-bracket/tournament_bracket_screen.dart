@@ -95,15 +95,34 @@ class TournamentBracket extends StatelessWidget {
         //     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum a velit feugiat, rutrum erat ac, porttitor diam. Suspendisse aliquam urna eget fermentum mattis. Donec egestas luctus turpis ac dapibus. Sed id dapibus lorem, id venenatis elit. Etiam eget urna a tellus condimentum ultricies. Aliquam maximus interdum nibh, non maximus tellus sagittis id. Phasellus tincidunt, elit at auctor semper, elit purus imperdiet lectus, posuere pretium ipsum sapien ut dolor. Quisque nec lacinia augue. In eu tempus neque, vel cursus quam. Ut venenatis egestas arcu. Vestibulum tortor sem, consequat et arcu nec, semper euismod erat. Sed pulvinar placerat dolor, ut sollicitudin velit tristique sit amet. Mauris volutpat sagittis ligula, a luctus velit convallis sed. Nulla tincidunt tempus lorem sed venenatis. Fusce enim libero, consectetur vitae ex eget, bibendum egestas velit. Nam vehicula mi diam, et luctus odio scelerisque a. Proin egestas mi ut urna luctus, vel convallis urna luctus. Nam at justo luctus, consectetur nisl sodales, pharetra nunc. Donec in est sit amet magna congue vehicula sit amet ac libero. Curabitur id posuere augue, a finibus turpis. Nam quis nunc pharetra, venenatis sapien eu, tincidunt nibh. Mauris aliquet sapien diam. Suspendisse dapibus eget nibh et eleifend. Nunc non lacus felis. Morbi sollicitudin pretium enim, nec accumsan lacus placerat nec. Sed lobortis enim ipsum, sit amet rhoncus eros rhoncus ut. Phasellus at tristique est. Donec vel nulla eu nunc consequat pellentesque. In sagittis ligula nec massa commodo eleifend. Morbi id sagittis eros. Fusce interdum non nunc in tincidunt. Cras bibendum mollis diam. Vivamus vel arcu non lectus malesuada varius eu et ligula. Sed orci quam, pellentesque eu auctor eget, molestie quis risus. Fusce pretium arcu vitae libero feugiat cursus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Morbi suscipit laoreet sollicitudin. Nullam semper ipsum in erat mattis, ut dictum mi ultricies. Etiam non mauris elit. In blandit, lectus id sodales ultricies, augue magna imperdiet arcu, in molestie diam ante ac mauris. Etiam congue arcu nisi, sit amet eleifend lorem posuere at."),
         child: ListView.builder(
           controller: _scrollController,
+          scrollDirection: Axis.vertical,
           itemCount: tournamentPlayers.length,
           itemBuilder: (context, index) {
-            return Text(
-              tournamentPlayers[index],
-              style: bodyMediumWhite,
-            );
+            return playerCard(
+                playerName: tournamentPlayers[index],
+                bodyMediumWhite: bodyMediumWhite);
           },
         ),
       ),
+    );
+  }
+}
+
+class playerCard extends StatelessWidget {
+  playerCard({
+    super.key,
+    required this.playerName,
+    required this.bodyMediumWhite,
+  });
+
+  String playerName;
+  final TextStyle? bodyMediumWhite;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      playerName,
+      style: bodyMediumWhite,
     );
   }
 }
