@@ -44,9 +44,9 @@ class UserManagementHeader extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: TextButton(
+              child: FilledButton(
                 onPressed: () {},
-                child: const Text("Save"),
+                child: const Text("Search"),
               ),
             )
           ],
