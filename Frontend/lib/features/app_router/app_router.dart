@@ -2,6 +2,7 @@ import 'package:darts_application/components/scaffolding.dart';
 import 'package:darts_application/features/app_router/app_router_redirect.dart';
 import 'package:darts_application/features/auth/auth_notifier.dart';
 import 'package:darts_application/features/auth/auth_view.dart';
+import 'package:darts_application/features/generate-tournament-bracket/tournament_bracket_screen.dart';
 import 'package:darts_application/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -145,6 +146,7 @@ final router = GoRouter(
                             '/statistics',
                             '/matches',
                             '/settings',
+                            '/tournament_bracket',
                           ],
                           context);
                     },
@@ -187,6 +189,18 @@ final router = GoRouter(
                             '/settings',
                           ],
                           context);
+                    },
+                  ),
+                ],
+              ),
+
+              // Desktop tournament bracket
+              StatefulShellBranch(
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: '/tournament_bracket',
+                    builder: (context, state) {
+                      return TournamentBracketScreen();
                     },
                   ),
                 ],
