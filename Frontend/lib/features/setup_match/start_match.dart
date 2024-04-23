@@ -5,7 +5,7 @@ import 'select_starting_player.dart';
 
 class StartMatch extends StatefulWidget {
   final String matchId;
-  const StartMatch({Key? key, required this.matchId}) : super(key: key);
+  const StartMatch({super.key, required this.matchId});
 
   @override
   State<StartMatch> createState() => _StartMatchState();
@@ -40,11 +40,6 @@ class _StartMatchState extends State<StartMatch> {
           .eq('id', widget.matchId)
           .single();
 
-      List<String> playerIds = [
-        matchResponse['player_1_id'],
-        matchResponse['player_2_id']
-      ];
-
       final userResponse = await Supabase.instance.client.from('user').select();
 
       Map<String, String> players = {};
@@ -66,7 +61,7 @@ class _StartMatchState extends State<StartMatch> {
         };
       });
     } catch (e) {
-      print(e.toString());
+      throw Exception('Failed to fetch match details: $e');
     }
   }
 
@@ -128,7 +123,7 @@ class _StartMatchState extends State<StartMatch> {
   Widget buildJoinMatchPage(
       BuildContext context, double buttonHeight, double startMatchPosition) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage('./assets/images/bg.png'),
           fit: BoxFit.cover,
@@ -142,7 +137,7 @@ class _StartMatchState extends State<StartMatch> {
             Text(
               'Match ID: ${widget.matchId}', // Display the match ID on the screen
 
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -191,7 +186,7 @@ class _StartMatchState extends State<StartMatch> {
                 style: buttonStyles['notJoined'],
                 onPressed: () {
                   _pageController.nextPage(
-                    duration: Duration(milliseconds: 500),
+                    duration: const Duration(milliseconds: 500),
                     curve: Curves.easeInOut,
                   );
                 },

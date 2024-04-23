@@ -9,6 +9,7 @@ class SelectStartingPlayerPageWidget extends StatefulWidget {
   final Map<String, dynamic> matchDetails;
 
   const SelectStartingPlayerPageWidget({
+    super.key,
     required this.buttonHeight,
     required this.startMatchPosition,
     required this.buttonStyles,
@@ -28,7 +29,7 @@ class _SelectStartingPlayerPageWidgetState
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage('./assets/images/bg.png'),
           fit: BoxFit.cover,
@@ -39,7 +40,7 @@ class _SelectStartingPlayerPageWidgetState
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SizedBox(height: widget.buttonHeight * 0.2), // Top padding
-            Text(
+            const Text(
               'Select Starting Player', // Display the heading
               style: TextStyle(
                 fontSize: 24, // Adjust the font size as needed
@@ -56,10 +57,10 @@ class _SelectStartingPlayerPageWidgetState
                   player2Selected = false;
                 });
               },
-              child: Text(widget.matchDetails['player_1_last_name']),
               style: player1Selected
                   ? widget.buttonStyles['joined']
                   : widget.buttonStyles['notJoined'],
+              child: Text(widget.matchDetails['player_1_last_name']),
             ),
             SizedBox(
                 height: widget.buttonHeight * 0.15), // Space between buttons
@@ -70,10 +71,10 @@ class _SelectStartingPlayerPageWidgetState
                   player2Selected = true;
                 });
               },
-              child: Text(widget.matchDetails['player_2_last_name']),
               style: player2Selected
                   ? widget.buttonStyles['joined']
                   : widget.buttonStyles['notJoined'],
+              child: Text(widget.matchDetails['player_2_last_name']),
             ),
             SizedBox(height: widget.buttonHeight * 0.15), // Space
             ElevatedButton(
@@ -104,8 +105,8 @@ class _SelectStartingPlayerPageWidgetState
                   ),
                 );
               },
-              child: const Text('Random'),
               style: widget.buttonStyles['random'],
+              child: const Text('Random'),
             ),
             SizedBox(
                 height: widget.buttonHeight * 0.15), // Space between buttons
@@ -132,8 +133,8 @@ class _SelectStartingPlayerPageWidgetState
                   ),
                 );
               },
-              child: const Text('Confirm'),
               style: widget.buttonStyles['notJoined'],
+              child: const Text('Confirm'),
             ),
           ],
         ),
