@@ -27,7 +27,7 @@ Widget getPlaceholderComponent(
             onPressed: () {
               Supabase.instance.client.auth.signOut();
             },
-            child: const Text('Sign out'))
+            child: const Text('Sign out')),
       ],
     ),
   );
