@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MatchListWidget extends StatelessWidget {
+  const MatchListWidget({super.key});
+
   Future<List<dynamic>> fetchMatches() async {
     // filter on data
     final matchResponse = await Supabase.instance.client
@@ -16,7 +18,7 @@ class MatchListWidget extends StatelessWidget {
       playerIds.add(match['player_2_id']);
     }
 
-    final userResponse = await Supabase.instance.client.rpc('get_all_users');
+    final userResponse = await Supabase.instance.client.from('user').select();
 
     // Map player IDs to last names for easy access
     Map<String, String> players = {};
@@ -41,11 +43,11 @@ class MatchListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Matches', style: TextStyle(color: Colors.white)),
+        title: const Text('Matches', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color(0xFFCD0612),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('./assets/images/bg.png'),
             fit: BoxFit.cover,
@@ -55,7 +57,7 @@ class MatchListWidget extends StatelessWidget {
           future: fetchMatches(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
@@ -79,14 +81,14 @@ class MatchListWidget extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFCD0612),
                         foregroundColor: Colors.white,
-                        padding:
-                            EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 12),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8)),
                       ),
                       child: Text(
                         'Match $matchId: $player1LastName vs $player2LastName',
-                        style: TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14),
                         overflow: TextOverflow
                             .ellipsis, // Ensures text does not overflow the button boundary
                       ),
@@ -95,7 +97,7 @@ class MatchListWidget extends StatelessWidget {
                 },
               );
             } else {
-              return Center(child: Text('No matches found.'));
+              return const Center(child: Text('No matches found.'));
             }
           },
         ),
