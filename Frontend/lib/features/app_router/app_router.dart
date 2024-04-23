@@ -1,7 +1,11 @@
 import 'package:darts_application/components/scaffolding.dart';
+import 'package:darts_application/features/app_router/app_router_redirect.dart';
+import 'package:darts_application/features/auth/auth_notifier.dart';
+import 'package:darts_application/features/auth/auth_view.dart';
 import 'package:darts_application/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../setup_match/start_match.dart';
 import '../setup_match/match_list_widget.dart';
@@ -19,6 +23,11 @@ Widget getPlaceholderComponent(
             },
             child: Text('Go to $route'),
           ),
+        TextButton(
+            onPressed: () {
+              Supabase.instance.client.auth.signOut();
+            },
+            child: const Text('Sign out'))
       ],
     ),
   );
@@ -30,12 +39,14 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
 final router = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/auth',
+  refreshListenable: AuthNotifier(),
+  redirect: appRouterRedirect,
   routes: <RouteBase>[
     // Auth route
     GoRoute(
       path: '/auth',
       builder: (context, state) {
-        return const Placeholder();
+        return const AuthView();
       },
     ),
 
