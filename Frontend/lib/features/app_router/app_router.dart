@@ -6,6 +6,9 @@ import 'package:darts_application/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+// import '../create_match/single_match/create_single_match_page.dart';
+import '../create_match/create_selector.dart';
+
 Widget getPlaceholderComponent(
     String currentRoute, List<String> routes, BuildContext context) {
   return Center(
@@ -178,15 +181,16 @@ final router = GoRouter(
                   GoRoute(
                     path: '/matches',
                     builder: (context, state) {
+                      return const CreateSelector();
                       // Ignore this for now
-                      return getPlaceholderComponent(
-                          '/matches',
-                          [
-                            '/',
-                            '/matches',
-                            '/settings',
-                          ],
-                          context);
+                      // return getPlaceholderComponent(
+                      //     '/matches',
+                      //     [
+                      //       '/',
+                      //       '/matches',
+                      //       '/settings',
+                      //     ],
+                      //     context);
                     },
                   ),
                 ],
