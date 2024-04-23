@@ -70,13 +70,6 @@ class _StartMatchState extends State<StartMatch> {
   }
 
   var buttonStyles = {
-    'notJoined': ElevatedButton.styleFrom(
-      backgroundColor: const Color(0xFFCD0612),
-      foregroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-    ),
     'joined': ElevatedButton.styleFrom(
       backgroundColor: Colors.grey,
       foregroundColor: Colors.white,
