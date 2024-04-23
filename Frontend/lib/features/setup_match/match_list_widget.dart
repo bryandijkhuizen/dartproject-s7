@@ -44,7 +44,6 @@ class MatchListWidget extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Matches', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFFCD0612),
       ),
       body: Container(
         decoration: const BoxDecoration(
