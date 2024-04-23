@@ -1,4 +1,4 @@
-create policy "select_own_matches"
+create policy "select_all_matches"
 on public.match
 as permissive
 for select
