@@ -11,18 +11,20 @@ class Scaffolding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: shell,
-      appBar: !isMobile
-          ? DesktopNavBar(
-              currentShell: shell,
-            )
-          : null,
-      bottomNavigationBar: isMobile
-          ? MobileNavBar(
-              currentShell: shell,
-            )
-          : null,
+    return SafeArea(
+      child: Scaffold(
+        body: shell,
+        appBar: !isMobile
+            ? DesktopNavBar(
+                currentShell: shell,
+              )
+            : null,
+        bottomNavigationBar: isMobile
+            ? MobileNavBar(
+                currentShell: shell,
+              )
+            : null,
+      ),
     );
   }
 }

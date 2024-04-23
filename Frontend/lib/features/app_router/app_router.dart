@@ -6,6 +6,10 @@ import 'package:darts_application/features/generate-tournament-bracket/tournamen
 import 'package:darts_application/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../setup_match/start_match.dart';
+import '../setup_match/match_list_widget.dart';
 
 Widget getPlaceholderComponent(
     String currentRoute, List<String> routes, BuildContext context) {
@@ -20,6 +24,11 @@ Widget getPlaceholderComponent(
             },
             child: Text('Go to $route'),
           ),
+        TextButton(
+            onPressed: () {
+              Supabase.instance.client.auth.signOut();
+            },
+            child: const Text('Sign out'))
       ],
     ),
   );
@@ -29,16 +38,16 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 
 final router = GoRouter(
-  refreshListenable: AuthNotifier(),
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/auth',
+  refreshListenable: AuthNotifier(),
   redirect: appRouterRedirect,
   routes: <RouteBase>[
     // Auth route
     GoRoute(
       path: '/auth',
       builder: (context, state) {
-        return const AuthScreen();
+        return const AuthView();
       },
     ),
 
@@ -96,16 +105,17 @@ final router = GoRouter(
                 routes: <RouteBase>[
                   GoRoute(
                     path: '/matches',
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: ':matchId',
+                        builder: (context, state) {
+                          final matchId = state.pathParameters['matchId']!;
+                          return StartMatch(matchId: matchId);
+                        },
+                      ),
+                    ],
                     builder: (context, state) {
-                      // Ignore this for now
-                      return getPlaceholderComponent(
-                          '/matches',
-                          [
-                            '/',
-                            '/statistics',
-                            '/settings',
-                          ],
-                          context);
+                      return MatchListWidget();
                     },
                   ),
                 ],
