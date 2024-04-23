@@ -3,8 +3,10 @@ import 'package:darts_application/features/app_router/app_router_redirect.dart';
 import 'package:darts_application/features/auth/auth_notifier.dart';
 import 'package:darts_application/features/auth/auth_view.dart';
 import 'package:darts_application/helpers.dart';
+import 'package:darts_application/features/gameplay/gameplay_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 
 Widget getPlaceholderComponent(
     String currentRoute, List<String> routes, BuildContext context) {
@@ -63,9 +65,20 @@ final router = GoRouter(
                             '/statistics',
                             '/matches',
                             '/settings',
+                            '/gameplay'
                           ],
                           context);
                     },
+                  ),
+                ],
+              ),
+
+              StatefulShellBranch(
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: '/gameplay',
+                    // ignore: prefer_const_constructors
+                    builder: (context, state) => GameplayView(),
                   ),
                 ],
               ),
@@ -141,17 +154,22 @@ final router = GoRouter(
                       // Ignore this for now
                       return getPlaceholderComponent(
                           '/',
-                          [
-                            '/statistics',
-                            '/matches',
-                            '/settings',
-                          ],
+                          ['/statistics', '/matches', '/settings', '/gameplay'],
                           context);
                     },
                   ),
                 ],
               ),
 
+              StatefulShellBranch(
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: '/gameplay',
+                    // ignore: prefer_const_constructors
+                    builder: (context, state) => GameplayView(),
+                  ),
+                ],
+              ),
               // Desktop statistics
               StatefulShellBranch(
                 routes: <RouteBase>[
