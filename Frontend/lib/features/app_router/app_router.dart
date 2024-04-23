@@ -10,8 +10,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../setup_match/start_match.dart';
 import '../setup_match/match_list_widget.dart';
 
-// import '../create_match/single_match/create_single_match_page.dart';
-import '../create_match/create_selector.dart';
+import '../create_match/single_match/create_single_match_page.dart';
+// import '../create_match/create_selector.dart';
 
 Widget getPlaceholderComponent(
     String currentRoute, List<String> routes, BuildContext context) {
@@ -191,16 +191,29 @@ final router = GoRouter(
                   GoRoute(
                     path: '/matches',
                     builder: (context, state) {
-                      return const CreateSelector();
+                      // return const CreateSelector();
                       // Ignore this for now
-                      // return getPlaceholderComponent(
-                      //     '/matches',
-                      //     [
-                      //       '/',
-                      //       '/matches',
-                      //       '/settings',
-                      //     ],
-                      //     context);
+                      return getPlaceholderComponent(
+                          '/matches',
+                          [
+                            '/',
+                            '/matches',
+                            '/settings',
+                            '/matches/create/single'
+                          ],
+                          context);
+                    },
+                  ),
+                ],
+              ),
+
+              // Desktop single match creation
+              StatefulShellBranch(
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: '/matches/create/single',
+                    builder: (context, state) {
+                      return const CreateSingleMatchPage();
                     },
                   ),
                 ],
