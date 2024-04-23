@@ -1,10 +1,10 @@
 import 'package:darts_application/components/scaffolding.dart';
-import 'package:darts_application/features/app_router/app_router_redirect.dart';
-import 'package:darts_application/features/auth/auth_notifier.dart';
-import 'package:darts_application/features/auth/auth_view.dart';
 import 'package:darts_application/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+import '../setup_match/start_match.dart';
+import '../setup_match/match_list_widget.dart';
 
 Widget getPlaceholderComponent(
     String currentRoute, List<String> routes, BuildContext context) {
@@ -28,16 +28,14 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 
 final router = GoRouter(
-  refreshListenable: AuthNotifier(),
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/auth',
-  redirect: appRouterRedirect,
   routes: <RouteBase>[
     // Auth route
     GoRoute(
       path: '/auth',
       builder: (context, state) {
-        return const AuthScreen();
+        return const Placeholder();
       },
     ),
 
@@ -95,16 +93,17 @@ final router = GoRouter(
                 routes: <RouteBase>[
                   GoRoute(
                     path: '/matches',
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: ':matchId',
+                        builder: (context, state) {
+                          final matchId = state.pathParameters['matchId']!;
+                          return StartMatch(matchId: matchId);
+                        },
+                      ),
+                    ],
                     builder: (context, state) {
-                      // Ignore this for now
-                      return getPlaceholderComponent(
-                          '/matches',
-                          [
-                            '/',
-                            '/statistics',
-                            '/settings',
-                          ],
-                          context);
+                      return MatchListWidget();
                     },
                   ),
                 ],
