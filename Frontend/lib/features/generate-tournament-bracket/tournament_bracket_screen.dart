@@ -1,8 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/svg.dart';
 
 class TournamentBracketScreen extends StatelessWidget {
   final List<String> tournamentPlayers = [
@@ -24,6 +22,8 @@ class TournamentBracketScreen extends StatelessWidget {
     "Danny Noppert",
   ];
 
+  TournamentBracketScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
@@ -34,6 +34,13 @@ class TournamentBracketScreen extends StatelessWidget {
         theme.textTheme.titleMedium?.copyWith(color: Colors.white);
     var bodyMediumWhite =
         theme.textTheme.bodyMedium?.copyWith(color: Colors.white);
+
+    const String avatarUrl = "assets/images/avatar_placeholder.png";
+    List<Player> players = [];
+
+    for (var tournamentPlayer in tournamentPlayers) {
+      players.add(Player(tournamentPlayer, avatarUrl));
+    }
 
     return Center(
       child: Container(
@@ -64,8 +71,7 @@ class TournamentBracketScreen extends StatelessWidget {
               ),
             ),
             TournamentBracket(
-                tournamentPlayers: tournamentPlayers,
-                bodyMediumWhite: bodyMediumWhite),
+                players: players, bodyMediumWhite: bodyMediumWhite),
           ],
         ),
       ),
@@ -73,19 +79,43 @@ class TournamentBracketScreen extends StatelessWidget {
   }
 }
 
+class Player {
+  final String name;
+  final String avatarUrl;
+
+  Player(this.name, this.avatarUrl);
+}
+
 class TournamentBracket extends StatelessWidget {
   const TournamentBracket({
     super.key,
-    required this.tournamentPlayers,
+    required this.players,
     required this.bodyMediumWhite,
   });
 
-  final List<String> tournamentPlayers;
+  final List<Player> players;
   final TextStyle? bodyMediumWhite;
 
   @override
   Widget build(BuildContext context) {
     final ScrollController _scrollController = ScrollController();
+
+    List<MatchupCard> matches = [];
+    Player firstPlayer = Player("", "");
+    var playerCount = 0;
+
+    for (var player in players) {
+      if (playerCount == 0) {
+        firstPlayer = player;
+        playerCount = 1;
+      } else if (playerCount == 1) {
+        matches.add(MatchupCard(
+            firstPlayer: firstPlayer,
+            secondPlayer: player,
+            bodyMediumWhite: bodyMediumWhite));
+        playerCount = 0;
+      }
+    }
 
     return Container(
       color: Colors.white,
@@ -96,11 +126,9 @@ class TournamentBracket extends StatelessWidget {
         child: ListView.builder(
           controller: _scrollController,
           scrollDirection: Axis.vertical,
-          itemCount: tournamentPlayers.length,
+          itemCount: matches.length,
           itemBuilder: (context, index) {
-            return playerCard(
-                playerName: tournamentPlayers[index],
-                bodyMediumWhite: bodyMediumWhite);
+            return matches[index];
           },
         ),
       ),
@@ -108,15 +136,48 @@ class TournamentBracket extends StatelessWidget {
   }
 }
 
-class playerCard extends StatelessWidget {
-  playerCard({
+class MatchupCard extends StatelessWidget {
+  final Player firstPlayer;
+  final Player secondPlayer;
+  final TextStyle? bodyMediumWhite;
+
+  const MatchupCard({
     super.key,
-    required this.playerName,
+    required this.firstPlayer,
+    required this.secondPlayer,
     required this.bodyMediumWhite,
   });
 
-  String playerName;
-  final String avatar = "assets/images/avatar_placeholder.png";
+  @override
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    return Card(
+      color: theme.colorScheme.primary,
+      child: Column(
+        children: [
+          PlayerCard(
+            player: firstPlayer,
+            bodyMediumWhite: bodyMediumWhite,
+          ),
+          // Spacer(),
+          PlayerCard(
+            player: secondPlayer,
+            bodyMediumWhite: bodyMediumWhite,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class PlayerCard extends StatelessWidget {
+  const PlayerCard({
+    super.key,
+    required this.player,
+    required this.bodyMediumWhite,
+  });
+
+  final Player player;
   final TextStyle? bodyMediumWhite;
 
   @override
@@ -125,8 +186,10 @@ class playerCard extends StatelessWidget {
       child: Row(
         // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(radius: 30, backgroundImage: AssetImage(avatar)),
-          SizedBox(width: 16),
+          SizedBox(width: 8),
+          CircleAvatar(
+              radius: 20, backgroundImage: AssetImage(player.avatarUrl)),
+          SizedBox(width: 8),
           // SvgPicture.asset(
           //   width: 50,
           //   height: 50,
@@ -134,9 +197,10 @@ class playerCard extends StatelessWidget {
           //   semanticsLabel: 'Avatar from player',
           // ),
           Text(
-            playerName,
+            player.name,
             // style: bodyMediumWhite,
           ),
+          SizedBox(width: 8),
         ],
       ),
     );
