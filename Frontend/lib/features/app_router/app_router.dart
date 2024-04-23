@@ -127,7 +127,7 @@ final router = GoRouter(
                       ),
                     ],
                     builder: (context, state) {
-                      return MatchListWidget();
+                      return const MatchListWidget();
                     },
                   ),
                 ],
