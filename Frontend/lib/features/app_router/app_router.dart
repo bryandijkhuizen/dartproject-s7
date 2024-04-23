@@ -2,6 +2,8 @@ import 'package:darts_application/components/scaffolding.dart';
 import 'package:darts_application/features/app_router/app_router_redirect.dart';
 import 'package:darts_application/features/auth/auth_notifier.dart';
 import 'package:darts_application/features/auth/auth_view.dart';
+import 'package:darts_application/features/user_management/user_management_assign.dart';
+import 'package:darts_application/features/user_management/user_management_view.dart';
 import 'package:darts_application/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -199,15 +201,14 @@ final router = GoRouter(
                     path: '/user-management',
                     builder: (context, state) {
                       // Ignore this for now
-                      return getPlaceholderComponent(
-                          '/user-management',
-                          [
-                            '/',
-                            '/statistics',
-                            '/matches',
-                          ],
-                          context);
+                      return UserManagementView();
                     },
+                    routes: [
+                      GoRoute(path: 'edit/:uuid',
+                      builder: (context, state) {
+                        return UserManagementAssign(uuid: state.pathParameters['uuid']!);
+                      },)
+                    ],
                   ),
                 ],
               ),
