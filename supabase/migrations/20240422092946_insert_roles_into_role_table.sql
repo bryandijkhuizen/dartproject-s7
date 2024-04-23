@@ -1,7 +1,7 @@
 insert into
   role (name)
 values
-  ('User'),
+  ('Player'),
   ('Marker'),
   ('Tournament organiser'),
   ('Darts association'),
@@ -13,5 +13,5 @@ values
     ('Members manager'),
     ('Club marketing'),
     ('Club tournament organiser'),
-    ('Club administrator')
+    ('Club administrator'),
     ('Club marker')
