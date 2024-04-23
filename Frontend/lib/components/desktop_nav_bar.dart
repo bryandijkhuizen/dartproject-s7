@@ -2,7 +2,6 @@ import 'package:darts_application/components/navigation_divider.dart';
 import 'package:darts_application/components/navigation_item.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
   final double height;
@@ -76,17 +75,10 @@ class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
               itemCount: navigationItems.length,
             ),
           ),
-          TextButton(
-            onPressed: () {
-              Supabase.instance.client.auth.signOut();
-            },
-            child: const Text(
-              'Logout',
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-          ),
+          const Text(
+            'Login/logout component here',
+            style: TextStyle(color: Colors.white),
+          )
         ],
       ),
     );
