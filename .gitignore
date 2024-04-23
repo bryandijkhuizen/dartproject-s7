@@ -9,7 +9,6 @@ Frontend/windows/flutter/generated_plugins.cmake
 .vscode/extensions.json
 .vscode/settings.json
 .vscode/launch.json
-/supabase
 Frontend/pubspec.lock
 gitflow.png
 Frontend/macos/Podfile
