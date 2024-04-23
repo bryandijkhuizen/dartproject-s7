@@ -29,7 +29,7 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
 
 final router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/',
+  initialLocation: '/auth',
   routes: <RouteBase>[
     // Auth route
     GoRoute(
