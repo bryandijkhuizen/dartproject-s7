@@ -15,6 +15,15 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
   final TextEditingController _matchNameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
 
+  bool useLegDuration = false;
+  bool useSetDuration = false;
+
+  bool is301Match = true;
+  bool is501Match = false;
+
+  bool bullOffStart = true;
+  bool randomStart = false;
+
   @override
   void dispose() {
     _matchNameController.dispose();
@@ -129,12 +138,12 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                                   style: TextStyle(color: Colors.white, fontSize: 16),
                                 ),
                                 Checkbox(
-                                  value: false,
-                                  onChanged: (bool? value) {
-                                    // Handle checkbox state change
+                                  value: useLegDuration,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      useLegDuration = value!;
+                                    });
                                   },
-                                  checkColor: Colors.white,
-                                  activeColor: Colors.green,
                                 ),
                                 const SizedBox(width: 250),
                               ],
@@ -162,12 +171,12 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                                   style: TextStyle(color: Colors.white, fontSize: 16),
                                 ),
                                 Checkbox(
-                                  value: false,
-                                  onChanged: (bool? value) {
-                                    // Handle checkbox state change
+                                  value: useSetDuration,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      useSetDuration = value!;
+                                    });
                                   },
-                                  checkColor: Colors.white,
-                                  activeColor: Colors.green,
                                 ),
                                 const SizedBox(width: 250),
                               ],
@@ -185,12 +194,15 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                             child: Row(
                               children: [
                                 Checkbox(
-                                  value: false,
-                                  onChanged: (bool? value) {
-                                    // Handle checkbox state change
+                                  value: is301Match,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      is301Match = value!;
+                                      if (is301Match) {
+                                        is501Match = false;
+                                      }
+                                    });
                                   },
-                                  checkColor: Colors.white,
-                                  activeColor: Colors.green,
                                 ),
                                 const Text(
                                   '301',
@@ -198,12 +210,15 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                                 ),
                                 const SizedBox(width: 20),
                                 Checkbox(
-                                  value: false,
-                                  onChanged: (bool? value) {
-                                    // Handle checkbox state change
+                                  value: is501Match,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      is501Match = value!;
+                                      if (is501Match) {
+                                        is301Match = false;
+                                      }
+                                    });
                                   },
-                                  checkColor: Colors.white,
-                                  activeColor: Colors.green,
                                 ),
                                 const Text(
                                   '501',
@@ -224,12 +239,15 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                             child: Row(
                               children: [
                                 Checkbox(
-                                  value: false,
-                                  onChanged: (bool? value) {
-                                    // Handle checkbox state change
+                                  value: bullOffStart,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      bullOffStart = value!;
+                                      if (bullOffStart) {
+                                        randomStart = false;
+                                      }
+                                    });
                                   },
-                                  checkColor: Colors.white,
-                                  activeColor: Colors.green,
                                 ),
                                 const Text(
                                   'Bull-off',
@@ -237,12 +255,15 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                                 ),
                                 const SizedBox(width: 20),
                                 Checkbox(
-                                  value: false,
-                                  onChanged: (bool? value) {
-                                    // Handle checkbox state change
+                                  value: randomStart,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      randomStart = value!;
+                                      if (randomStart) {
+                                        bullOffStart = false;
+                                      }
+                                    });
                                   },
-                                  checkColor: Colors.white,
-                                  activeColor: Colors.green,
                                 ),
                                 const Text(
                                   'Random',
