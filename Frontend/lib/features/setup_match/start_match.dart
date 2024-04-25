@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-import 'select_starting_player.dart';
+import 'package:darts_application/features/setup_match/select_starting_player.dart';
 
 class StartMatch extends StatefulWidget {
   final String matchId;
