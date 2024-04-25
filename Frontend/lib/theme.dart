@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 ThemeData darkTheme = ThemeData(
+  appBarTheme: const AppBarTheme(
+    backgroundColor:
+        Color(0xFFCD0612), // Ensures AppBar uses the exact red color
+    foregroundColor: Colors.white, // Ensures text and icons are white
+  ),
   brightness: Brightness.dark,
   colorScheme: ColorScheme.fromSeed(
     seedColor: const Color(0xFFCD0612),
@@ -13,6 +18,19 @@ ThemeData darkTheme = ThemeData(
     background: const Color(0xFF101010),
     surface: const Color(0xFF101010),
     onSurface: Colors.white,
+  ),
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ButtonStyle(
+      backgroundColor: MaterialStateProperty.all<Color>(
+        const Color(0xFFCD0612),
+      ),
+      foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+      shape: MaterialStateProperty.all<OutlinedBorder>(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    ),
   ),
   inputDecorationTheme: InputDecorationTheme(
     floatingLabelBehavior: FloatingLabelBehavior.never,

@@ -42,6 +42,8 @@ dependencies:
   google_fonts: ^6.2.1
   intl: ^0.19.0
   form_validator: ^2.1.1
+  backend:
+    path: ../backend
 
 dev_dependencies:
   flutter_test:

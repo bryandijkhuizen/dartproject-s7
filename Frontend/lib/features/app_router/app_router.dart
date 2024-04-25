@@ -7,9 +7,8 @@ import 'package:darts_application/features/gameplay/gameplay_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-import '../setup_match/start_match.dart';
-import '../setup_match/match_list_widget.dart';
+import 'package:darts_application/features/setup_match/start_match.dart';
+import 'package:darts_application/features/setup_match/match_list_widget.dart';
 
 
 Widget getPlaceholderComponent(
@@ -29,7 +28,7 @@ Widget getPlaceholderComponent(
             onPressed: () {
               Supabase.instance.client.auth.signOut();
             },
-            child: const Text('Sign out'))
+            child: const Text('Sign out')),
       ],
     ),
   );
