@@ -9,7 +9,7 @@ ColorScheme darkColorScheme = ColorScheme.fromSeed(
   brightness: Brightness.dark,
   secondary: const Color(0xFF2C4789),
   background: const Color(0xFF101010),
-  surface: const Color(0xFF101010),
+  surface: const Color(0xFF404040),
   onSurface: Colors.white,
 );
 
@@ -20,6 +20,7 @@ ThemeData darkTheme = ThemeData(
     foregroundColor: Colors.white, // Ensures text and icons are white
   ),
   brightness: Brightness.dark,
+  cardTheme: CardTheme(color: darkColorScheme.surface),
   colorScheme: darkColorScheme,
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
@@ -52,10 +53,11 @@ ThemeData darkTheme = ThemeData(
     backgroundColor: darkColorScheme.primary,
     height: 56,
     labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-    indicatorColor: darkColorScheme.surface,
+    indicatorColor: darkColorScheme.background,
     iconTheme:
         MaterialStateProperty.resolveWith(getNavigationIconThemeMaterialState),
   ),
+  scaffoldBackgroundColor: darkColorScheme.background,
   textTheme: TextTheme(
     displayLarge: GoogleFonts.poppins(
       fontSize: 94,
