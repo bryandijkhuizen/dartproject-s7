@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-import 'select_starting_player.dart';
+import 'package:darts_application/features/setup_match/select_starting_player.dart';
 
 class StartMatch extends StatefulWidget {
   final String matchId;
@@ -70,13 +69,6 @@ class _StartMatchState extends State<StartMatch> {
   }
 
   var buttonStyles = {
-    'notJoined': ElevatedButton.styleFrom(
-      backgroundColor: const Color(0xFFCD0612),
-      foregroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-    ),
     'joined': ElevatedButton.styleFrom(
       backgroundColor: Colors.grey,
       foregroundColor: Colors.white,

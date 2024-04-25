@@ -17,7 +17,6 @@ class SelectStartingPlayerPageWidget extends StatefulWidget {
   });
 
   @override
-  // ignore: library_private_types_in_public_api
   _SelectStartingPlayerPageWidgetState createState() =>
       _SelectStartingPlayerPageWidgetState();
 }
@@ -26,6 +25,7 @@ class _SelectStartingPlayerPageWidgetState
     extends State<SelectStartingPlayerPageWidget> {
   bool player1Selected = false;
   bool player2Selected = false;
+  Random random = Random();
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +80,6 @@ class _SelectStartingPlayerPageWidgetState
             SizedBox(height: widget.buttonHeight * 0.15), // Space
             ElevatedButton(
               onPressed: () async {
-                // Randomly select a player
-                final random = Random();
-
                 final playerId = random.nextBool()
                     ? widget.matchDetails['player_1_id']
                     : widget.matchDetails['player_2_id'];
@@ -98,7 +95,6 @@ class _SelectStartingPlayerPageWidgetState
                     .update({'starting_player_id': playerId}).match(
                         {'id': widget.matchDetails['id']});
 
-                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -127,7 +123,6 @@ class _SelectStartingPlayerPageWidgetState
                     .update({'starting_player_id': playerId}).match(
                         {'id': widget.matchDetails['id']});
 
-                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
