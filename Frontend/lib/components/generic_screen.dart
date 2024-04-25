@@ -8,11 +8,8 @@ class GenericScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
+      padding: const EdgeInsets.all(
         36.0,
-        12.0,
-        36.0,
-        12.0,
       ),
       child: child,
     );
