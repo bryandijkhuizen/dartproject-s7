@@ -7,18 +7,41 @@ class UserManagementHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Text("Select a user"),
-        Row(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
+    ThemeData theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 20.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text("Select a user", style: theme.textTheme.headlineSmall),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Name"),
+                      TextField(
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Enter a search term',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Name"),
+                    Text("Role"),
                     TextField(
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
@@ -28,30 +51,17 @@ class UserManagementHeader extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Role"),
-                  TextField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Enter a search term',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: FilledButton(
-                onPressed: () {},
-                child: const Text("Search"),
-              ),
-            )
-          ],
-        ),
-      ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: FilledButton(
+                  onPressed: () {},
+                  child: const Text("Search"),
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

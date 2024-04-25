@@ -35,6 +35,7 @@ Widget getPlaceholderComponent(
   );
 }
 
+
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 

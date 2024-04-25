@@ -1,6 +1,9 @@
+import 'package:darts_application/features/app_router/app_router_extentions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:backend/backend.dart';
 
 class UserManagementAssign extends StatefulWidget {
   UserManagementAssign({Key? key, required this.uuid}) : super(key: key);
@@ -12,14 +15,13 @@ class UserManagementAssign extends StatefulWidget {
 }
 
 class _UserManagementAssignState extends State<UserManagementAssign> {
-  late final Future<rol_assignment_model> fetchCurrentUsersRoleFuture;
+  late RoleAssignmentController controller;
+  @override
   void initState() {
-    fetchCurrentUsersRoleFuture = Supabase.instance.client.rpc(
-        "get_current_user_roles",
-        params: {'current_user_id': '${widget.uuid}'});
+    controller = RoleAssignmentController(Supabase.instance.client, widget.uuid);
     super.initState();
   }
-
+  
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -30,22 +32,35 @@ class _UserManagementAssignState extends State<UserManagementAssign> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             FutureBuilder(
-                future: fetchCurrentUsersRoleFuture,
+                future: controller.model,
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
-                    return const Text("something went wrong");
+                    return const Text('something went wrong');
                   }
                   if (snapshot.hasData) {
-                    var userdata = snapshot.data[0];
-                    print(snapshot.data);
-
+                    var userData = snapshot.data;
+                    controller.setSelectlist(userData!.myRoles);
                     return Column(
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.all(30.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10.0),
+                                child: CircleAvatar(radius: 50, backgroundImage: NetworkImage(userData!.avatarUrl),),
+                              ),
+                              Text(userData.fullName, style: theme.textTheme.headlineSmall,),
+                            ],
+                          ),
+                        ),
                         DataTable(
                           showCheckboxColumn: true,
-                          headingRowColor:
-                              MaterialStatePropertyAll(theme.colorScheme.primary),
-                          headingTextStyle: const TextStyle(color: Colors.white),
+                          headingRowColor: MaterialStatePropertyAll(
+                              theme.colorScheme.primary),
+                          headingTextStyle:
+                              const TextStyle(color: Colors.white),
                           columnSpacing: 10,
                           columns: const [
                             DataColumn(
@@ -53,21 +68,37 @@ class _UserManagementAssignState extends State<UserManagementAssign> {
                             ),
                           ],
                           rows: [
-                            for (var roles in userdata["all_roles"])
+                            for (var role in userData.allRoles)
                               DataRow(
-                                color:
-                                    MaterialStatePropertyAll(Colors.grey.shade300),
-                                onSelectChanged: (value){print("jo");},
+                                color: MaterialStatePropertyAll(
+                                    Colors.grey.shade300),
+                                onSelectChanged: (value) {
+                                  if (value == true) {
+                                    setState(() {
+                                      controller.addRole(role);
+                                    });
+                                  } else if (value == false) {
+                                    setState(() {
+                                      controller.removeRole(role);
+                                    });
+                                  }
+                                },
+                                selected: controller.getSelectlist().contains(role),
                                 cells: [
                                   DataCell(
-                                    Text(roles.toString(),
+                                    Text(role.toString(),
                                         style: TextStyle(color: Colors.black)),
                                   ),
-                                 
                                 ],
                               ),
                           ],
                         ),
+                        Row(
+                          children: [
+                            FilledButton(onPressed: (){ context.goBack("/user-management");}, child: Text("Cancel")),
+                            FilledButton(onPressed: (){controller.saveRoles(userData.myRoles, userData.id); context.goBack("/user-management");}, child: Text("Save")),
+                          ],
+                        )
                       ],
                     );
                   }
