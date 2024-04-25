@@ -1,31 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:backend/src/dart_game_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ScoreInput extends StatefulWidget {
-  final Function(int) onScoreEntered;
-  final Function() onLegFinished;
-  final Function() onUndo;
+  final String matchId;
+  final String currentLegId;
+  final String currentSetId;
+  final String currentPlayerId;
 
   const ScoreInput({
     super.key,
-    required this.onScoreEntered,
-    required this.onLegFinished,
-    required this.onUndo,
+    required this.matchId,
+    required this.currentLegId,
+    required this.currentSetId,
+    required this.currentPlayerId,
   });
 
   @override
-  // ignore: library_private_types_in_public_api
   _ScoreInputState createState() => _ScoreInputState();
 }
 
 class _ScoreInputState extends State<ScoreInput> {
   final TextEditingController _controller = TextEditingController();
-  String scorePrefix = '';
+  late final DartGameService gameService;
+
+  @override
+  void initState() {
+    super.initState();
+    gameService = DartGameService(Supabase.instance.client);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFF060606),
-      padding: const EdgeInsets.all(16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -34,7 +41,7 @@ class _ScoreInputState extends State<ScoreInput> {
             children: [
               IconButton(
                 icon: const Icon(Icons.undo, color: Colors.white),
-                onPressed: widget.onUndo,
+                onPressed: _undoLastScore,
               ),
               Expanded(
                 child: TextField(
@@ -47,52 +54,78 @@ class _ScoreInputState extends State<ScoreInput> {
                     hintText: 'Enter Score',
                     hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
                   ),
+                  onSubmitted: (score) => _submitScore(),
                 ),
               ),
               IconButton(
                 icon: const Icon(Icons.check, color: Colors.white),
-                onPressed: () {
-                  final int? score = int.tryParse(_controller.text);
-                  if (score != null) {
-                    widget.onScoreEntered(score);
-                    _controller.clear();
-                  }
-                },
+                onPressed: _submitScore,
               ),
             ],
           ),
-          GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 2,
-            ),
-            itemCount: 12,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (BuildContext context, int index) {
-              final labels = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'T', '0', 'D'];
-              final color = labels[index] == 'T' || labels[index] == 'D'
-                  ? const Color(0xFF921B22)
-                  : const Color(0xFFCD0612);
-
-              return ScoreButton(
-                label: labels[index],
-                onTap: () => _quickScore(labels[index]),
-                backgroundColor: labels[index] == '0' ? const Color(0xFFCD0612) : color,
-              );
-            },
-          ),
+          _buildNumPad(),
         ],
       ),
     );
   }
 
-  void _quickScore(String score) {
-    if ('TD'.contains(score) && !scorePrefix.contains(score)) {
-      scorePrefix = score;
-    } else {
-      final currentText = _controller.text;
-      _controller.text = currentText + score;
+  Widget _buildNumPad() {
+    final labels = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'T', '0', 'D'];
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        childAspectRatio: 2,
+      ),
+      itemCount: labels.length,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (BuildContext context, int index) {
+        return ScoreButton(
+          label: labels[index],
+          onTap: () => _handleNumPadInput(labels[index]),
+          backgroundColor: const Color(0xFFCD0612),
+        );
+      },
+    );
+  }
+
+  void _handleNumPadInput(String input) {
+    setState(() {
+      _controller.text += input;
+    });
+  }
+
+  void _submitScore() async {
+    try {
+      await gameService.enterScore(
+        legId: widget.currentLegId,
+        playerId: widget.currentPlayerId,
+        scoreInput: _controller.text,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Score entered successfully')),
+      );
+      _controller.clear();
+    } on DartGameException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    }
+  }
+
+  Future<void> _undoLastScore() async {
+    try {
+      await gameService.undoLastScore(
+        legId: widget.currentLegId,
+        playerId: widget.currentPlayerId,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Last score undone')),
+      );
+    } on DartGameException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
     }
   }
 }
