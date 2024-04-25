@@ -12,11 +12,9 @@ class UserManagementView extends StatefulWidget {
 }
 
 class _UserManagementViewState extends State<UserManagementView> {
-  late final Future<dynamic> fetchAllUserFuture;
-  @override
-  void initState() {
-    fetchAllUserFuture = Supabase.instance.client.rpc("get_all_users");
-    super.initState();
+
+  Future loadData(){
+    return Supabase.instance.client.rpc("get_all_users");
   }
 
   @override
@@ -30,20 +28,21 @@ class _UserManagementViewState extends State<UserManagementView> {
           children: [
             const UserManagementHeader(),
             FutureBuilder(
-              future: fetchAllUserFuture,
+              future: loadData(),
+              
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasError) {
                     return const Text("something went wrong");
                   }
                   if (snapshot.hasData) {
-                    print(snapshot.data);
 
                     return DataTable(
+
                       headingRowColor:
                           MaterialStatePropertyAll(theme.colorScheme.primary),
                       headingTextStyle: const TextStyle(color: Colors.white),
-                      columnSpacing: 10,
+                      columnSpacing: 100,
                       columns: const [
                         DataColumn(
                           label: Text('Name'),
