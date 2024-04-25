@@ -2,6 +2,8 @@ import 'package:darts_application/components/scaffolding.dart';
 import 'package:darts_application/features/app_router/app_router_redirect.dart';
 import 'package:darts_application/features/auth/auth_notifier.dart';
 import 'package:darts_application/features/auth/auth_view.dart';
+import 'package:darts_application/features/settings/views/settings_name_view.dart';
+import 'package:darts_application/features/settings/views/settings_view.dart';
 import 'package:darts_application/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -35,6 +37,24 @@ Widget getPlaceholderComponent(
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
+
+// SettingsRoute is identical on mobile and desktop
+final settingsRoute = StatefulShellBranch(
+  routes: <RouteBase>[
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) {
+        return const SettingsView();
+      },
+      routes: <RouteBase>[
+        GoRoute(
+          path: 'name',
+          builder: (context, state) => const SettingsNameView(),
+        )
+      ],
+    ),
+  ],
+);
 
 final router = GoRouter(
   navigatorKey: _rootNavigatorKey,
@@ -121,24 +141,7 @@ final router = GoRouter(
               ),
 
               // Mobile user settings
-              StatefulShellBranch(
-                routes: <RouteBase>[
-                  GoRoute(
-                    path: '/settings',
-                    builder: (context, state) {
-                      // Ignore this for now
-                      return getPlaceholderComponent(
-                          '/settings',
-                          [
-                            '/',
-                            '/statistics',
-                            '/matches',
-                          ],
-                          context);
-                    },
-                  ),
-                ],
-              ),
+              settingsRoute
             ]
           // Desktop branches
           : [
@@ -241,6 +244,8 @@ final router = GoRouter(
                   ),
                 ],
               ),
+
+              settingsRoute
             ],
     ),
   ],
