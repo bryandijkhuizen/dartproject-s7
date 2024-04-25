@@ -57,7 +57,7 @@ class FormSaveButton extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              onCancel?.call();
+              onSave?.call();
             },
             child: const Text('Save'),
           ),
