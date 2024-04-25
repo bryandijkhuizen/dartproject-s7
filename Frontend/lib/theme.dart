@@ -1,28 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+ColorScheme darkColorScheme = ColorScheme.fromSeed(
+  seedColor: const Color(0xFFCD0612),
+)
+    // Overwrite the seeded colors with copyWith
+    .copyWith(
+  brightness: Brightness.dark,
+  secondary: const Color(0xFF2C4789),
+  background: const Color(0xFF101010),
+  surface: const Color(0xFF101010),
+  onSurface: Colors.white,
+);
+
 ThemeData darkTheme = ThemeData(
-  appBarTheme: const AppBarTheme(
+  appBarTheme: AppBarTheme(
     backgroundColor:
-        Color(0xFFCD0612), // Ensures AppBar uses the exact red color
+        darkColorScheme.primary, // Ensures AppBar uses the exact red color
     foregroundColor: Colors.white, // Ensures text and icons are white
   ),
   brightness: Brightness.dark,
-  colorScheme: ColorScheme.fromSeed(
-    seedColor: const Color(0xFFCD0612),
-  )
-      // Overwrite the seeded colors with copyWith
-      .copyWith(
-    brightness: Brightness.dark,
-    secondary: const Color(0xFF2C4789),
-    background: const Color(0xFF101010),
-    surface: const Color(0xFF101010),
-    onSurface: Colors.white,
-  ),
+  colorScheme: darkColorScheme,
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
       backgroundColor: MaterialStateProperty.all<Color>(
-        const Color(0xFFCD0612),
+        darkColorScheme.primary,
       ),
       foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
       shape: MaterialStateProperty.all<OutlinedBorder>(
@@ -40,9 +42,19 @@ ThemeData darkTheme = ThemeData(
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
     ),
-    iconColor: Colors.white,
-    prefixIconColor: Colors.white,
-    suffixIconColor: Colors.white,
+    iconColor: darkColorScheme.onSurface,
+    prefixIconColor: darkColorScheme.onSurface,
+    suffixIconColor: darkColorScheme.onSurface,
+    filled: true,
+    fillColor: darkColorScheme.surface,
+  ),
+  navigationBarTheme: NavigationBarThemeData(
+    backgroundColor: darkColorScheme.primary,
+    height: 56,
+    labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+    indicatorColor: darkColorScheme.surface,
+    iconTheme:
+        MaterialStateProperty.resolveWith(getNavigationIconThemeMaterialState),
   ),
   textTheme: TextTheme(
     displayLarge: GoogleFonts.poppins(
@@ -113,3 +125,9 @@ ThemeData darkTheme = ThemeData(
 );
 
 ThemeData lightTheme = ThemeData();
+
+IconThemeData? getNavigationIconThemeMaterialState(Set<MaterialState> states) {
+  // Return fallback with custom color no matter what states are active for now
+  return const IconThemeData.fallback()
+      .copyWith(color: darkColorScheme.onPrimary);
+}
