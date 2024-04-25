@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class TournamentBracketScreen extends StatelessWidget {
   final List<String> tournamentPlayers = [
@@ -42,39 +43,48 @@ class TournamentBracketScreen extends StatelessWidget {
       players.add(Player(tournamentPlayer, avatarUrl));
     }
 
-    return Center(
-      child: Container(
-        width: 1200.00,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 30),
-            Container(
-              margin: EdgeInsets.only(bottom: 20.0),
-              child: Text(
-                "Edit tournament",
-                style: titleLargeWhite,
-              ),
+    return Wrap(
+      children: [
+        Center(
+          child: Container(
+            width: 1200.00,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              // crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(bottom: 20.0, top: 30),
+                  child: Text(
+                    "Edit tournament",
+                    style: titleLargeWhite,
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 20.0),
+                  child: Text(
+                    "Review the proposed matches.",
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 20.0),
+                  child: Text(
+                    "Matches",
+                    style: titleMediumWhite,
+                  ),
+                ),
+                TournamentBrackets(
+                  context: context,
+                  players: players,
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 20, bottom: 20),
+                  child: Text("Create"),
+                ),
+              ],
             ),
-            Container(
-              margin: EdgeInsets.only(bottom: 20.0),
-              child: Text(
-                "Review the proposed matches.",
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(bottom: 20.0),
-              child: Text(
-                "Matches",
-                style: titleMediumWhite,
-              ),
-            ),
-            TournamentBrackets(
-              players: players,
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -89,9 +99,11 @@ class Player {
 class TournamentBrackets extends StatelessWidget {
   const TournamentBrackets({
     super.key,
+    required this.context,
     required this.players,
   });
 
+  final BuildContext context;
   final List<Player> players;
   final String avatarUrl = "assets/images/avatar_placeholder.png";
 
@@ -179,10 +191,13 @@ class TournamentBrackets extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Widget> rounds = createRounds(players, 1, fillInPlayers: false);
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: rounds,
+    return Container(
+      margin: EdgeInsets.only(bottom: 20.0),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: rounds,
+        ),
       ),
     );
   }
