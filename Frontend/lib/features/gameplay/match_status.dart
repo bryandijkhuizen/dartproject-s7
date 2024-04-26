@@ -32,18 +32,18 @@ class _MatchStatusState extends State<MatchStatus> {
       }
     }, onError: (error) => print('Error listening to match changes: $error'));
 
-    _turnsSubscription =
-        _dartGameService.subscribeToTurns(widget.matchId).listen((data) {
-    }, onError: (error) => print('Error listening to turns changes: $error'));
+    _turnsSubscription = _dartGameService
+        .subscribeToTurns(widget.matchId)
+        .listen((data) {},
+            onError: (error) =>
+                print('Error listening to turns changes: $error'));
   }
 
   Future<void> _fetchMatchDetails() async {
     try {
       final response = await _dartGameService.getMatchDetails(widget.matchId);
-      if (response['data'] != null &&
-          response['data'] is Map<String, dynamic>) {
-        setState(() => _matchData = response['data']);
-      }
+
+      setState(() => _matchData = response['data']);
     } catch (e) {
       print('Error fetching match details: $e');
     }
@@ -58,14 +58,15 @@ class _MatchStatusState extends State<MatchStatus> {
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> matchData = _matchData ?? {
-      'player_1_name': 'Speler 1',
-      'player_1_score': 501,
-      'player_2_name': 'Speler 2',
-      'player_2_score': 501,
-      'current_turn': 'player_1_id',
-      'leg_stand': '0 - 0',
-    };
+    final Map<String, dynamic> matchData = _matchData ??
+        {
+          'player_1_name': 'Speler 1',
+          'player_1_score': 501,
+          'player_2_name': 'Speler 2',
+          'player_2_score': 501,
+          'current_turn': 'player_1_id',
+          'leg_stand': '0 - 0',
+        };
 
     bool isPlayerOneTurn = matchData['current_turn'] == 'player_1_id';
 
@@ -88,13 +89,15 @@ class _MatchStatusState extends State<MatchStatus> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildPlayerScore(matchData['player_1_name'], matchData['player_1_score'], isPlayerOneTurn),
+                  _buildPlayerScore(matchData['player_1_name'],
+                      matchData['player_1_score'], isPlayerOneTurn),
                   Container(
                     width: 3,
                     color: Colors.white,
                     margin: EdgeInsets.only(top: 8, bottom: 8),
                   ),
-                  _buildPlayerScore(matchData['player_2_name'], matchData['player_2_score'], !isPlayerOneTurn),
+                  _buildPlayerScore(matchData['player_2_name'],
+                      matchData['player_2_score'], !isPlayerOneTurn),
                 ],
               ),
             ),
