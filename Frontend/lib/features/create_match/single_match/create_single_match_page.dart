@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:darts_application/components/input_fields/time_picker.dart';
 import 'package:darts_application/components/input_fields/date_picker.dart';
 
+import 'package:darts_application/features/create_match/single_match/player_selector.dart';
+
 class CreateSingleMatchPage extends StatefulWidget {
   const CreateSingleMatchPage({super.key});
 
@@ -24,11 +26,21 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
   bool bullOffStart = true;
   bool randomStart = false;
 
+  String playerOne = '';
+  String playerTwo = '';
+
   @override
   void dispose() {
     _matchNameController.dispose();
     _locationController.dispose();
     super.dispose();
+  }
+
+  void updateSelectedPlayer(String selectedOne, String selectedTwo) {
+    setState(() {
+      playerOne = selectedOne;
+      playerTwo = selectedTwo;
+    });
   }
 
   @override
@@ -279,13 +291,41 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                 ]
               )
             ),
-            Container(
-              color: Colors.orange,
-              child: const Center(
-                child: Text(
-                  'Bottom Text',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+            const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                    'Select players',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
+              ),
+            Column(
+              children: [
+                PlayerSelector(onSelectionChanged: updateSelectedPlayer),
+                Text('Selected Player One: $playerOne'),
+                Text('Selected Player Two: $playerTwo'),
+              ],
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFCD0612),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                    vertical: 8, horizontal: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+              ),
+              onPressed: () {  },
+              child: const Text(
+                'Create match',
+                style: TextStyle(fontSize: 20),
+                overflow: TextOverflow
+                    .ellipsis,
               ),
             ),
           ],
