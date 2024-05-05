@@ -26,8 +26,8 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
   bool bullOffStart = true;
   bool randomStart = false;
 
-  String playerOne = '';
-  String playerTwo = '';
+  String? playerOne;
+  String? playerTwo;
 
   @override
   void dispose() {
@@ -51,10 +51,10 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: Row(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Row(
                 children: [
                   Expanded(
                     child: Container(
@@ -289,47 +289,44 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                     )
                   ),
                 ]
-              )
-            ),
-            const Padding(
+              ),
+              const Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                    'Select players',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      'Select players',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
               ),
-            Column(
-              children: [
-                PlayerSelector(onSelectionChanged: updateSelectedPlayer),
-                Text('Selected Player One: $playerOne'),
-                Text('Selected Player Two: $playerTwo'),
-              ],
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFCD0612),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
+              Column(
+                children: [
+                  PlayerSelector(onSelectionChanged: updateSelectedPlayer),
+                ],
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFCD0612),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
                     vertical: 8, horizontal: 12),
-                shape: RoundedRectangleBorder(
+                  shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8)),
+                ),
+                onPressed: () {  },
+                child: const Text(
+                  'Create match',
+                  style: TextStyle(fontSize: 20),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              onPressed: () {  },
-              child: const Text(
-                'Create match',
-                style: TextStyle(fontSize: 20),
-                overflow: TextOverflow
-                    .ellipsis,
-              ),
-            ),
-          ],
-        )
+            ],
+          ),
+        ),
       ),
     );
   }

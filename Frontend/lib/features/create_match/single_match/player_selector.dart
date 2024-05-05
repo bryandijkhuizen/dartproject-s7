@@ -11,14 +11,13 @@ class PlayerSelector extends StatefulWidget {
 }
 
 class _PlayerSelectorState extends State<PlayerSelector>{
-  List<String> players = ['Luuk Ottens', 'Julian van Veen', 'Bryan Dijkhuizen', 'Kevin Herrema', 'Wietze Bronkema', 'Jelmer Bosma'];
-  // List<String> players = ['test'];
   String? selectedOne;
   String? selectedTwo;
 
   // TODO: fetch current user_id
-  String currentUser = "f27b1465-7969-465a-a237-a772be84a7a2";
+  String currentUser = "f885fe8b-7107-4235-a020-88c39afd2d33";
   int? currentClub;
+  String? clubName;
 
   Map<String, String> clubPlayerList = {};
 
@@ -36,6 +35,8 @@ class _PlayerSelectorState extends State<PlayerSelector>{
           .eq('user_id', currentUser)
           .single();
 
+      final clubInfo = await Supabase.instance.client.from('club').select().eq('id', userClub['club_id']).single(); 
+
       final clubMembers = await Supabase.instance.client
           .from('user_club')
           .select()
@@ -48,12 +49,13 @@ class _PlayerSelectorState extends State<PlayerSelector>{
           .select()
           .eq('id', user['user_id'])
           .single();
-
-        members[user['id'].toString()] = "$memberName['first_name] $memberName['last_name]";
+        
+        members[user['user_id'].toString()] = memberName['first_name'] + " " + memberName['last_name'];
       }
 
     setState(() {
       currentClub = userClub['club_id'];
+      clubName = clubInfo['name'];
       clubPlayerList = members;
     });
 
@@ -79,18 +81,25 @@ class _PlayerSelectorState extends State<PlayerSelector>{
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      // itemCount: clubPlayerList.length,
-      itemCount: players.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(players[index]),
-          onTap: () => _handleTap(players[index]),
-          selected: players[index] == selectedOne || players[index] == selectedTwo,
-        );
-        // return Text('Current club: $currentClub');
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            'Showing members of club $clubName:',
+          ),
+        ),
+        ListView(
+          shrinkWrap: true,
+          children: clubPlayerList.entries.map((entry) {
+            return ListTile(
+              title: Text(entry.value),
+              onTap: () => _handleTap(entry.key),
+              selected: entry.key == selectedOne || entry.key == selectedTwo,
+            );
+          }).toList(),
+        ),
+      ],
     );
-  }
-}
+  }}
