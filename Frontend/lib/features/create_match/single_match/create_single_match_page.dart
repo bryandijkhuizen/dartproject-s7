@@ -17,6 +17,9 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
   final TextEditingController _matchNameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
 
+  DateTime? selectedDate;
+  TimeOfDay? selectedTime;
+
   bool useLegDuration = false;
   bool useSetDuration = false;
 
@@ -29,6 +32,9 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
   String? playerOne;
   String? playerTwo;
 
+  int legAmount = 0;
+  int setAmount = 0;
+
   @override
   void dispose() {
     _matchNameController.dispose();
@@ -36,11 +42,30 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
     super.dispose();
   }
 
+  void updateSelectedDate(DateTime date) {
+    setState(() {
+      selectedDate = date;
+    });
+  }
+
+  void updateSelectedTime(TimeOfDay time) {
+    setState(() {
+      selectedTime = time;
+    });
+  }
+
   void updateSelectedPlayer(String selectedOne, String selectedTwo) {
     setState(() {
       playerOne = selectedOne;
       playerTwo = selectedTwo;
     });
+  }
+
+  void _submitForm() {
+    String matchName = _matchNameController.text;
+    String location = _locationController.text;
+
+    // Add database logic here
   }
 
   @override
@@ -85,7 +110,7 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
-                          const DatePicker(),
+                          DatePicker(onDateSelected: updateSelectedDate),
                           const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
@@ -93,7 +118,7 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
-                          const TimePicker(),
+                          TimePicker(onTimeSelected: updateSelectedTime),
                           const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
@@ -134,6 +159,11 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                               children: [
                                 Expanded(
                                   child: TextField(
+                                    onChanged: (value) {
+                                      setState(() {
+                                        legAmount = int.tryParse(value) ?? 0;
+                                      });
+                                    },
                                     decoration: const InputDecoration(
                                       labelText: 'Leg amount',
                                       border: OutlineInputBorder(),
@@ -167,6 +197,11 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                               children: [
                                 Expanded(
                                   child: TextField(
+                                    onChanged: (value) {
+                                      setState(() {
+                                        setAmount = int.tryParse(value) ?? 0;
+                                      });
+                                    },
                                     decoration: const InputDecoration(
                                       labelText: 'Set amount',
                                       border: OutlineInputBorder(),
