@@ -8,26 +8,26 @@ import 'package:form_validator/form_validator.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class SettingsNameView extends StatefulWidget {
-  const SettingsNameView({super.key});
+class SettingsPasswordView extends StatefulWidget {
+  const SettingsPasswordView({super.key});
 
   @override
-  State<SettingsNameView> createState() => _SettingsNameViewState();
+  State<SettingsPasswordView> createState() => _SettingsPasswordViewState();
 }
 
-class _SettingsNameViewState extends State<SettingsNameView> {
+class _SettingsPasswordViewState extends State<SettingsPasswordView> {
   bool loading = false;
   User user = Supabase.instance.client.auth.currentUser!;
   final _formKey = GlobalKey<FormState>();
-  TextEditingController firstNameController = TextEditingController();
-  TextEditingController lastNameController = TextEditingController();
+  TextEditingController newPasswordController = TextEditingController();
+  TextEditingController repeatPasswordController = TextEditingController();
 
-  String? Function(String?)? firstNameValidator =
+  String? Function(String?)? passwordValidator =
       ValidationBuilder(requiredMessage: 'Please enter your first name')
           .minLength(2, 'Your first name must be a minimum of 2 characters')
           .build();
 
-  String? Function(String?)? lastNameValidator =
+  String? Function(String?)? repeatPasswordValidator =
       ValidationBuilder(requiredMessage: 'Please enter your last name')
           .minLength(2, 'Your last name must be a minimum of 2 characters')
           .build();
@@ -46,10 +46,7 @@ class _SettingsNameViewState extends State<SettingsNameView> {
       try {
         await Supabase.instance.client.auth.updateUser(
           UserAttributes(
-            data: {
-              'first_name': firstNameController.text,
-              'last_name': lastNameController.text,
-            },
+            password: newPasswordController.text,
           ),
         );
 
@@ -57,7 +54,7 @@ class _SettingsNameViewState extends State<SettingsNameView> {
           context.goBack('/settings');
           context.ShowSnackbar(
             const SnackBar(
-              content: Text('Succesfully changed your name!'),
+              content: Text('Succesfully changed your password!'),
             ),
           );
         }
@@ -79,18 +76,11 @@ class _SettingsNameViewState extends State<SettingsNameView> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    firstNameController.text = user.userMetadata?['first_name'];
-    lastNameController.text = user.userMetadata?['last_name'];
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Change your name'),
+        title: const Text('Change your Password'),
       ),
       body: GenericScreen(
         child: Column(
@@ -102,14 +92,15 @@ class _SettingsNameViewState extends State<SettingsNameView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const FormFieldLabel(label: 'First name'),
+                      const FormFieldLabel(label: 'New password'),
                       TextFormField(
-                        controller: firstNameController,
+                        controller: newPasswordController,
                         decoration: createInputDecoration(
-                          'First name',
-                          'John',
+                          'New password',
+                          '',
                         ),
-                        validator: firstNameValidator,
+                        obscureText: true,
+                        validator: passwordValidator,
                       ),
                       const SizedBox(
                         height: 24.0,
@@ -118,8 +109,11 @@ class _SettingsNameViewState extends State<SettingsNameView> {
                         label: 'Last name',
                       ),
                       TextFormField(
-                        controller: lastNameController,
-                        decoration: createInputDecoration('Last name', 'Doe'),
+                        controller: repeatPasswordController,
+                        decoration:
+                            createInputDecoration('Repeat password', ''),
+                        obscureText: true,
+                        validator: repeatPasswordValidator,
                       ),
                     ],
                   ),
