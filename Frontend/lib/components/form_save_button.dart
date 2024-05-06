@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 
 class FormSaveButton extends StatelessWidget {
   const FormSaveButton(
-      {super.key, required this.onCancel, required this.onSave});
+      {super.key,
+      required this.onCancel,
+      required this.onSave,
+      this.loading = false});
 
   final void Function()? onCancel;
   final void Function()? onSave;
+  final bool loading;
 
   MaterialStateProperty<Color?> getMaterialStateOverlayColor(ThemeData theme) =>
       MaterialStateProperty.resolveWith(
@@ -38,7 +42,9 @@ class FormSaveButton extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              onCancel?.call();
+              if (!loading) {
+                onCancel?.call();
+              }
             },
             child: const Text('Cancel'),
           ),
@@ -57,7 +63,9 @@ class FormSaveButton extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              onSave?.call();
+              if (!loading) {
+                onSave?.call();
+              }
             },
             child: const Text('Save'),
           ),

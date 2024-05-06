@@ -8,28 +8,29 @@ import 'package:form_validator/form_validator.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class SettingsNameView extends StatefulWidget {
-  const SettingsNameView({super.key});
+class SettingsEmailView extends StatefulWidget {
+  const SettingsEmailView({super.key});
 
   @override
-  State<SettingsNameView> createState() => _SettingsNameViewState();
+  State<SettingsEmailView> createState() => _SettingsEmailViewState();
 }
 
-class _SettingsNameViewState extends State<SettingsNameView> {
+class _SettingsEmailViewState extends State<SettingsEmailView> {
   bool loading = false;
   User user = Supabase.instance.client.auth.currentUser!;
   final _formKey = GlobalKey<FormState>();
-  TextEditingController firstNameController = TextEditingController();
-  TextEditingController lastNameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController confirmEmailController = TextEditingController();
 
-  String? Function(String?)? firstNameValidator =
-      ValidationBuilder(requiredMessage: 'Please enter your first name')
-          .minLength(2, 'Your first name must be a minimum of 2 characters')
+  String? Function(String?)? emailValidator =
+      ValidationBuilder(requiredMessage: 'Please enter your new email')
+          .email('Invalid email address')
           .build();
 
-  String? Function(String?)? lastNameValidator =
-      ValidationBuilder(requiredMessage: 'Please enter your last name')
-          .minLength(2, 'Your last name must be a minimum of 2 characters')
+  late String? Function(String?)? confirmEmailValidator =
+      ValidationBuilder(requiredMessage: 'Please confirm your new email')
+          .matches(() => emailController.text, 'Addresses dont match')
+          .email('Invalid email address')
           .build();
 
   InputDecoration createInputDecoration(String label, String hintText) =>
@@ -43,13 +44,11 @@ class _SettingsNameViewState extends State<SettingsNameView> {
       loading = true;
     });
     if (_formKey.currentState?.validate() == true) {
+      _formKey.currentState!.save();
       try {
         await Supabase.instance.client.auth.updateUser(
           UserAttributes(
-            data: {
-              'first_name': firstNameController.text,
-              'last_name': lastNameController.text,
-            },
+            email: emailController.text,
           ),
         );
 
@@ -57,7 +56,7 @@ class _SettingsNameViewState extends State<SettingsNameView> {
           context.goBack('/settings');
           context.ShowSnackbar(
             const SnackBar(
-              content: Text('Succesfully changed your name!'),
+              content: Text('An email has been sent to you'),
             ),
           );
         }
@@ -66,23 +65,16 @@ class _SettingsNameViewState extends State<SettingsNameView> {
           context.goBack('/settings');
           context.ShowSnackbar(
             SnackBar(
+              backgroundColor: Theme.of(context).colorScheme.error,
               content: Text(e.message),
             ),
           );
         }
       }
     }
-
     setState(() {
       loading = false;
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    firstNameController.text = user.userMetadata?['first_name'];
-    lastNameController.text = user.userMetadata?['last_name'];
   }
 
   @override
@@ -90,7 +82,7 @@ class _SettingsNameViewState extends State<SettingsNameView> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Change your name'),
+        title: const Text('Change your Email'),
       ),
       body: GenericScreen(
         child: Column(
@@ -102,24 +94,26 @@ class _SettingsNameViewState extends State<SettingsNameView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const FormFieldLabel(label: 'First name'),
-                      TextFormField(
-                        controller: firstNameController,
-                        decoration: createInputDecoration(
-                          'First name',
-                          'John',
-                        ),
-                        validator: firstNameValidator,
-                      ),
-                      const SizedBox(
-                        height: 24.0,
-                      ),
+                      Text('Current email: ${user.email!}'),
+                      const SizedBox(height: 12),
                       const FormFieldLabel(
-                        label: 'Last name',
+                        label: 'New email',
                       ),
                       TextFormField(
-                        controller: lastNameController,
-                        decoration: createInputDecoration('Last name', 'Doe'),
+                        controller: emailController,
+                        decoration: createInputDecoration(
+                            'New email', 'john.doe@exmaple.com'),
+                        validator: emailValidator,
+                      ),
+                      const SizedBox(height: 12),
+                      const FormFieldLabel(
+                        label: 'Confirm email',
+                      ),
+                      TextFormField(
+                        controller: confirmEmailController,
+                        decoration: createInputDecoration(
+                            'Confirm email', 'john.doe@exmaple.com'),
+                        validator: confirmEmailValidator,
                       ),
                     ],
                   ),

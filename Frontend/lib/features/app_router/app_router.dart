@@ -2,7 +2,9 @@ import 'package:darts_application/components/scaffolding.dart';
 import 'package:darts_application/features/app_router/app_router_redirect.dart';
 import 'package:darts_application/features/auth/auth_notifier.dart';
 import 'package:darts_application/features/auth/auth_view.dart';
+import 'package:darts_application/features/settings/views/settings_email_view.dart';
 import 'package:darts_application/features/settings/views/settings_name_view.dart';
+import 'package:darts_application/features/settings/views/settings_password_view.dart';
 import 'package:darts_application/features/settings/views/settings_view.dart';
 import 'package:darts_application/helpers.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +52,14 @@ final settingsRoute = StatefulShellBranch(
         GoRoute(
           path: 'name',
           builder: (context, state) => const SettingsNameView(),
+        ),
+        GoRoute(
+          path: 'email',
+          builder: (context, state) => const SettingsEmailView(),
+        ),
+        GoRoute(
+          path: 'password',
+          builder: (context, state) => const SettingsPasswordView(),
         )
       ],
     ),

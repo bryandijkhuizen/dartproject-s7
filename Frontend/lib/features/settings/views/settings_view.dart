@@ -1,8 +1,11 @@
 import 'package:darts_application/components/generic_screen.dart';
 import 'package:darts_application/features/settings/settings_header.dart';
 import 'package:darts_application/features/settings/settings_item.dart';
+import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SettingsView extends StatefulWidget {
@@ -13,10 +16,9 @@ class SettingsView extends StatefulWidget {
 }
 
 class SettingsViewState extends State<SettingsView> {
-  User user = Supabase.instance.client.auth.currentUser!;
-
   @override
   Widget build(BuildContext context) {
+    UserStore userStore = context.read<UserStore>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -39,25 +41,33 @@ class SettingsViewState extends State<SettingsView> {
                         padding: const EdgeInsets.symmetric(
                           vertical: 16.0,
                         ),
-                        child: Column(
-                          children: [
-                            SettingsItem(
-                              callback: () {
-                                context.go('/settings/name');
-                              },
-                              title: 'Name',
-                              value:
-                                  '${user.userMetadata?['first_name']} ${user.userMetadata?['last_name']}',
-                            ),
-                            SettingsItem(
-                              title: 'Email',
-                              value: '${user.userMetadata?['email']}',
-                            ),
-                            const SettingsItem(
-                              title: 'Password',
-                              value: '********',
-                            ),
-                          ],
+                        child: Observer(
+                          builder: (_) => Column(
+                            children: [
+                              SettingsItem(
+                                callback: () {
+                                  context.push('/settings/name');
+                                },
+                                title: 'Name',
+                                value:
+                                    '${userStore.currentUser?.userMetadata?['first_name']} ${userStore.currentUser?.userMetadata?['last_name']}',
+                              ),
+                              SettingsItem(
+                                callback: () {
+                                  context.push('/settings/email');
+                                },
+                                title: 'Email',
+                                value: '${userStore.currentUser?.email}',
+                              ),
+                              SettingsItem(
+                                callback: () {
+                                  context.push('/settings/password');
+                                },
+                                title: 'Password',
+                                value: '********',
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
