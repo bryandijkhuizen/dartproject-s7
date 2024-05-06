@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 ThemeData darkTheme = ThemeData(
+  appBarTheme: const AppBarTheme(
+    backgroundColor:
+        Color(0xFFCD0612), // Ensures AppBar uses the exact red color
+    foregroundColor: Colors.white, // Ensures text and icons are white
+  ),
   brightness: Brightness.dark,
   colorScheme: ColorScheme.fromSeed(
     seedColor: const Color(0xFFCD0612),
