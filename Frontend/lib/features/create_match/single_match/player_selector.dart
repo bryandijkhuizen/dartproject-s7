@@ -15,6 +15,7 @@ class _PlayerSelectorState extends State<PlayerSelector>{
   String? selectedTwo;
 
   // TODO: fetch current user_id
+  // Supabase.instance.client.auth.currentUser
   String currentUser = "f885fe8b-7107-4235-a020-88c39afd2d33";
   int? currentClub;
   String? clubName;
