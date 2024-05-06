@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:darts_application/components/input_fields/time_picker.dart';
 import 'package:darts_application/components/input_fields/date_picker.dart';
@@ -14,11 +15,11 @@ class CreateSingleMatchPage extends StatefulWidget {
 }
 
 class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
-  final TextEditingController _matchNameController = TextEditingController();
+  // final TextEditingController _matchNameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
 
-  DateTime? selectedDate;
-  TimeOfDay? selectedTime;
+  late DateTime selectedDate = DateTime.now();
+  late TimeOfDay selectedTime = TimeOfDay.now();
 
   bool useLegDuration = false;
   bool useSetDuration = false;
@@ -37,7 +38,7 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
 
   @override
   void dispose() {
-    _matchNameController.dispose();
+    // _matchNameController.dispose();
     _locationController.dispose();
     super.dispose();
   }
@@ -61,11 +62,53 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
     });
   }
 
-  void _submitForm() {
-    String matchName = _matchNameController.text;
+  Future<void> submitForm() async {
+    // String matchName = _matchNameController.text;
     String location = _locationController.text;
 
-    // Add database logic here
+    DateTime matchDateTime = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedTime.hour, selectedTime.minute);
+
+
+
+    if (location.isNotEmpty && playerOne!.isNotEmpty && playerTwo!.isNotEmpty){
+      // print('Match Name: $matchName');
+      print('Date: $selectedDate');
+      print('Time: $selectedTime');
+      print('Location: $location');
+      
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Match created!',
+          ),
+        ),
+      );
+
+    } {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'You did not fill in all the required fields!',
+          ),
+        ),
+      ); 
+    }
+
+
+    //TODO: Add match name + starting method to table
+
+    await Supabase.instance.client
+      .from('match')
+      .upsert({
+        'set_target': 10,
+        'leg_target': 20,
+        'starting_score': 501,
+        'player_1_id': 'f885fe8b-7107-4235-a020-88c39afd2d33',
+        'player_2_id': 'f885fe8b-7107-4235-a020-88c39afd2d33',
+        'date': matchDateTime.toString(),
+        'location': "Cafe 't Hoekje",
+      });
   }
 
   @override
@@ -86,19 +129,36 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // const Padding(
+                          //   padding: EdgeInsets.all(8.0),
+                          //   child: Text(
+                          //     'Match Name (optional)',
+                          //     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          //   ),
+                          // ),
+                          // Padding(
+                          //   padding: const EdgeInsets.all(8.0),
+                          //   child: TextField(
+                          //     controller: _matchNameController,
+                          //     decoration: const InputDecoration(
+                          //       labelText: 'Enter the name of the match',
+                          //       border: OutlineInputBorder(),
+                          //     ),
+                          //   ),
+                          // ),
                           const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
-                              'Match Name (optional)',
+                              'Location',
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: TextField(
-                              controller: _matchNameController,
+                              controller: _locationController,
                               decoration: const InputDecoration(
-                                labelText: 'Enter the name of the match',
+                                labelText: 'Enter the location of the match',
                                 border: OutlineInputBorder(),
                               ),
                             ),
@@ -122,20 +182,49 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                           const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
-                              'Location',
+                              'Match type',
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: TextField(
-                              controller: _locationController,
-                              decoration: const InputDecoration(
-                                labelText: 'Enter the location of the match',
-                                border: OutlineInputBorder(),
-                              ),
+                            child: Row(
+                              children: [
+                                Checkbox(
+                                  value: is301Match,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      is301Match = value!;
+                                      if (is301Match) {
+                                        is501Match = false;
+                                      }
+                                    });
+                                  },
+                                ),
+                                const Text(
+                                  '301',
+                                  style: TextStyle(color: Colors.white, fontSize: 16),
+                                ),
+                                const SizedBox(width: 20),
+                                Checkbox(
+                                  value: is501Match,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      is501Match = value!;
+                                      if (is501Match) {
+                                        is301Match = false;
+                                      }
+                                    });
+                                  },
+                                ),
+                                const Text(
+                                  '501',
+                                  style: TextStyle(color: Colors.white, fontSize: 16),
+                                ),
+                              ],
                             ),
-                          )
+                          ),
+
                         ],
                       ),
                     ),
@@ -232,51 +321,6 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                           const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
-                              'Match type',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                Checkbox(
-                                  value: is301Match,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      is301Match = value!;
-                                      if (is301Match) {
-                                        is501Match = false;
-                                      }
-                                    });
-                                  },
-                                ),
-                                const Text(
-                                  '301',
-                                  style: TextStyle(color: Colors.white, fontSize: 16),
-                                ),
-                                const SizedBox(width: 20),
-                                Checkbox(
-                                  value: is501Match,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      is501Match = value!;
-                                      if (is501Match) {
-                                        is301Match = false;
-                                      }
-                                    });
-                                  },
-                                ),
-                                const Text(
-                                  '501',
-                                  style: TextStyle(color: Colors.white, fontSize: 16),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text(
                               'Starting method',
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
@@ -352,7 +396,7 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8)),
                 ),
-                onPressed: () {  },
+                onPressed: submitForm,
                 child: const Text(
                   'Create match',
                   style: TextStyle(fontSize: 20),
