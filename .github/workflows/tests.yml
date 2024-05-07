@@ -6,7 +6,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: subosito/flutter-action@v2
-    - run: cd backend
-    - run: ls
-    - run: flutter pub get
-    - run: flutter test
+    - name: Run flutter pub get
+      working-directory: ./backend
+      run: flutter pub get
+    - name: Run flutter test
+      working-directory: ./backend
+      run: flutter test
