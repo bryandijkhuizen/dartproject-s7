@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// ignore: implementation_imports
 import 'package:backend/src/dart_game_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -17,6 +18,7 @@ class ScoreInput extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _ScoreInputState createState() => _ScoreInputState();
 }
 
@@ -32,40 +34,38 @@ class _ScoreInputState extends State<ScoreInput> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.undo, color: Colors.white),
-                onPressed: _undoLastScore,
-              ),
-              Expanded(
-                child: TextField(
-                  controller: _controller,
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white, fontSize: 22),
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Enter Score',
-                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                  ),
-                  onSubmitted: (score) => _submitScore(),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.undo, color: Colors.white),
+              onPressed: _undoLastScore,
+            ),
+            Expanded(
+              child: TextField(
+                controller: _controller,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white, fontSize: 22),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Enter Score',
+                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
                 ),
+                onSubmitted: (score) => _submitScore(),
               ),
-              IconButton(
-                icon: const Icon(Icons.check, color: Colors.white),
-                onPressed: _submitScore,
-              ),
-            ],
-          ),
-          _buildNumPad(),
-        ],
-      ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.check, color: Colors.white),
+              onPressed: _submitScore,
+            ),
+          ],
+        ),
+        _buildNumPad(),
+      ],
     );
   }
 
@@ -102,11 +102,13 @@ class _ScoreInputState extends State<ScoreInput> {
         playerId: widget.currentPlayerId,
         scoreInput: _controller.text,
       );
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Score entered successfully')),
       );
       _controller.clear();
     } on DartGameException catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message)),
       );
@@ -119,10 +121,12 @@ class _ScoreInputState extends State<ScoreInput> {
         legId: widget.currentLegId,
         playerId: widget.currentPlayerId,
       );
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Last score undone')),
       );
     } on DartGameException catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message)),
       );

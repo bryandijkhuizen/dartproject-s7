@@ -4,9 +4,11 @@ import 'match_status.dart';
 import 'end_of_match_view.dart';
 
 class GameplayView extends StatefulWidget {
+  // ignore: use_key_in_widget_constructors
   const GameplayView({Key? key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _GameplayViewState createState() => _GameplayViewState();
 }
 
@@ -52,7 +54,7 @@ class _GameplayViewState extends State<GameplayView> {
                       playerOneScore != 0 ? playerOneScore : playerTwoScore,
                   onQuitAndSave: _saveAndQuit,
                 )
-              : Column(
+              : const Column(
                   children: [
                     Expanded(
                       child: MatchStatus(matchId: ''),

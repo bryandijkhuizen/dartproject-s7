@@ -17,6 +17,7 @@ class SelectStartingPlayerPageWidget extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _SelectStartingPlayerPageWidgetState createState() =>
       _SelectStartingPlayerPageWidgetState();
 }
@@ -95,6 +96,7 @@ class _SelectStartingPlayerPageWidgetState
                     .update({'starting_player_id': playerId}).match(
                         {'id': widget.matchDetails['id']});
 
+                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -123,6 +125,7 @@ class _SelectStartingPlayerPageWidgetState
                     .update({'starting_player_id': playerId}).match(
                         {'id': widget.matchDetails['id']});
 
+                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
