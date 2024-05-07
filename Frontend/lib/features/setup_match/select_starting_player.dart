@@ -25,6 +25,7 @@ class _SelectStartingPlayerPageWidgetState
     extends State<SelectStartingPlayerPageWidget> {
   bool player1Selected = false;
   bool player2Selected = false;
+  Random random = Random();
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +80,6 @@ class _SelectStartingPlayerPageWidgetState
             SizedBox(height: widget.buttonHeight * 0.15), // Space
             ElevatedButton(
               onPressed: () async {
-                // Randomly select a player
-                final random = new Random();
-
                 final playerId = random.nextBool()
                     ? widget.matchDetails['player_1_id']
                     : widget.matchDetails['player_2_id'];
