@@ -43,7 +43,8 @@ class TournamentBracketScreen extends StatelessWidget {
       players.add(Player(tournamentPlayer, avatarUrl));
     }
 
-    return Wrap(
+    return ListView(
+      scrollDirection: Axis.vertical,
       children: [
         Center(
           child: SizedBox(
