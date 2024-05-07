@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -51,7 +52,6 @@ class TournamentBracketScreen extends StatelessWidget {
             width: 1200.00,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              // crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(height: 30),
                 Container(
@@ -74,16 +74,33 @@ class TournamentBracketScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 20),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      child: Text("Fill in random"),
+                      onPressed: () => {},
+                    ),
+                    Spacer(),
+                    ElevatedButton(
+                      child: Text("Clear"),
+                      onPressed: () => {},
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
                 TournamentBrackets(
                   context: context,
                   players: players,
                 ),
                 SizedBox(height: 20),
-                Container(
-                  child: ElevatedButton(
-                    child: Text("Create"),
-                    onPressed: () => {},
-                  ),
+                Row(
+                  children: [
+                    Spacer(),
+                    ElevatedButton(
+                      child: Text("Create"),
+                      onPressed: () => {},
+                    ),
+                  ],
                 ),
                 SizedBox(height: 20),
               ],
@@ -182,10 +199,12 @@ class TournamentBrackets extends StatelessWidget {
         secondPlayer = placeholderPlayer;
       }
 
-      matches.add(MatchupCard(
-        firstPlayer: firstPlayer,
-        secondPlayer: secondPlayer,
-      ));
+      matches.add(
+        MatchupCard(
+          firstPlayer: firstPlayer,
+          secondPlayer: secondPlayer,
+        ),
+      );
 
       amountOfMatches--;
     }
