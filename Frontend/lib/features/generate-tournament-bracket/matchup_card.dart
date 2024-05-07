@@ -3,6 +3,7 @@
 import 'package:darts_application/features/generate-tournament-bracket/tournament_bracket_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import 'player_card.dart';
 
@@ -21,14 +22,25 @@ class MatchupCard extends StatelessWidget {
     var theme = Theme.of(context);
     return Card(
       color: theme.colorScheme.primary,
-      child: Column(
+      child: Row(
         children: [
-          PlayerCard(
-            player: firstPlayer,
+          Expanded(
+            child: Column(
+              children: [
+                PlayerCard(
+                  player: firstPlayer,
+                ),
+                PlayerCard(
+                  player: secondPlayer,
+                ),
+              ],
+            ),
           ),
-          PlayerCard(
-            player: secondPlayer,
+          ElevatedButton(
+            child: Text("Edit"),
+            onPressed: () => {},
           ),
+          SizedBox(width: 8)
         ],
       ),
     );
