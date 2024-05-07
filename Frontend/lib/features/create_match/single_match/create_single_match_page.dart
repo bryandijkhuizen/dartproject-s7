@@ -16,7 +16,6 @@ class CreateSingleMatchPage extends StatefulWidget {
 }
 
 class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
-  // final TextEditingController _matchNameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
 
   late DateTime selectedDate = DateTime.now();
@@ -39,7 +38,6 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
 
   @override
   void dispose() {
-    // _matchNameController.dispose();
     _locationController.dispose();
     super.dispose();
   }
@@ -64,7 +62,6 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
   }
 
   Future<void> submitForm() async {
-    // String matchName = _matchNameController.text;
     String location = _locationController.text;
 
     DateTime matchDateTime = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedTime.hour, selectedTime.minute);
@@ -141,23 +138,6 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // const Padding(
-                        //   padding: EdgeInsets.all(8.0),
-                        //   child: Text(
-                        //     'Match Name (optional)',
-                        //     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        //   ),
-                        // ),
-                        // Padding(
-                        //   padding: const EdgeInsets.all(8.0),
-                        //   child: TextField(
-                        //     controller: _matchNameController,
-                        //     decoration: const InputDecoration(
-                        //       labelText: 'Enter the name of the match',
-                        //       border: OutlineInputBorder(),
-                        //     ),
-                        //   ),
-                        // ),
                         const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text(
