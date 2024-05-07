@@ -1,4 +1,5 @@
 import 'package:darts_application/components/generic_screen.dart';
+import 'package:darts_application/features/settings/settings_club_card.dart';
 import 'package:darts_application/features/settings/settings_header.dart';
 import 'package:darts_application/features/settings/settings_item.dart';
 import 'package:darts_application/stores/user_store.dart';
@@ -19,6 +20,8 @@ class SettingsViewState extends State<SettingsView> {
   @override
   Widget build(BuildContext context) {
     UserStore userStore = context.read<UserStore>();
+    ThemeData theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -36,6 +39,10 @@ class SettingsViewState extends State<SettingsView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    Text(
+                      'User settings',
+                      style: theme.textTheme.titleMedium,
+                    ),
                     Card(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -71,6 +78,14 @@ class SettingsViewState extends State<SettingsView> {
                         ),
                       ),
                     ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    Text(
+                      'Assigned clubs',
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    const SettingsClubCard(),
                   ],
                 ),
               ),
