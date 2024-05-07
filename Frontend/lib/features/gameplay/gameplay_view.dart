@@ -57,11 +57,11 @@ class _GameplayViewState extends State<GameplayView> {
               : const Column(
                   children: [
                     Expanded(
-                      child: MatchStatus(matchId: ''),
+                      child: MatchStatus(matchId: '1'),
                     ),
                     Expanded(
                       child: ScoreInput(
-                        matchId: '',
+                        matchId: '1',
                         currentLegId: '',
                         currentSetId: '',
                         currentPlayerId: '',
