@@ -21,7 +21,7 @@ class SelectStartingPlayerPageWidget extends StatefulWidget {
   _SelectStartingPlayerPageWidgetState createState() =>
       _SelectStartingPlayerPageWidgetState();
 
-  Future<void> selectStartingPlayer(String playerId, String matchId) async {}
+  Future<void> updateStartingPlayer(String playerId, String matchId) async {}
 }
 
 class _SelectStartingPlayerPageWidgetState
@@ -30,7 +30,7 @@ class _SelectStartingPlayerPageWidgetState
   bool player2Selected = false;
   Random random = Random();
 
-  Future<void> selectStartingPlayer(playerId, matchId) async {
+  Future<void> updateStartingPlayer(playerId, matchId) async {
     await Supabase.instance.client
         .from('match')
         .update({'starting_player_id': playerId}).match({'id': matchId});
@@ -96,7 +96,7 @@ class _SelectStartingPlayerPageWidgetState
                     ? widget.matchDetails.player1LastName
                     : widget.matchDetails.player2LastName;
 
-                selectStartingPlayer(playerId, widget.matchDetails.id);
+                updateStartingPlayer(playerId, widget.matchDetails.id);
 
                 // directly redirect to gameplay here...
 
@@ -123,7 +123,7 @@ class _SelectStartingPlayerPageWidgetState
                     ? widget.matchDetails.player1Id
                     : widget.matchDetails.player2Id;
 
-                selectStartingPlayer(playerId, widget.matchDetails.id);
+                updateStartingPlayer(playerId, widget.matchDetails.id);
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
