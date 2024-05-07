@@ -3,6 +3,7 @@
 import 'package:darts_application/features/generate-tournament-bracket/tournament_bracket_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class PlayerCard extends StatelessWidget {
   const PlayerCard({
@@ -21,8 +22,10 @@ class PlayerCard extends StatelessWidget {
           CircleAvatar(
               radius: 20, backgroundImage: AssetImage(player.avatarUrl)),
           SizedBox(width: 8),
-          Text(
-            player.name,
+          Expanded(
+            child: Text(
+              player.name,
+            ),
           ),
           SizedBox(width: 8),
         ],

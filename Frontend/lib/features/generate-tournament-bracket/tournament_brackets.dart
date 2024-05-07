@@ -32,7 +32,7 @@ class TournamentBrackets extends StatelessWidget {
         ),
         Container(
           color: Colors.white,
-          height: 500,
+          height: 400,
           width: 400,
           child: Scrollbar(
             controller: _scrollController,
