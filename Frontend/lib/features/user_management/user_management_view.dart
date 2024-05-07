@@ -12,9 +12,10 @@ class UserManagementView extends StatefulWidget {
 }
 
 class _UserManagementViewState extends State<UserManagementView> {
-
-  Future loadData(){
-    return Supabase.instance.client.rpc("get_all_users");
+  String? name;
+  String? role;
+  Future loadUsersData() {
+    return Supabase.instance.client.rpc("get_all_users", params: {'name_filter': name, 'role_filter': role},);
   }
 
   @override
@@ -22,23 +23,29 @@ class _UserManagementViewState extends State<UserManagementView> {
     ThemeData theme = Theme.of(context);
     return Center(
       child: Container(
-        constraints: BoxConstraints(maxWidth: 600),
+        constraints: BoxConstraints(maxWidth: 800),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const UserManagementHeader(),
+            UserManagementHeader(
+              Supabase.instance.client,
+              onSearch: (String? searchedName, String? searchedRole) {
+                setState(() {
+                  // Update the search filter
+                  name = searchedName;
+                  role = searchedRole;
+                });
+              },
+            ),
             FutureBuilder(
-              future: loadData(),
-              
+              future: loadUsersData(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasError) {
                     return const Text("something went wrong");
                   }
                   if (snapshot.hasData) {
-
                     return DataTable(
-
                       headingRowColor:
                           MaterialStatePropertyAll(theme.colorScheme.primary),
                       headingTextStyle: const TextStyle(color: Colors.white),
@@ -48,7 +55,7 @@ class _UserManagementViewState extends State<UserManagementView> {
                           label: Text('Name'),
                         ),
                         DataColumn(
-                          label: Text('Role'),
+                          label: Text('Roles'),
                         ),
                         DataColumn(
                           label: Text(""),
@@ -57,20 +64,24 @@ class _UserManagementViewState extends State<UserManagementView> {
                       ],
                       rows: [
                         for (var userObj in snapshot.data)
-                          
                           DataRow(
                             color:
                                 MaterialStatePropertyAll(Colors.grey.shade300),
                             cells: [
                               DataCell(
-                                Text( userObj["full_name"],style: TextStyle(color: Colors.black)),
+                                Text(userObj["full_name"],
+                                    style: TextStyle(color: Colors.black)),
                               ),
                               DataCell(
-                                Text(userObj["roles"].toString(), style: TextStyle(color: Colors.black)),
+                                Text(userObj["roles"].toString(),
+                                    style: TextStyle(color: Colors.black)),
                               ),
                               DataCell(
                                 FilledButton(
-                                  onPressed: () {context.go("/user-management/edit/${userObj["id"]}");},
+                                  onPressed: () {
+                                    context.go(
+                                        "/user-management/edit/${userObj["id"]}");
+                                  },
                                   child: const Text("Edit"),
                                 ),
                               ),

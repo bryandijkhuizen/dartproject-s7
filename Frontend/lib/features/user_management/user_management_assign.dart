@@ -18,10 +18,11 @@ class _UserManagementAssignState extends State<UserManagementAssign> {
   late RoleAssignmentController controller;
   @override
   void initState() {
-    controller = RoleAssignmentController(Supabase.instance.client, widget.uuid);
+    controller =
+        RoleAssignmentController(Supabase.instance.client, widget.uuid);
     super.initState();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -49,9 +50,16 @@ class _UserManagementAssignState extends State<UserManagementAssign> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(right: 10.0),
-                                child: CircleAvatar(radius: 50, backgroundImage: NetworkImage(userData!.avatarUrl),),
+                                child: CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage:
+                                      NetworkImage(userData!.avatarUrl),
+                                ),
                               ),
-                              Text(userData.fullName, style: theme.textTheme.headlineSmall,),
+                              Text(
+                                userData.fullName,
+                                style: theme.textTheme.headlineSmall,
+                              ),
                             ],
                           ),
                         ),
@@ -83,7 +91,8 @@ class _UserManagementAssignState extends State<UserManagementAssign> {
                                     });
                                   }
                                 },
-                                selected: controller.getSelectlist().contains(role),
+                                selected:
+                                    controller.getSelectlist().contains(role),
                                 cells: [
                                   DataCell(
                                     Text(role.toString(),
@@ -95,8 +104,21 @@ class _UserManagementAssignState extends State<UserManagementAssign> {
                         ),
                         Row(
                           children: [
-                            FilledButton(onPressed: (){ context.goBack("/user-management");}, child: Text("Cancel")),
-                            FilledButton(onPressed: (){controller.saveRoles(userData.myRoles, userData.id); context.goBack("/user-management");}, child: Text("Save")),
+                            FilledButton(
+                                onPressed: () {
+                                  context.goBack("/user-management");
+                                },
+                                child: Text("Cancel")),
+                            FilledButton(
+                                onPressed: () {
+                                  controller.saveRoles(
+                                      userData.myRoles, userData.id);
+                                  Future.delayed(
+                                      const Duration(milliseconds: 500), () {
+                                    context.goBack("/user-management");
+                                  });
+                                },
+                                child: Text("Save")),
                           ],
                         )
                       ],
