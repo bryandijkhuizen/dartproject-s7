@@ -11,6 +11,7 @@ import '../setup_match/start_match.dart';
 import '../setup_match/match_list_widget.dart';
 
 import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
+import 'package:darts_application/features/create_match/tournament/create_tournament_page.dart';
 
 Widget getPlaceholderComponent(
     String currentRoute, List<String> routes, BuildContext context) {
@@ -198,7 +199,8 @@ final router = GoRouter(
                             '/',
                             '/matches',
                             '/settings',
-                            '/matches/create/single'
+                            '/matches/create/single',
+                            '/matches/create/tournament'
                           ],
                           context);
                     },
@@ -213,6 +215,18 @@ final router = GoRouter(
                     path: '/matches/create/single',
                     builder: (context, state) {
                       return const CreateSingleMatchPage();
+                    },
+                  ),
+                ],
+              ),
+
+              // Desktop tournament creation
+              StatefulShellBranch(
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: '/matches/create/tournament',
+                    builder: (context, state) {
+                      return const CreateTournamentPage();
                     },
                   ),
                 ],
