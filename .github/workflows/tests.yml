@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./frontend
+        working-directory: ./Frontend
     steps:
       - name: Retrieve files from repository
         uses: actions/checkout@v4
