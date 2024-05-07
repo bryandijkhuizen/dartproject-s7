@@ -57,62 +57,65 @@ class TournamentBracketScreen extends StatelessWidget {
       scrollDirection: Axis.vertical,
       children: [
         Center(
-          child: SizedBox(
-            width: 1200.00,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 30),
-                Container(
-                  child: Text(
-                    "Edit tournament",
-                    style: titleLargeWhite,
-                  ),
-                ),
-                SizedBox(height: 20),
-                Container(
-                  child: Text(
-                    "Review the proposed matches.",
-                  ),
-                ),
-                SizedBox(height: 20),
-                Container(
-                  child: Text(
-                    "Matches",
-                    style: titleMediumWhite,
-                  ),
-                ),
-                SizedBox(height: 20),
-                Row(
-                  children: [
-                    ElevatedButton(
-                      child: Text("Fill in random"),
-                      onPressed: () => {},
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            child: SizedBox(
+              width: 1200.00,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 30),
+                  Container(
+                    child: Text(
+                      "Edit tournament",
+                      style: titleLargeWhite,
                     ),
-                    Spacer(),
-                    ElevatedButton(
-                      child: Text("Clear"),
-                      onPressed: () => {},
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    child: Text(
+                      "Review the proposed matches.",
                     ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                TournamentBrackets(
-                  context: context,
-                  players: players,
-                ),
-                SizedBox(height: 20),
-                Row(
-                  children: [
-                    Spacer(),
-                    ElevatedButton(
-                      child: Text("Create"),
-                      onPressed: () => {},
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    child: Text(
+                      "Matches",
+                      style: titleMediumWhite,
                     ),
-                  ],
-                ),
-                SizedBox(height: 20),
-              ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        child: Text("Fill in random"),
+                        onPressed: () => {},
+                      ),
+                      Spacer(),
+                      ElevatedButton(
+                        child: Text("Clear"),
+                        onPressed: () => {},
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  TournamentBrackets(
+                    context: context,
+                    players: players,
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Spacer(),
+                      ElevatedButton(
+                        child: Text("Create"),
+                        onPressed: () => {},
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
         ),

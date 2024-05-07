@@ -18,7 +18,7 @@ class PlayerCard extends StatelessWidget {
     return Card(
       child: Row(
         children: [
-          SizedBox(width: 8),
+          SizedBox(width: 4),
           CircleAvatar(
               radius: 20, backgroundImage: AssetImage(player.avatarUrl)),
           SizedBox(width: 8),
@@ -27,7 +27,7 @@ class PlayerCard extends StatelessWidget {
               player.name,
             ),
           ),
-          SizedBox(width: 8),
+          SizedBox(width: 4),
         ],
       ),
     );
