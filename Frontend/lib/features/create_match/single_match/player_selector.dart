@@ -14,9 +14,6 @@ class _PlayerSelectorState extends State<PlayerSelector>{
   String? selectedOne;
   String? selectedTwo;
 
-  // TODO: fetch current user_id
-  // Supabase.instance.client.auth.currentUser
-  String currentUser = "f885fe8b-7107-4235-a020-88c39afd2d33";
   int? currentClub;
   String? clubName;
 
@@ -33,7 +30,7 @@ class _PlayerSelectorState extends State<PlayerSelector>{
       final userClub = await Supabase.instance.client
           .from('user_club')
           .select()
-          .eq('user_id', currentUser)
+          .eq('user_id', Supabase.instance.client.auth.currentUser!.id)
           .single();
 
       final clubInfo = await Supabase.instance.client.from('club').select().eq('id', userClub['club_id']).single(); 

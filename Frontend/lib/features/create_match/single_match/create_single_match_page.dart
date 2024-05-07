@@ -30,8 +30,8 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
   bool bullOffStart = true;
   bool randomStart = false;
 
-  String? playerOne;
-  String? playerTwo;
+  String playerOne = "";
+  String playerTwo = "";
 
   int legAmount = 0;
   int setAmount = 0;
@@ -67,48 +67,46 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
     String location = _locationController.text;
 
     DateTime matchDateTime = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedTime.hour, selectedTime.minute);
+    
+    if (location.isNotEmpty && playerOne.isNotEmpty && playerTwo.isNotEmpty){
+      try {
+        await Supabase.instance.client
+          .from('match')
+          .upsert({
+            'set_target': setAmount,
+            'leg_target': legAmount,
+            'starting_score': 501,
+            'player_1_id': playerOne,
+            'player_2_id': playerTwo,
+            'date': matchDateTime.toString(),
+            'location': location,
+          });
 
-
-
-    if (location.isNotEmpty && playerOne!.isNotEmpty && playerTwo!.isNotEmpty){
-      // print('Match Name: $matchName');
-      print('Date: $selectedDate');
-      print('Time: $selectedTime');
-      print('Location: $location');
-      
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Match created!',
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Match created!',
+            ),
           ),
-        ),
-      );
-
-    } {
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Something went wrong: $e',
+            ),
+          ),
+        );
+      }
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
             'You did not fill in all the required fields!',
           ),
         ),
-      ); 
+      );
     }
-
-
-    //TODO: Add match name + starting method to table
-
-    await Supabase.instance.client
-      .from('match')
-      .upsert({
-        'set_target': 10,
-        'leg_target': 20,
-        'starting_score': 501,
-        'player_1_id': 'f885fe8b-7107-4235-a020-88c39afd2d33',
-        'player_2_id': 'f885fe8b-7107-4235-a020-88c39afd2d33',
-        'date': matchDateTime.toString(),
-        'location': "Cafe 't Hoekje",
-      });
   }
 
   @override
