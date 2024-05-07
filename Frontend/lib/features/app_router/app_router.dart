@@ -10,6 +10,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../setup_match/start_match.dart';
 import '../setup_match/match_list_widget.dart';
 
+import 'package:darts_application/features/upcoming_matches/upcoming_matches_page.dart';
 import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
 import 'package:darts_application/features/create_match/tournament/create_tournament_page.dart';
 
@@ -199,10 +200,23 @@ final router = GoRouter(
                             '/',
                             '/matches',
                             '/settings',
+                            '/matches/upcoming',
                             '/matches/create/single',
                             '/matches/create/tournament'
                           ],
                           context);
+                    },
+                  ),
+                ],
+              ),
+
+              // Desktop upcoming matches overview
+              StatefulShellBranch(
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: '/matches/upcoming',
+                    builder: (context, state) {
+                      return const UpcomingMatchesPage();
                     },
                   ),
                 ],
