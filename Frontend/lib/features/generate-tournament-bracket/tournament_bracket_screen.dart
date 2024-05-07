@@ -46,40 +46,45 @@ class TournamentBracketScreen extends StatelessWidget {
     return Wrap(
       children: [
         Center(
-          child: Container(
+          child: SizedBox(
             width: 1200.00,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               // crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                SizedBox(height: 30),
                 Container(
-                  margin: EdgeInsets.only(bottom: 20.0, top: 30),
                   child: Text(
                     "Edit tournament",
                     style: titleLargeWhite,
                   ),
                 ),
+                SizedBox(height: 20),
                 Container(
-                  margin: EdgeInsets.only(bottom: 20.0),
                   child: Text(
                     "Review the proposed matches.",
                   ),
                 ),
+                SizedBox(height: 20),
                 Container(
-                  margin: EdgeInsets.only(bottom: 20.0),
                   child: Text(
                     "Matches",
                     style: titleMediumWhite,
                   ),
                 ),
+                SizedBox(height: 20),
                 TournamentBrackets(
                   context: context,
                   players: players,
                 ),
+                SizedBox(height: 20),
                 Container(
-                  margin: EdgeInsets.only(top: 20, bottom: 20),
-                  child: Text("Create"),
+                  child: ElevatedButton(
+                    child: Text("Create"),
+                    onPressed: () => {},
+                  ),
                 ),
+                SizedBox(height: 20),
               ],
             ),
           ),
