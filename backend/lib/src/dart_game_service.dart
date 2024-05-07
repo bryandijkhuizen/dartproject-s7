@@ -13,24 +13,35 @@ class DartGameService {
 
   DartGameService(this.client);
 
-Future<Map<String, dynamic>> getMatchDetails(String matchId) async {
-  final response = await client.rpc('get_match_details', params: {'match_id': matchId});
-  if (response.error != null) {
-    throw DartGameException('Failed to fetch match details: ${response.error!.message}');
+  // Validate the UUID before making the call
+  Future<Map<String, dynamic>> getMatchDetails(String matchId) async {
+    if (!isValidUUID(matchId)) {
+      throw DartGameException('Invalid or empty match ID');
+    }
+    final response = await client.rpc('get_match_details', params: {'match_id': matchId});
+    if (response.error != null) {
+      throw DartGameException('Failed to fetch match details: ${response.error!.message}');
+    }
+    return response.data;
   }
-  return response.data;
-}
 
+  // Subscribe to match changes with validation
   Stream<List<Map<String, dynamic>>> subscribeToMatchChanges(String matchId) {
+    if (!isValidUUID(matchId)) {
+      throw DartGameException('Invalid match ID');
+    }
     return client.from('match').stream(primaryKey: ['id']).eq('id', matchId);
   }
 
+  // Subscribe to turns with validation
   Stream<List<Map<String, dynamic>>> subscribeToTurns(String matchId) {
-    return client
-        .from('turn')
-        .stream(primaryKey: ['id']).eq('match_id', matchId);
+    if (!isValidUUID(matchId)) {
+      throw DartGameException('Invalid match ID');
+    }
+    return client.from('turn').stream(primaryKey: ['id']).eq('match_id', matchId);
   }
 
+  // Handling score entering with improved error handling
   Future<void> enterScore({
     required String legId,
     required String playerId,
@@ -52,11 +63,11 @@ Future<Map<String, dynamic>> getMatchDetails(String matchId) async {
     });
 
     if (response.error != null) {
-      throw DartGameException(
-          'Failed to enter score: ${response.error!.message}');
+      throw DartGameException('Failed to enter score: ${response.error!.message}');
     }
   }
 
+  // Handling undo last score with improved error handling
   Future<void> undoLastScore({
     required String legId,
     required String playerId,
@@ -67,17 +78,13 @@ Future<Map<String, dynamic>> getMatchDetails(String matchId) async {
     });
 
     if (response.error != null) {
-      throw DartGameException(
-          'Failed to undo last score: ${response.error!.message}');
+      throw DartGameException('Failed to undo last score: ${response.error!.message}');
     }
   }
 
+  // Helper methods
   int _parseScore(String input) {
-    int multiplier = input.startsWith('T')
-        ? 3
-        : input.startsWith('D')
-            ? 2
-            : 1;
+    int multiplier = input.startsWith('T') ? 3 : input.startsWith('D') ? 2 : 1;
     String numberPart = input.replaceAll(RegExp(r'[TD]'), '');
     int? parsedNumber = int.tryParse(numberPart);
     if (parsedNumber == null || parsedNumber < 0 || parsedNumber > 60) {
@@ -89,5 +96,11 @@ Future<Map<String, dynamic>> getMatchDetails(String matchId) async {
   bool _isValidInput(String input) {
     RegExp regex = RegExp(r'^[TD]?[1-9][0-9]?$');
     return regex.hasMatch(input) && _parseScore(input) <= 180;
+  }
+
+  // UUID validation
+  bool isValidUUID(String uuid) {
+    RegExp exp = RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$');
+    return exp.hasMatch(uuid);
   }
 }

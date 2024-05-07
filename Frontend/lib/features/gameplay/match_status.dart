@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-// ignore: implementation_imports
-import 'package:backend/src/dart_game_service.dart';
+import 'package:backend/src/dart_game_service.dart';  // Ensure this path is correct
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MatchStatus extends StatefulWidget {
@@ -9,7 +8,6 @@ class MatchStatus extends StatefulWidget {
   const MatchStatus({super.key, required this.matchId});
 
   @override
-  // ignore: library_private_types_in_public_api
   _MatchStatusState createState() => _MatchStatusState();
 }
 
@@ -19,12 +17,10 @@ class _MatchStatusState extends State<MatchStatus> {
   @override
   void initState() {
     super.initState();
+    if (widget.matchId.isEmpty) {
+      throw Exception('Match ID is required for MatchStatus widget');
+    }
     _dartGameService = DartGameService(Supabase.instance.client);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override
@@ -35,26 +31,32 @@ class _MatchStatusState extends State<MatchStatus> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(child: Text('Error: ${snapshot.error.toString()}'));
         } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
           var matchData = snapshot.data!.first;
           bool isPlayerOneTurn = matchData['current_turn'] == 'player_1_id';
-          return buildMatchUI(matchData, isPlayerOneTurn);
+          String playerOneName = matchData['player_1_name'] ?? 'Player 1'; // Default if null
+          String playerTwoName = matchData['player_2_name'] ?? 'Player 2'; // Default if null
+          int playerOneScore = matchData['player_1_score'] ?? 0; // Default if null
+          int playerTwoScore = matchData['player_2_score'] ?? 0; // Default if null
+          String legStand = matchData['leg_stand'] ?? '0 - 0'; // Default if null
+
+          return buildMatchUI(playerOneName, playerOneScore, playerTwoName, playerTwoScore, isPlayerOneTurn, legStand);
         } else {
-          return const Center(child: Text('Geen data beschikbaar'));
+          return const Center(child: Text('No data available'));
         }
       },
     );
   }
 
-  Widget buildMatchUI(Map<String, dynamic> matchData, bool isPlayerOneTurn) {
+  Widget buildMatchUI(String playerOneName, int playerOneScore, String playerTwoName, int playerTwoScore, bool isPlayerOneTurn, String legStand) {
     return Container(
       color: Colors.transparent,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            matchData['leg_stand'],
+            legStand,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 24,
@@ -67,15 +69,9 @@ class _MatchStatusState extends State<MatchStatus> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  buildPlayerScore(matchData['player_1_name'],
-                      matchData['player_1_score'], isPlayerOneTurn),
-                  Container(
-                    width: 3,
-                    color: Colors.white,
-                    margin: const EdgeInsets.only(top: 8, bottom: 8),
-                  ),
-                  buildPlayerScore(matchData['player_2_name'],
-                      matchData['player_2_score'], !isPlayerOneTurn),
+                  buildPlayerScore(playerOneName, playerOneScore, isPlayerOneTurn),
+                  const VerticalDivider(color: Colors.white, width: 3),
+                  buildPlayerScore(playerTwoName, playerTwoScore, !isPlayerOneTurn),
                 ],
               ),
             ),
