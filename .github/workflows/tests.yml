@@ -1,0 +1,36 @@
+name: unit-tests
+
+on:
+  workflow_dispatch:
+  push:
+  
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: Retrieve files from repository
+        uses: actions/checkout@v4
+      - name: Set up Flutter environment
+        uses: subosito/flutter-action@v2
+      - name: Run flutter pub get
+        run: flutter pub get
+      - name: Run flutter test
+        run: flutter test
+
+  frontend-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Frontend
+    steps:
+      - name: Retrieve files from repository
+        uses: actions/checkout@v4
+      - name: Set up Flutter environment
+        uses: subosito/flutter-action@v2
+      - name: Run flutter pub get
+        run: flutter pub get
+      - name: Run flutter test
+        run: flutter test
