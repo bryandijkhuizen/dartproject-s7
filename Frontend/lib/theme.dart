@@ -123,6 +123,11 @@ ThemeData darkTheme = ThemeData(
       letterSpacing: 1.5,
     ),
   ),
+  textButtonTheme: TextButtonThemeData(
+    style: ButtonStyle(
+      foregroundColor: MaterialStatePropertyAll(darkColorScheme.onPrimary),
+    ),
+  ),
   useMaterial3: true,
 );
 
