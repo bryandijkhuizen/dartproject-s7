@@ -13,35 +13,92 @@ class DartGameService {
 
   DartGameService(this.client);
 
-  // Validate the UUID before making the call
-  Future<Map<String, dynamic>> getMatchDetails(String matchId) async {
-    if (!isValidUUID(matchId)) {
-      throw DartGameException('Invalid or empty match ID');
-    }
-    final response = await client.rpc('get_match_details', params: {'match_id': matchId});
-    if (response.error != null) {
-      throw DartGameException('Failed to fetch match details: ${response.error!.message}');
-    }
-    return response.data;
+  bool isValidMatchId(String matchId) {
+    return RegExp(r'^\d+$').hasMatch(matchId);
   }
 
-  // Subscribe to match changes with validation
+  Future<Map<String, dynamic>?> getMatchDetails(String matchId) async {
+    if (!isValidMatchId(matchId)) {
+      throw DartGameException('Invalid or empty match ID');
+    }
+    try {
+      final response =
+          await client.rpc('get_match_details', params: {'match_id': matchId});
+      if (response.isNotEmpty) {
+        return response[0] as Map<String, dynamic>;
+      } else {
+        print("No data returned from getMatchDetails.");
+        throw DartGameException('No match details found');
+      }
+    } catch (error) {
+      print('Error in getMatchDetails: $error');
+      throw DartGameException(
+          'Failed to fetch match details: ${error.toString()}');
+    }
+  }
+
   Stream<List<Map<String, dynamic>>> subscribeToMatchChanges(String matchId) {
-    if (!isValidUUID(matchId)) {
+    if (!isValidMatchId(matchId)) {
       throw DartGameException('Invalid match ID');
     }
     return client.from('match').stream(primaryKey: ['id']).eq('id', matchId);
   }
 
-  // Subscribe to turns with validation
-  Stream<List<Map<String, dynamic>>> subscribeToTurns(String matchId) {
-    if (!isValidUUID(matchId)) {
+  Stream<List<Map<String, dynamic>>> subscribeToTurnChanges(String matchId) {
+    if (!isValidMatchId(matchId)) {
       throw DartGameException('Invalid match ID');
     }
-    return client.from('turn').stream(primaryKey: ['id']).eq('match_id', matchId);
+    try {
+      return client
+          .rpc('get_turns_for_match', params: {'input_match_id': matchId})
+          .asStream()
+          .map((data) {
+        if (data == null || data.isEmpty) {
+          throw DartGameException('No turn data available.');
+        }
+        return List<Map<String, dynamic>>.from(
+            data.map((item) => Map<String, dynamic>.from(item)));
+      });
+    } catch (e) {
+      print('Error subscribing to turn changes: $e');
+      throw DartGameException(
+          'Error subscribing to turn changes: ${e.toString()}');
+    }
   }
 
-  // Handling score entering with improved error handling
+  Future<Map<String, int>> getCurrentLegStand(String matchId) async {
+    try {
+      final response =
+          await client.rpc('get_current_leg_stand', params: {'match_id': matchId});
+
+      Map<String, int> legStand = {};
+      for (var row in response) {
+        legStand[row['winner_id'].toString()] = row['count'];
+      }
+      return legStand;
+    } catch (e) {
+      print('Error fetching leg stand: $e');
+      throw DartGameException('Error fetching leg stand: ${e.toString()}');
+    }
+  }
+
+  Future<Map<String, int>> getCurrentSetStand(String matchId) async {
+    try {
+      final response =
+          await client.rpc('get_current_set_stand', params: {'match_id': matchId});
+      Map<String, int> setStand = {};
+      for (var row in response) {
+        if (row.error != null) {
+          throw DartGameException('Failed to fetch set stand: ${row.error.message}');
+        }
+        setStand[row['winner_id'].toString()] = row['count'];
+      }
+      return setStand;
+    } catch (e) {
+      throw DartGameException('Error fetching set stand: ${e.toString()}');
+    }
+  }
+
   Future<void> enterScore({
     required String legId,
     required String playerId,
@@ -50,24 +107,26 @@ class DartGameService {
     if (!_isValidInput(scoreInput)) {
       throw DartGameException('Invalid score input');
     }
-
     final score = _parseScore(scoreInput);
     if (score > 180) {
       throw DartGameException('Score exceeds the maximum score per turn');
     }
-
-    final response = await client.rpc('enter_score', params: {
-      'leg_id': legId,
-      'player_id': playerId,
-      'score': score,
-    });
-
-    if (response.error != null) {
-      throw DartGameException('Failed to enter score: ${response.error!.message}');
+    try {
+      print(legId);
+      final response = await client.rpc('enter_score', params: {
+        'leg_id': legId,
+        'player_id': playerId,
+        'score': score,
+      });
+      if (response.error != null) {
+        throw DartGameException(
+            'Failed to enter score: ${response.error.message}');
+      }
+    } catch (error) {
+      throw DartGameException('Failed to enter score: $error');
     }
   }
 
-  // Handling undo last score with improved error handling
   Future<void> undoLastScore({
     required String legId,
     required String playerId,
@@ -76,15 +135,18 @@ class DartGameService {
       'leg_id': legId,
       'player_id': playerId,
     });
-
     if (response.error != null) {
-      throw DartGameException('Failed to undo last score: ${response.error!.message}');
+      throw DartGameException(
+          'Failed to undo last score: ${response.error.message}');
     }
   }
 
-  // Helper methods
   int _parseScore(String input) {
-    int multiplier = input.startsWith('T') ? 3 : input.startsWith('D') ? 2 : 1;
+    int multiplier = input.startsWith('T')
+        ? 3
+        : input.startsWith('D')
+            ? 2
+            : 1;
     String numberPart = input.replaceAll(RegExp(r'[TD]'), '');
     int? parsedNumber = int.tryParse(numberPart);
     if (parsedNumber == null || parsedNumber < 0 || parsedNumber > 60) {
@@ -98,9 +160,16 @@ class DartGameService {
     return regex.hasMatch(input) && _parseScore(input) <= 180;
   }
 
-  // UUID validation
-  bool isValidUUID(String uuid) {
-    RegExp exp = RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$');
-    return exp.hasMatch(uuid);
+  Future<Map<String, dynamic>> getEndOfMatchResult(String matchId) async {
+    try {
+      final response =
+          await client.rpc('get_end_of_match_result', params: {'match_id': matchId});
+      if (response.error != null) {
+        throw DartGameException('Failed to fetch end of match result: ${response.error.message}');
+      }
+      return response.data[0] as Map<String, dynamic>;
+    } catch (e) {
+      throw DartGameException('Failed to fetch end of match result: $e');
+    }
   }
 }

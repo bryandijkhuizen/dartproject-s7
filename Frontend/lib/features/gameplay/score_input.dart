@@ -41,8 +41,8 @@ class _ScoreInputState extends State<ScoreInput> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             IconButton(
-              icon: const Icon(Icons.undo, color: Colors.white),
-              onPressed: _undoLastScore,
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: _removeLastInput,
             ),
             Expanded(
               child: TextField(
@@ -95,42 +95,43 @@ class _ScoreInputState extends State<ScoreInput> {
     });
   }
 
+  void _removeLastInput() {
+    setState(() {
+      if (_controller.text.isNotEmpty) {
+        _controller.text = _controller.text.substring(0, _controller.text.length - 1);
+      }
+    });
+  }
+
   void _submitScore() async {
-    try {
-      await gameService.enterScore(
-        legId: widget.currentLegId,
-        playerId: widget.currentPlayerId,
-        scoreInput: _controller.text,
-      );
-      // ignore: use_build_context_synchronously
+    String scoreInput = _controller.text.trim();
+    if (scoreInput.isNotEmpty && _isNumeric(scoreInput)) {
+      try {
+        await gameService.enterScore(
+          legId: widget.currentLegId,
+          playerId: widget.currentPlayerId,
+          scoreInput: scoreInput,
+        );
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Score entered successfully')),
+        );
+        _controller.clear();
+      } on DartGameException catch (e) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message)),
+        );
+      }
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Score entered successfully')),
-      );
-      _controller.clear();
-    } on DartGameException catch (e) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
+        const SnackBar(content: Text('Please enter a valid score')),
       );
     }
   }
 
-  Future<void> _undoLastScore() async {
-    try {
-      await gameService.undoLastScore(
-        legId: widget.currentLegId,
-        playerId: widget.currentPlayerId,
-      );
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Last score undone')),
-      );
-    } on DartGameException catch (e) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
-      );
-    }
+  bool _isNumeric(String str) {
+    return double.tryParse(str) != null;
   }
 }
 

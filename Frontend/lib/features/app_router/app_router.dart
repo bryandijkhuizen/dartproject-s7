@@ -86,7 +86,7 @@ final router = GoRouter(
                   GoRoute(
                     path: '/gameplay',
                     // ignore: prefer_const_constructors
-                    builder: (context, state) => GameplayView(),
+                    builder: (context, state) => GameplayView(matchId: '1',),
                   ),
                 ],
               ),
@@ -175,7 +175,7 @@ final router = GoRouter(
                   GoRoute(
                     path: '/gameplay',
                     // ignore: prefer_const_constructors
-                    builder: (context, state) => GameplayView(),
+                    builder: (context, state) => GameplayView(matchId: '1',),
                   ),
                 ],
               ),
