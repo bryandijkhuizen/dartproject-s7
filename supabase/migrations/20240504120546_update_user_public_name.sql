@@ -1,19 +1,3 @@
-create policy "Users can update their own data"
-on "auth"."users"
-as permissive
-for update
-to public
-using ((auth.uid() = id))
-with check ((auth.uid() = id));
-
-
-CREATE TRIGGER on_auth_user_meta_data_update AFTER UPDATE OF raw_user_meta_data ON auth.users FOR EACH ROW EXECUTE FUNCTION update_public_user();
-
-
-drop trigger if exists "on_user_name_update" on "public"."user";
-
-drop function if exists "public"."update_auth_user_meta_data"();
-
 set check_function_bodies = off;
 
 CREATE OR REPLACE FUNCTION public.update_public_user()
@@ -38,6 +22,22 @@ BEGIN
 END;
 $function$
 ;
+
+create policy "Users can update their own data"
+on "auth"."users"
+as permissive
+for update
+to public
+using ((auth.uid() = id))
+with check ((auth.uid() = id));
+
+
+CREATE TRIGGER on_auth_user_meta_data_update AFTER UPDATE OF raw_user_meta_data ON auth.users FOR EACH ROW EXECUTE FUNCTION update_public_user();
+
+
+drop trigger if exists "on_user_name_update" on "public"."user";
+
+drop function if exists "public"."update_auth_user_meta_data"();
 
 create policy "update_own_user_policy"
 on "public"."user"
