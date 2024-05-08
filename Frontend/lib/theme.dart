@@ -20,7 +20,10 @@ ThemeData darkTheme = ThemeData(
     foregroundColor: Colors.white, // Ensures text and icons are white
   ),
   brightness: Brightness.dark,
-  cardTheme: CardTheme(color: darkColorScheme.surface),
+  cardTheme: CardTheme(
+    color: darkColorScheme.surface,
+    margin: const EdgeInsets.all(0.0),
+  ),
   colorScheme: darkColorScheme,
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
@@ -32,6 +35,9 @@ ThemeData darkTheme = ThemeData(
         RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
+      ),
+      padding: const MaterialStatePropertyAll(
+        EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       ),
     ),
   ),
@@ -126,6 +132,9 @@ ThemeData darkTheme = ThemeData(
   textButtonTheme: TextButtonThemeData(
     style: ButtonStyle(
       foregroundColor: MaterialStatePropertyAll(darkColorScheme.onPrimary),
+      padding: const MaterialStatePropertyAll(
+        EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+      ),
     ),
   ),
   useMaterial3: true,
