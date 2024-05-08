@@ -17,6 +17,11 @@ class SettingsClubCard extends StatelessWidget {
       );
 
   Widget getUserClubs(List<Club> clubs) {
+    if (clubs.isEmpty) {
+      return const Center(
+        child: Text('You are not a club member'),
+      );
+    }
     return ListView.separated(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
