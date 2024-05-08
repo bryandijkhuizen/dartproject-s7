@@ -42,6 +42,7 @@ class _SettingsNameViewState extends State<SettingsNameView> {
     setState(() {
       loading = true;
     });
+
     if (_formKey.currentState?.validate() == true) {
       try {
         await Supabase.instance.client.auth.updateUser(
@@ -120,6 +121,7 @@ class _SettingsNameViewState extends State<SettingsNameView> {
                       TextFormField(
                         controller: lastNameController,
                         decoration: createInputDecoration('Last name', 'Doe'),
+                        validator: lastNameValidator,
                       ),
                     ],
                   ),
