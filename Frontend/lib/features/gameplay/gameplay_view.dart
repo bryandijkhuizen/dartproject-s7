@@ -2,30 +2,77 @@ import 'package:flutter/material.dart';
 import 'score_input.dart';
 import 'match_status.dart';
 import 'end_of_match_view.dart';
+// ignore: implementation_imports
+import 'package:backend/src/dart_game_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class GameplayView extends StatefulWidget {
-  // ignore: use_key_in_widget_constructors
-  const GameplayView({Key? key});
+  final String matchId;
+
+  const GameplayView({super.key, required this.matchId});
 
   @override
-  // ignore: library_private_types_in_public_api
   _GameplayViewState createState() => _GameplayViewState();
 }
 
 class _GameplayViewState extends State<GameplayView> {
-  int playerOneScore = 501;
-  int playerTwoScore = 501;
-  String playerOneName = 'Speler 1';
-  String playerTwoName = 'Speler 2';
-  int currentPlayer = 1;
-  List<int> playerOneThrows = [];
-  List<int> playerTwoThrows = [];
-  int playerOneLegs = 0;
-  int playerTwoLegs = 0;
-  bool matchEnded = false;
+  late String currentLegId;
+  late String currentPlayerId;
+  late DartGameService _gameService;
 
-  void _saveAndQuit() {
-    Navigator.pop(context);
+  @override
+  void initState() {
+    super.initState();
+    currentLegId = '';
+    currentPlayerId = '';
+    _gameService = DartGameService(Supabase.instance.client);
+    _fetchGameDetails();
+  }
+
+  Future<void> _fetchGameDetails() async {
+    try {
+      final legStand = await _gameService.getCurrentLegStand(widget.matchId);
+
+      // Controleren op legId
+      if (legStand.isNotEmpty) {
+        currentLegId = legStand.keys.first;
+      } else {
+        throw DartGameException('Failed to fetch leg stand');
+      }
+
+      final setStand = await _gameService.getCurrentSetStand(widget.matchId);
+
+      // Controleren op playerId
+      if (setStand.isNotEmpty) {
+        final currentSetId = setStand.keys.first;
+        currentPlayerId = setStand[currentSetId]! > legStand[currentLegId]!
+            ? currentSetId
+            : setStand.keys.last;
+      } else {
+        throw DartGameException('Failed to fetch set stand');
+      }
+
+      setState(() {});
+
+      // Check of de wedstrijd voorbij is
+      final endOfMatchResult =
+          await _gameService.getEndOfMatchResult(widget.matchId);
+      final loserName = endOfMatchResult['loser_name'];
+      if (loserName != null && loserName.isNotEmpty) {
+        // Navigeer naar de EndOfMatchView
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => EndOfMatchView(
+            matchId: widget.matchId,
+            onQuitAndSave: () {
+              // Voer hier de logica uit om de wedstrijd af te sluiten en op te slaan
+            },
+          ),
+        ));
+      }
+    } catch (e) {
+      print('Failed to fetch game details: $e');
+      // Handle errors
+    }
   }
 
   @override
@@ -39,36 +86,26 @@ class _GameplayViewState extends State<GameplayView> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('./assets/images/bg.png'),
+                image: AssetImage('assets/images/bg.png'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          matchEnded
-              ? EndOfMatchView(
-                  winner: playerOneScore == 0 ? playerOneName : playerTwoName,
-                  loser: playerOneScore != 0 ? playerOneName : playerTwoName,
-                  winnerScore:
-                      playerOneScore == 0 ? playerOneScore : playerTwoScore,
-                  loserScore:
-                      playerOneScore != 0 ? playerOneScore : playerTwoScore,
-                  onQuitAndSave: _saveAndQuit,
-                )
-              : const Column(
-                  children: [
-                    Expanded(
-                      child: MatchStatus(matchId: '1'),
-                    ),
-                    Expanded(
-                      child: ScoreInput(
-                        matchId: '1',
-                        currentLegId: '',
-                        currentSetId: '',
-                        currentPlayerId: '',
-                      ),
-                    ),
-                  ],
+          Column(
+            children: [
+              Expanded(
+                child: MatchStatus(matchId: widget.matchId),
+              ),
+              Expanded(
+                child: ScoreInput(
+                  matchId: widget.matchId,
+                  currentLegId: currentLegId,
+                  currentPlayerId: currentPlayerId, 
+                  currentSetId: '',
                 ),
+              ),
+            ],
+          ),
         ],
       ),
     );

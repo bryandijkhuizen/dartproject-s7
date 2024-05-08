@@ -1,5 +1,9 @@
+// ignore_for_file: avoid_print
+
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:backend/src/dart_game_service.dart';  // Ensure this path is correct
+// ignore: implementation_imports
+import 'package:backend/src/dart_game_service.dart'; // Update the import path as needed
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MatchStatus extends StatefulWidget {
@@ -8,72 +12,150 @@ class MatchStatus extends StatefulWidget {
   const MatchStatus({super.key, required this.matchId});
 
   @override
+  // ignore: library_private_types_in_public_api
   _MatchStatusState createState() => _MatchStatusState();
 }
 
 class _MatchStatusState extends State<MatchStatus> {
   late final DartGameService _dartGameService;
+  late StreamSubscription<List<Map<String, dynamic>>> _matchSubscription;
+  late StreamSubscription<List<Map<String, dynamic>>> _turnSubscription;
+  Map<String, dynamic>? _matchData;
+  int playerOneScore = 0;
+  int playerTwoScore = 0;
+  String legStand = "0-0";
+  String setStand = "0-0";
 
   @override
   void initState() {
     super.initState();
-    if (widget.matchId.isEmpty) {
-      throw Exception('Match ID is required for MatchStatus widget');
-    }
     _dartGameService = DartGameService(Supabase.instance.client);
+    _loadMatchDetails();
+    _subscribeToMatchChanges();
+    _subscribeToTurnChanges();
+  }
+
+  @override
+  void dispose() {
+    _matchSubscription.cancel();
+    _turnSubscription.cancel();
+    super.dispose();
+  }
+
+  void _loadMatchDetails() async {
+    try {
+      final response = await _dartGameService.getMatchDetails(widget.matchId);
+      if (response != null) {
+        setState(() {
+          _matchData = response;
+          playerOneScore = _matchData?['starting_score'] ?? 0;
+          playerTwoScore = _matchData?['starting_score'] ?? 0;
+        });
+      } else {
+        print("No data returned from getMatchDetails.");
+      }
+    } catch (e) {
+      print('Error loading match details: $e');
+    }
+  }
+
+  void _subscribeToMatchChanges() {
+    _matchSubscription =
+        _dartGameService.subscribeToMatchChanges(widget.matchId).listen((data) {
+      if (data.isNotEmpty) {
+        _mergeMatchData(data.first);
+      }
+    }, onError: (error) {
+      print('Error subscribing to match changes: $error');
+    });
+  }
+
+  void _subscribeToTurnChanges() {
+    _turnSubscription =
+        _dartGameService.subscribeToTurnChanges(widget.matchId).listen((turn) {
+      if (turn.isNotEmpty) {
+        _updateScores(turn);
+      }
+    }, onError: (error) {
+      print('Error subscribing to turn changes: $error');
+    });
+  }
+
+  void _updateScores(List<Map<String, dynamic>> turns) {
+    setState(() {
+      for (var turn in turns) {
+        var playerId = turn['player_id'].toString();
+        var score = int.parse(turn['score'].toString());
+        if (playerId == _matchData?['player_1_id'].toString()) {
+          playerOneScore -= score;
+        } else if (playerId == _matchData?['player_2_id'].toString()) {
+          playerTwoScore -= score;
+        }
+      }
+    });
+  }
+
+  void _mergeMatchData(Map<String, dynamic> newData) {
+    setState(() {
+      _matchData = {...?_matchData, ...newData};
+      legStand = newData['leg_stand'] ?? legStand;
+      setStand = newData['set_stand'] ?? setStand;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<Map<String, dynamic>>>(
-      stream: _dartGameService.subscribeToMatchChanges(widget.matchId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error.toString()}'));
-        } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-          var matchData = snapshot.data!.first;
-          bool isPlayerOneTurn = matchData['current_turn'] == 'player_1_id';
-          String playerOneName = matchData['player_1_name'] ?? 'Player 1'; // Default if null
-          String playerTwoName = matchData['player_2_name'] ?? 'Player 2'; // Default if null
-          int playerOneScore = matchData['player_1_score'] ?? 0; // Default if null
-          int playerTwoScore = matchData['player_2_score'] ?? 0; // Default if null
-          String legStand = matchData['leg_stand'] ?? '0 - 0'; // Default if null
-
-          return buildMatchUI(playerOneName, playerOneScore, playerTwoName, playerTwoScore, isPlayerOneTurn, legStand);
-        } else {
-          return const Center(child: Text('No data available'));
-        }
-      },
-    );
+    return _matchData != null
+        ? buildMatchUI()
+        : const Center(child: CircularProgressIndicator());
   }
 
-  Widget buildMatchUI(String playerOneName, int playerOneScore, String playerTwoName, int playerTwoScore, bool isPlayerOneTurn, String legStand) {
+  Widget buildMatchUI() {
+    final isPlayerOneTurn =
+        _matchData!['current_turn'] == _matchData!['player_1_id'];
+    final isStartingPlayer =
+        _matchData!['starting_player_id'] == _matchData!['player_1_id'];
+    final playerOneName = _matchData!['player_1_name'] ?? "Unknown";
+    final playerTwoName = _matchData!['player_2_name'] ?? "Unknown";
+    final setTarget = _matchData!['set_target'];
+
     return Container(
       color: Colors.transparent,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // Display set stand only if setTarget is more than 1
+          if (setTarget > 1)
+            Text(
+              setStand,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold),
+            ),
           Text(
             legStand,
             style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+                color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Expanded(
-            child: IntrinsicHeight(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  buildPlayerScore(playerOneName, playerOneScore, isPlayerOneTurn),
-                  const VerticalDivider(color: Colors.white, width: 3),
-                  buildPlayerScore(playerTwoName, playerTwoScore, !isPlayerOneTurn),
-                ],
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                buildPlayerScore(playerOneName, playerOneScore, isPlayerOneTurn,
+                    isStartingPlayer),
+                Container(
+                  width: 1, // Changed width to 1
+                  color: Colors.white,
+                  margin: const EdgeInsets.only(
+                      top: 116,
+                      bottom:
+                          12), // Adjusted margin to control length of the vertical divider
+                ),
+                buildPlayerScore(playerTwoName, playerTwoScore,
+                    !isPlayerOneTurn, !isStartingPlayer),
+              ],
             ),
           ),
         ],
@@ -81,17 +163,28 @@ class _MatchStatusState extends State<MatchStatus> {
     );
   }
 
-  Widget buildPlayerScore(String name, int score, bool isCurrentTurn) {
+  Widget buildPlayerScore(
+      String name, int score, bool isCurrentTurn, bool isStartingPlayer) {
     return Expanded(
       child: Column(
         children: [
-          Text(
-            name.toUpperCase(),
-            style: TextStyle(
-              color: isCurrentTurn ? Colors.yellow : Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(width: 10), // Adjust the width of the spacer
+              Text(
+                name.toUpperCase(),
+                style: TextStyle(
+                  color: isCurrentTurn ? Colors.yellow : Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (isStartingPlayer)
+                const Icon(Icons.star,
+                    color: Colors.yellow,
+                    size: 20), // An indicator for the starting player
+            ],
           ),
           const SizedBox(height: 4),
           Text(
@@ -103,9 +196,9 @@ class _MatchStatusState extends State<MatchStatus> {
             ),
           ),
           Container(
-            height: 3,
-            color: isCurrentTurn ? Colors.yellow : Colors.white,
-            margin: const EdgeInsets.only(top: 4),
+            height: 1,
+            color: Colors.white,
+            margin: const EdgeInsets.only(top: 4, bottom: 8),
           ),
         ],
       ),
