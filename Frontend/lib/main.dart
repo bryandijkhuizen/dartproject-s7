@@ -1,5 +1,6 @@
 import 'package:darts_application/constants.dart';
 import 'package:darts_application/features/app_router/app_router.dart';
+import 'package:darts_application/stores/clubs_store.dart';
 import 'package:darts_application/stores/user_store.dart';
 import 'package:darts_application/theme.dart';
 import 'package:flutter/material.dart';
@@ -22,11 +23,23 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Provider(
       create: (_) => UserStore(Supabase.instance.client),
-      child: MaterialApp.router(
-        title: 'Flutter Demo',
-        themeMode: ThemeMode.dark,
-        darkTheme: darkTheme,
-        routerConfig: router,
+      child: Builder(
+        builder: (context) => MultiProvider(
+          providers: [
+            Provider<ClubsStore>(
+              create: (_) => ClubsStore(
+                Supabase.instance.client,
+                context.read<UserStore>(),
+              ),
+            ),
+          ],
+          child: MaterialApp.router(
+            title: 'Flutter Demo',
+            themeMode: ThemeMode.dark,
+            darkTheme: darkTheme,
+            routerConfig: router,
+          ),
+        ),
       ),
     );
   }

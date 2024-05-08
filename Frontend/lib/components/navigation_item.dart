@@ -17,7 +17,7 @@ class NavigationItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        context.go(location);
+        context.push(location);
       },
       child: Center(
         child: Padding(
