@@ -29,6 +29,7 @@ class SettingsClubCard extends StatelessWidget {
       },
       separatorBuilder: (context, index) => const Divider(
         indent: textButtonPadding + iconSize + iconSpacing,
+        endIndent: 12,
       ),
       itemCount: clubs.length,
     );

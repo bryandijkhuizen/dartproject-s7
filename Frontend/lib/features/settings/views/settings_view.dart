@@ -86,6 +86,25 @@ class SettingsViewState extends State<SettingsView> {
                       style: theme.textTheme.titleMedium,
                     ),
                     const SettingsClubCard(),
+                    const SizedBox(
+                      height: 24,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.push('/clubs');
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStatePropertyAll(theme.colorScheme.surface),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Find clubs'),
+                          Icon(Icons.chevron_right),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
