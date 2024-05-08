@@ -29,11 +29,28 @@ class FormSaveButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
+
+    Color? cancelBackgroundColorResolver(states) {
+      if (states.contains(MaterialState.disabled)) {
+        return theme.colorScheme.primary.withAlpha(128);
+      }
+      return theme.colorScheme.primary;
+    }
+
+    Color? saveBackgroundColorResolver(states) {
+      if (states.contains(MaterialState.disabled)) {
+        return theme.colorScheme.secondary.withAlpha(128);
+      }
+      return theme.colorScheme.secondary;
+    }
+
     return Row(
       children: [
         Expanded(
           child: ElevatedButton(
             style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.resolveWith(
+                  cancelBackgroundColorResolver),
               overlayColor: getMaterialStateOverlayColor(theme),
               shape: MaterialStateProperty.resolveWith(
                 (states) => RoundedRectangleBorder(
@@ -41,11 +58,11 @@ class FormSaveButton extends StatelessWidget {
                 ),
               ),
             ),
-            onPressed: () {
-              if (!loading) {
-                onCancel?.call();
-              }
-            },
+            onPressed: loading
+                ? null
+                : () {
+                    onCancel?.call();
+                  },
             child: const Text('Cancel'),
           ),
         ),
@@ -53,8 +70,7 @@ class FormSaveButton extends StatelessWidget {
           child: ElevatedButton(
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.resolveWith(
-                (states) => theme.colorScheme.secondary,
-              ),
+                  saveBackgroundColorResolver),
               overlayColor: getMaterialStateOverlayColor(theme),
               shape: MaterialStateProperty.resolveWith(
                 (states) => RoundedRectangleBorder(
@@ -62,11 +78,11 @@ class FormSaveButton extends StatelessWidget {
                 ),
               ),
             ),
-            onPressed: () {
-              if (!loading) {
-                onSave?.call();
-              }
-            },
+            onPressed: loading
+                ? null
+                : () {
+                    onSave?.call();
+                  },
             child: const Text('Save'),
           ),
         ),
