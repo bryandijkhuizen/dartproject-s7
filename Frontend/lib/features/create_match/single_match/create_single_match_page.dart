@@ -27,9 +27,6 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
   bool is301Match = true;
   bool is501Match = false;
 
-  bool bullOffStart = true;
-  bool randomStart = false;
-
   String playerOne = "";
   String playerTwo = "";
 
@@ -64,35 +61,34 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
   Future<void> submitForm() async {
     String location = _locationController.text;
 
-    DateTime matchDateTime = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedTime.hour, selectedTime.minute);
-    
-    if (location.isNotEmpty && playerOne.isNotEmpty && playerTwo.isNotEmpty){
-      try {
-        await Supabase.instance.client
-          .from('match')
-          .upsert({
-            'set_target': setAmount,
-            'leg_target': legAmount,
-            'starting_score': is301Match ? 301 : 501,
-            'player_1_id': playerOne,
-            'player_2_id': playerTwo,
-            'date': matchDateTime.toString(),
-            'location': location,
-          });
+    DateTime matchDateTime = DateTime(selectedDate.year, selectedDate.month,
+        selectedDate.day, selectedTime.hour, selectedTime.minute);
 
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => ConfirmationPage(
-                location: location,
-                matchDateTime: matchDateTime,
-                playerOne: playerOne,
-                playerTwo: playerTwo,
-                legAmount: legAmount,
-                setAmount: setAmount,
-                is301Match: is301Match,
-              ),
+    if (location.isNotEmpty && playerOne.isNotEmpty && playerTwo.isNotEmpty) {
+      try {
+        await Supabase.instance.client.from('match').upsert({
+          'set_target': setAmount,
+          'leg_target': legAmount,
+          'starting_score': is301Match ? 301 : 501,
+          'player_1_id': playerOne,
+          'player_2_id': playerTwo,
+          'date': matchDateTime.toString(),
+          'location': location,
+        });
+
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ConfirmationPage(
+              location: location,
+              matchDateTime: matchDateTime,
+              playerOne: playerOne,
+              playerTwo: playerTwo,
+              legAmount: legAmount,
+              setAmount: setAmount,
+              is301Match: is301Match,
             ),
-          );
+          ),
+        );
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -132,232 +128,188 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            'Location',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              Row(children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'Location',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: _locationController,
+                          decoration: const InputDecoration(
+                            labelText: 'Enter the location of the match',
+                            border: OutlineInputBorder(),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextField(
-                            controller: _locationController,
-                            decoration: const InputDecoration(
-                              labelText: 'Enter the location of the match',
-                              border: OutlineInputBorder(),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'Date',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      DatePicker(onDateSelected: updateSelectedDate),
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'Time',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      TimePicker(onTimeSelected: updateSelectedTime),
+                    ],
+                  ),
+                ),
+                Expanded(
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'Duration (best of)',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              onChanged: (value) {
+                                setState(() {
+                                  legAmount = int.tryParse(value) ?? 0;
+                                });
+                              },
+                              decoration: const InputDecoration(
+                                labelText: 'Leg amount',
+                                border: OutlineInputBorder(),
+                              ),
+                              keyboardType: TextInputType.number,
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
                             ),
                           ),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            'Date',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          const SizedBox(width: 20),
+                          const Text(
+                            'Legs',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
-                        ),
-                        DatePicker(onDateSelected: updateSelectedDate),
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            'Time',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          Checkbox(
+                            value: useLegDuration,
+                            onChanged: (value) {
+                              setState(() {
+                                useLegDuration = value!;
+                              });
+                            },
                           ),
-                        ),
-                        TimePicker(onTimeSelected: updateSelectedTime),
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            'Match type',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Checkbox(
-                                value: is301Match,
-                                onChanged: (value) {
-                                  setState(() {
-                                    is301Match = value!;
-                                    if (is301Match) {
-                                      is501Match = false;
-                                    }
-                                  });
-                                },
-                              ),
-                              const Text(
-                                '301',
-                                style: TextStyle(color: Colors.white, fontSize: 16),
-                              ),
-                              const SizedBox(width: 20),
-                              Checkbox(
-                                value: is501Match,
-                                onChanged: (value) {
-                                  setState(() {
-                                    is501Match = value!;
-                                    if (is501Match) {
-                                      is301Match = false;
-                                    }
-                                  });
-                                },
-                              ),
-                              const Text(
-                                '501',
-                                style: TextStyle(color: Colors.white, fontSize: 16),
-                              ),
-                            ],
-                          ),
-                        ),
-                    
-                      ],
+                          const SizedBox(width: 250),
+                        ],
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            'Duration (best of)',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              onChanged: (value) {
+                                setState(() {
+                                  setAmount = int.tryParse(value) ?? 0;
+                                });
+                              },
+                              decoration: const InputDecoration(
+                                labelText: 'Set amount',
+                                border: OutlineInputBorder(),
+                              ),
+                              keyboardType: TextInputType.number,
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  onChanged: (value) {
-                                    setState(() {
-                                      legAmount = int.tryParse(value) ?? 0;
-                                    });
-                                  },
-                                  decoration: const InputDecoration(
-                                    labelText: 'Leg amount',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.digitsOnly
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 20),
-                              const Text(
-                                'Legs',
-                                style: TextStyle(color: Colors.white, fontSize: 16),
-                              ),
-                              Checkbox(
-                                value: useLegDuration,
-                                onChanged: (value) {
-                                  setState(() {
-                                    useLegDuration = value!;
-                                  });
-                                },
-                              ),
-                              const SizedBox(width: 250),
-                            ],
+                          const SizedBox(width: 20),
+                          const Text(
+                            'Sets',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  onChanged: (value) {
-                                    setState(() {
-                                      setAmount = int.tryParse(value) ?? 0;
-                                    });
-                                  },
-                                  decoration: const InputDecoration(
-                                    labelText: 'Set amount',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.digitsOnly
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 20),
-                              const Text(
-                                'Sets',
-                                style: TextStyle(color: Colors.white, fontSize: 16),
-                              ),
-                              Checkbox(
-                                value: useSetDuration,
-                                onChanged: (value) {
-                                  setState(() {
-                                    useSetDuration = value!;
-                                  });
-                                },
-                              ),
-                              const SizedBox(width: 250),
-                            ],
+                          Checkbox(
+                            value: useSetDuration,
+                            onChanged: (value) {
+                              setState(() {
+                                useSetDuration = value!;
+                              });
+                            },
                           ),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            'Starting method',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          const SizedBox(width: 250),
+                        ],
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'Match type',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: is301Match,
+                            onChanged: (value) {
+                              setState(() {
+                                is301Match = value!;
+                                if (is301Match) {
+                                  is501Match = false;
+                                }
+                              });
+                            },
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Checkbox(
-                                value: bullOffStart,
-                                onChanged: (value) {
-                                  setState(() {
-                                    bullOffStart = value!;
-                                    if (bullOffStart) {
-                                      randomStart = false;
-                                    }
-                                  });
-                                },
-                              ),
-                              const Text(
-                                'Bull-off',
-                                style: TextStyle(color: Colors.white, fontSize: 16),
-                              ),
-                              const SizedBox(width: 20),
-                              Checkbox(
-                                value: randomStart,
-                                onChanged: (value) {
-                                  setState(() {
-                                    randomStart = value!;
-                                    if (randomStart) {
-                                      bullOffStart = false;
-                                    }
-                                  });
-                                },
-                              ),
-                              const Text(
-                                'Random',
-                                style: TextStyle(color: Colors.white, fontSize: 16),
-                              ),
-                            ],
+                          const Text(
+                            '301',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
-                        )
-                      ],
-                    )
-                  ),
-                ]
-              ),
+                          const SizedBox(width: 20),
+                          Checkbox(
+                            value: is501Match,
+                            onChanged: (value) {
+                              setState(() {
+                                is501Match = value!;
+                                if (is501Match) {
+                                  is301Match = false;
+                                }
+                              });
+                            },
+                          ),
+                          const Text(
+                            '501',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                )),
+              ]),
               const Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Column(
@@ -365,7 +317,8 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                   children: [
                     Text(
                       'Select players',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -380,10 +333,10 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFCD0612),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8, horizontal: 12),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+                      borderRadius: BorderRadius.circular(8)),
                 ),
                 onPressed: submitForm,
                 child: const Text(
