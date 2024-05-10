@@ -10,7 +10,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/features/setup_match/start_match.dart';
 import 'package:darts_application/features/setup_match/match_list_widget.dart';
 
-
 Widget getPlaceholderComponent(
     String currentRoute, List<String> routes, BuildContext context) {
   return Center(
@@ -69,12 +68,7 @@ final router = GoRouter(
                       // Ignore this for now
                       return getPlaceholderComponent(
                           '/',
-                          [
-                            '/statistics',
-                            '/matches',
-                            '/settings',
-                            '/gameplay'
-                          ],
+                          ['/statistics', '/matches', '/settings', '/gameplay'],
                           context);
                     },
                   ),
@@ -85,8 +79,19 @@ final router = GoRouter(
                 routes: <RouteBase>[
                   GoRoute(
                     path: '/gameplay',
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: ':matchId',
+                        builder: (context, state) {
+                          final matchId = state.pathParameters['matchId']!;
+                          return GameplayView(matchId: matchId);
+                        },
+                      ),
+                    ],
                     // ignore: prefer_const_constructors
-                    builder: (context, state) => GameplayView(matchId: '1',),
+                    builder: (context, state) => GameplayView(
+                      matchId: '1',
+                    ),
                   ),
                 ],
               ),
@@ -175,7 +180,9 @@ final router = GoRouter(
                   GoRoute(
                     path: '/gameplay',
                     // ignore: prefer_const_constructors
-                    builder: (context, state) => GameplayView(matchId: '1',),
+                    builder: (context, state) => GameplayView(
+                      matchId: '1',
+                    ),
                   ),
                 ],
               ),
