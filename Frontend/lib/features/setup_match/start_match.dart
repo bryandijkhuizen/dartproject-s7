@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/features/setup_match/select_starting_player.dart';
 
@@ -177,10 +178,7 @@ class _StartMatchState extends State<StartMatch> {
               ElevatedButton(
                 style: buttonStyles['notJoined'],
                 onPressed: () {
-                  _pageController.nextPage(
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeInOut,
-                  );
+                  context.go('/gameplay/${widget.matchId}}');
                 },
                 child: const Text('Start Match'),
               ),
