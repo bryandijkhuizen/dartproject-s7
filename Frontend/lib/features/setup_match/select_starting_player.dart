@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/match.dart';
 import 'dart:math';
@@ -29,6 +30,10 @@ class _SelectStartingPlayerPageWidgetState
   bool player1Selected = false;
   bool player2Selected = false;
   Random random = Random();
+
+  void redirecToGameplay(matchId) {
+    context.go('/gameplay/$matchId');
+  }
 
   Future<void> updateStartingPlayer(playerId, matchId) async {
     await Supabase.instance.client
@@ -107,6 +112,7 @@ class _SelectStartingPlayerPageWidgetState
                     ),
                   ),
                 );
+                redirecToGameplay(widget.matchDetails.id);
               },
               style: widget.buttonStyles['random'],
               child: const Text('Random'),
@@ -132,6 +138,8 @@ class _SelectStartingPlayerPageWidgetState
                     ),
                   ),
                 );
+
+                redirecToGameplay(widget.matchDetails.id);
               },
               style: widget.buttonStyles['notJoined'],
               child: const Text('Confirm'),
