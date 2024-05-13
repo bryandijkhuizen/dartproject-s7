@@ -3,7 +3,7 @@ import 'package:darts_application/features/app_router/app_router_redirect.dart';
 import 'package:darts_application/features/auth/auth_notifier.dart';
 import 'package:darts_application/features/auth/auth_view.dart';
 import 'package:darts_application/helpers.dart';
-import 'package:darts_application/features/gameplay/gameplay_view.dart';
+import 'package:darts_application/features/gameplay//views/match_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -84,12 +84,12 @@ final router = GoRouter(
                         path: ':matchId',
                         builder: (context, state) {
                           final matchId = state.pathParameters['matchId']!;
-                          return GameplayView(matchId: matchId);
+                          return MatchView(matchId: matchId);
                         },
                       ),
                     ],
                     // ignore: prefer_const_constructors
-                    builder: (context, state) => GameplayView(
+                    builder: (context, state) => MatchView(
                       matchId: '1',
                     ),
                   ),
@@ -184,12 +184,12 @@ final router = GoRouter(
                         path: ':matchId',
                         builder: (context, state) {
                           final matchId = state.pathParameters['matchId']!;
-                          return GameplayView(matchId: matchId);
+                          return MatchView(matchId: matchId);
                         },
                       ),
                     ],
                     // ignore: prefer_const_constructors
-                    builder: (context, state) => GameplayView(
+                    builder: (context, state) => MatchView(
                       matchId: '1',
                     ),
                   ),
