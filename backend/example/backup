@@ -1,0 +1,613 @@
+import 'package:flutter/material.dart';
+// ignore: implementation_imports
+import 'package:backend/src/dart_game_service.dart'; // Verwijzing naar je service
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class EndOfMatchView extends StatelessWidget {
+  final String matchId;
+  final Function() onQuitAndSave;
+
+  const EndOfMatchView({
+    super.key,
+    required this.matchId,
+    required this.onQuitAndSave,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _fetchMatchResult(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else {
+          final winner = snapshot.data?['winner'];
+          final winnerScore = snapshot.data?['winner_score'];
+          final loserScore = snapshot.data?['loser_score'];
+          return Scaffold(
+            backgroundColor: const Color(0xFF060606),
+            body: Center(
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.white.withOpacity(0.05),
+                      spreadRadius: 5,
+                      blurRadius: 7,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Einde van de match',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      '$winner wint!',
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.greenAccent,
+                      ),
+                    ),
+                    Text(
+                      'Score: $winnerScore - $loserScore',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: onQuitAndSave,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                      ),
+                      child: const Text(
+                        'Afsluiten en opslaan',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Future<Map<String, dynamic>> _fetchMatchResult() async {
+    try {
+      final gameService = DartGameService(Supabase.instance.client);
+      final matchResult = await gameService.getEndOfMatchResult(matchId);
+      return matchResult;
+    } catch (e) {
+      throw Exception('Failed to fetch match result: $e');
+    }
+  }
+}
+
+
+import 'package:darts_application/stores/match_store.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:provider/provider.dart';
+import 'score_input.dart';
+import 'match_status.dart';
+import 'end_of_match_view.dart';
+// ignore: implementation_imports
+import 'package:backend/src/dart_game_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class GameplayView extends StatefulWidget {
+  final String matchId;
+
+  const GameplayView({super.key, required this.matchId});
+
+  @override
+  _GameplayViewState createState() => _GameplayViewState();
+}
+
+class _GameplayViewState extends State<GameplayView> {
+  late String currentLegId;
+  late String currentPlayerId;
+  late DartGameService _gameService;
+
+  @override
+  void initState() {
+    super.initState();
+    currentLegId = '';
+    currentPlayerId = '';
+    _gameService = DartGameService(Supabase.instance.client);
+    _fetchGameDetails();
+  }
+
+  Future<void> _fetchGameDetails() async {
+    try {
+      final legStand = await _gameService.getCurrentLegStand(widget.matchId);
+
+      // Controleren op legId
+      if (legStand.isNotEmpty) {
+        currentLegId = legStand.keys.first;
+      } else {
+        throw DartGameException('Failed to fetch leg stand');
+      }
+
+      final setStand = await _gameService.getCurrentSetStand(widget.matchId);
+
+      // Controleren op playerId
+      if (setStand.isNotEmpty) {
+        final currentSetId = setStand.keys.first;
+        currentPlayerId = setStand[currentSetId]! > legStand[currentLegId]!
+            ? currentSetId
+            : setStand.keys.last;
+      } else {
+        throw DartGameException('Failed to fetch set stand');
+      }
+
+      setState(() {});
+
+      // Check of de wedstrijd voorbij is
+      final endOfMatchResult =
+          await _gameService.getEndOfMatchResult(widget.matchId);
+      final loserName = endOfMatchResult['loser_name'];
+      if (loserName != null && loserName.isNotEmpty) {
+        // Navigeer naar de EndOfMatchView
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => EndOfMatchView(
+            matchId: widget.matchId,
+            onQuitAndSave: () {
+              // Voer hier de logica uit om de wedstrijd af te sluiten en op te slaan
+            },
+          ),
+        ));
+      }
+    } catch (e) {
+      print('Failed to fetch game details: $e');
+      // Handle errors
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    MatchStore matchStore = context.read();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Gameplay', style: TextStyle(color: Colors.white)),
+      ),
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/bg.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Column(
+            children: [
+              Expanded(
+                child: MatchStatus(matchId: widget.matchId),
+              ),
+              Expanded(
+                child: ScoreInput(
+                  matchId: widget.matchId,
+                  currentLegId: currentLegId,
+                  currentPlayerId: currentPlayerId, 
+                  currentSetId: '',
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+// ignore_for_file: avoid_print
+
+import 'dart:async';
+import 'package:darts_application/stores/match_store.dart';
+import 'package:flutter/material.dart';
+// ignore: implementation_imports
+import 'package:backend/src/dart_game_service.dart'; // Update the import path as needed
+import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class MatchStatus extends StatefulWidget {
+  final String matchId;
+
+  const MatchStatus({super.key, required this.matchId});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _MatchStatusState createState() => _MatchStatusState();
+}
+
+class _MatchStatusState extends State<MatchStatus> {
+  late final DartGameService _dartGameService;
+  late StreamSubscription<List<Map<String, dynamic>>> _matchSubscription;
+  late StreamSubscription<List<Map<String, dynamic>>> _turnSubscription;
+  Map<String, dynamic>? _matchData;
+  int playerOneScore = 0;
+  int playerTwoScore = 0;
+  String legStand = "0-0";
+  String setStand = "0-0";
+
+  @override
+  void initState() {
+    super.initState();
+    _dartGameService = DartGameService(Supabase.instance.client);
+    _loadMatchDetails();
+    _subscribeToMatchChanges();
+    _subscribeToTurnChanges();
+  }
+
+  @override
+  void dispose() {
+    _matchSubscription.cancel();
+    _turnSubscription.cancel();
+    super.dispose();
+  }
+
+  void _loadMatchDetails() async {
+    try {
+      final response = await _dartGameService.getMatchDetails(widget.matchId);
+      if (response != null) {
+        setState(() {
+          _matchData = response;
+          playerOneScore = _matchData?['starting_score'] ?? 0;
+          playerTwoScore = _matchData?['starting_score'] ?? 0;
+        });
+      } else {
+        print("No data returned from getMatchDetails.");
+      }
+    } catch (e) {
+      print('Error loading match details: $e');
+    }
+  }
+
+  void _subscribeToMatchChanges() {
+    _matchSubscription =
+        _dartGameService.subscribeToMatchChanges(widget.matchId).listen((data) {
+      if (data.isNotEmpty) {
+        _mergeMatchData(data.first);
+      }
+    }, onError: (error) {
+      print('Error subscribing to match changes: $error');
+    });
+  }
+
+  void _subscribeToTurnChanges() {
+    _turnSubscription =
+        _dartGameService.subscribeToTurnChanges(widget.matchId).listen((turn) {
+      if (turn.isNotEmpty) {
+        _updateScores(turn);
+      }
+    }, onError: (error) {
+      print('Error subscribing to turn changes: $error');
+    });
+  }
+
+  void _updateScores(List<Map<String, dynamic>> turns) {
+    setState(() {
+      for (var turn in turns) {
+        var playerId = turn['player_id'].toString();
+        var score = int.parse(turn['score'].toString());
+        if (playerId == _matchData?['player_1_id'].toString()) {
+          playerOneScore -= score;
+        } else if (playerId == _matchData?['player_2_id'].toString()) {
+          playerTwoScore -= score;
+        }
+      }
+    });
+  }
+
+  void _mergeMatchData(Map<String, dynamic> newData) {
+    setState(() {
+      _matchData = {...?_matchData, ...newData};
+      legStand = newData['leg_stand'] ?? legStand;
+      setStand = newData['set_stand'] ?? setStand;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+  MatchStore matchStore = context.read<MatchStore>();
+    return _matchData != null
+        ? buildMatchUI()
+        : const Center(child: CircularProgressIndicator());
+  }
+
+  Widget buildMatchUI() {
+    final isPlayerOneTurn =
+        _matchData!['current_turn'] == _matchData!['player_1_id'];
+    final isStartingPlayer =
+        _matchData!['starting_player_id'] == _matchData!['player_1_id'];
+    final playerOneName = _matchData!['player_1_name'] ?? "Unknown";
+    final playerTwoName = _matchData!['player_2_name'] ?? "Unknown";
+    final setTarget = _matchData!['set_target'];
+
+    return Container(
+      color: Colors.transparent,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Display set stand only if setTarget is more than 1
+          if (setTarget > 1)
+            Text(
+              setStand,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold),
+            ),
+          Text(
+            legStand,
+            style: const TextStyle(
+                color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                buildPlayerScore(playerOneName, playerOneScore, isPlayerOneTurn,
+                    isStartingPlayer),
+                Container(
+                  width: 1, // Changed width to 1
+                  color: Colors.white,
+                  margin: const EdgeInsets.only(
+                      top: 116,
+                      bottom:
+                          12), // Adjusted margin to control length of the vertical divider
+                ),
+                buildPlayerScore(playerTwoName, playerTwoScore,
+                    !isPlayerOneTurn, !isStartingPlayer),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildPlayerScore(
+      String name, int score, bool isCurrentTurn, bool isStartingPlayer) {
+    return Expanded(
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(width: 10), // Adjust the width of the spacer
+              Text(
+                name.toUpperCase(),
+                style: TextStyle(
+                  color: isCurrentTurn ? Colors.yellow : Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (isStartingPlayer)
+                const Icon(Icons.star,
+                    color: Colors.yellow,
+                    size: 20), // An indicator for the starting player
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            score.toString(),
+            style: TextStyle(
+              color: isCurrentTurn ? Colors.yellow : Colors.white,
+              fontSize: 52,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Container(
+            height: 1,
+            color: Colors.white,
+            margin: const EdgeInsets.only(top: 4, bottom: 8),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+import 'package:flutter/material.dart';
+// ignore: implementation_imports
+import 'package:backend/src/dart_game_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class ScoreInput extends StatefulWidget {
+  final String matchId;
+  final String currentLegId;
+  final String currentSetId;
+  final String currentPlayerId;
+
+  const ScoreInput({
+    super.key,
+    required this.matchId,
+    required this.currentLegId,
+    required this.currentSetId,
+    required this.currentPlayerId,
+  });
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _ScoreInputState createState() => _ScoreInputState();
+}
+
+class _ScoreInputState extends State<ScoreInput> {
+  final TextEditingController _controller = TextEditingController();
+  late final DartGameService gameService;
+
+  @override
+  void initState() {
+    super.initState();
+    gameService = DartGameService(Supabase.instance.client);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: _removeLastInput,
+            ),
+            Expanded(
+              child: TextField(
+                controller: _controller,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white, fontSize: 22),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Enter Score',
+                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                ),
+                onSubmitted: (score) => _submitScore(),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.check, color: Colors.white),
+              onPressed: _submitScore,
+            ),
+          ],
+        ),
+        _buildNumPad(),
+      ],
+    );
+  }
+
+  Widget _buildNumPad() {
+    final labels = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'T', '0', 'D'];
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        childAspectRatio: 2,
+      ),
+      itemCount: labels.length,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (BuildContext context, int index) {
+        return ScoreButton(
+          label: labels[index],
+          onTap: () => _handleNumPadInput(labels[index]),
+          backgroundColor: const Color(0xFFCD0612),
+        );
+      },
+    );
+  }
+
+  void _handleNumPadInput(String input) {
+    setState(() {
+      _controller.text += input;
+    });
+  }
+
+  void _removeLastInput() {
+    setState(() {
+      if (_controller.text.isNotEmpty) {
+        _controller.text = _controller.text.substring(0, _controller.text.length - 1);
+      }
+    });
+  }
+
+  void _submitScore() async {
+    String scoreInput = _controller.text.trim();
+    if (scoreInput.isNotEmpty && _isNumeric(scoreInput)) {
+      try {
+        await gameService.enterScore(
+          legId: widget.currentLegId,
+          playerId: widget.currentPlayerId,
+          scoreInput: scoreInput,
+        );
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Score entered successfully')),
+        );
+        _controller.clear();
+      } on DartGameException catch (e) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message)),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid score')),
+      );
+    }
+  }
+
+  bool _isNumeric(String str) {
+    return double.tryParse(str) != null;
+  }
+}
+
+class ScoreButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  final Color backgroundColor;
+
+  const ScoreButton({
+    super.key,
+    required this.label,
+    required this.onTap,
+    required this.backgroundColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+}
