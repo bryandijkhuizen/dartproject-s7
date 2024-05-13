@@ -1,39 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:darts_application/models/match.dart';
+import 'package:darts_application/models/player.dart';
 
 class MatchListWidget extends StatelessWidget {
   const MatchListWidget({super.key});
 
-  Future<List<dynamic>> fetchMatches() async {
-    // filter on data
-    final matchResponse = await Supabase.instance.client
-        .from('match')
-        .select()
-        .order('date', ascending: true);
-
-    List<String> playerIds = [];
-    for (var match in matchResponse) {
-      playerIds.add(match['player_1_id']);
-      playerIds.add(match['player_2_id']);
-    }
+  Future<List<MatchModel>> fetchMatches() async {
+    final matchResponse = await Supabase.instance.client.from('match').select();
+    List<MatchModel> matches = matchResponse
+        .map<MatchModel>((match) => MatchModel.fromJson(match))
+        .toList();
 
     final userResponse = await Supabase.instance.client.from('user').select();
+    List<PlayerModel> players = userResponse
+        .map<PlayerModel>((user) => PlayerModel.fromJson(user))
+        .toList();
 
-    // Map player IDs to last names for easy access
-    Map<String, String> players = {};
-    for (var user in userResponse) {
-      players[user['id']] = user['last_name'];
-    }
-
-    // Map player IDs to last names for each match
-    List<dynamic> matches = [];
-    for (var match in matchResponse) {
-      matches.add({
-        'id': match['id'],
-        'player_1_last_name': players[match['player_1_id']],
-        'player_2_last_name': players[match['player_2_id']],
-      });
+    for (var match in matches) {
+      match.player1LastName =
+          players.firstWhere((player) => player.id == match.player1Id).lastName;
+      match.player2LastName =
+          players.firstWhere((player) => player.id == match.player2Id).lastName;
     }
 
     return matches;
@@ -52,7 +41,7 @@ class MatchListWidget extends StatelessWidget {
             fit: BoxFit.cover,
           ),
         ),
-        child: FutureBuilder<List<dynamic>>(
+        child: FutureBuilder<List<MatchModel>>(
           future: fetchMatches(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -65,11 +54,9 @@ class MatchListWidget extends StatelessWidget {
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
                   final match = snapshot.data![index];
-                  final matchId = match['id'];
-                  final player1LastName =
-                      match['player_1_last_name'] ?? 'Unknown';
-                  final player2LastName =
-                      match['player_2_last_name'] ?? 'Unknown';
+                  final matchId = match.id;
+                  final player1LastName = match.player1LastName;
+                  final player2LastName = match.player2LastName;
                   return Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 4.0, horizontal: 16.0),
