@@ -1,4 +1,7 @@
+import 'package:darts_application/stores/match_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:provider/provider.dart';
 import 'score_input.dart';
 import 'match_status.dart';
 import 'end_of_match_view.dart';
@@ -77,6 +80,7 @@ class _GameplayViewState extends State<GameplayView> {
 
   @override
   Widget build(BuildContext context) {
+    MatchStore matchStore = context.read();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Gameplay', style: TextStyle(color: Colors.white)),
