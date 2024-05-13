@@ -1,5 +1,4 @@
 import 'package:backend/backend.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class FinishCalculator {
   List<List<String>> suggestions = [];
