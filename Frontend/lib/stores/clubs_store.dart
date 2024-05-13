@@ -12,7 +12,7 @@ abstract class _ClubsStore with Store {
   final UserStore _userStore;
 
   _ClubsStore(this._supabase, this._userStore) {
-    _fetchUserClubs();
+    fetchUserClubs();
   }
 
   @observable
@@ -22,7 +22,7 @@ abstract class _ClubsStore with Store {
   List<Club> assignedClubs = [];
 
   @action
-  Future<void> _fetchUserClubs() async {
+  Future<void> fetchUserClubs() async {
     loading = true;
     try {
       final response = await _supabase.rpc('get_user_clubs',

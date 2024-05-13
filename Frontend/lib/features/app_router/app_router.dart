@@ -152,23 +152,6 @@ final router = GoRouter(
 
               // Mobile user settings
               settingsRoute,
-
-              StatefulShellBranch(
-                routes: <RouteBase>[
-                  GoRoute(
-                    path: '/clubs',
-                    builder: (context, state) => const Placeholder(),
-                    routes: <RouteBase>[
-                      GoRoute(
-                        path: ':id',
-                        builder: (context, state) {
-                          return Placeholder();
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
             ]
           // Desktop branches
           : [

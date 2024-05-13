@@ -41,12 +41,12 @@ mixin _$ClubsStore on _ClubsStore, Store {
     });
   }
 
-  late final _$_fetchUserClubsAsyncAction =
-      AsyncAction('_ClubsStore._fetchUserClubs', context: context);
+  late final _$fetchUserClubsAsyncAction =
+      AsyncAction('_ClubsStore.fetchUserClubs', context: context);
 
   @override
-  Future<void> _fetchUserClubs() {
-    return _$_fetchUserClubsAsyncAction.run(() => super._fetchUserClubs());
+  Future<void> fetchUserClubs() {
+    return _$fetchUserClubsAsyncAction.run(() => super.fetchUserClubs());
   }
 
   @override

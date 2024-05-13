@@ -22,6 +22,7 @@ class SettingsClubCard extends StatelessWidget {
         child: Text('You are not a club member'),
       );
     }
+
     return ListView.separated(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
@@ -43,16 +44,39 @@ class SettingsClubCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final clubsStore = context.read<ClubsStore>();
+    ThemeData theme = Theme.of(context);
     return Observer(
       builder: (_) {
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: clubsStore.loading
-                ? getLoadingIndicator()
-                : getUserClubs(clubsStore.assignedClubs),
+        return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Assigned clubs',
+                style: theme.textTheme.titleMedium,
+              ),
+              IconButton(
+                onPressed: () {
+                  if (!clubsStore.loading) {
+                    clubsStore.fetchUserClubs();
+                  }
+                },
+                icon: Icon(
+                  Icons.refresh,
+                  color: theme.colorScheme.onPrimary,
+                ),
+              ),
+            ],
           ),
-        );
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: clubsStore.loading
+                  ? getLoadingIndicator()
+                  : getUserClubs(clubsStore.assignedClubs),
+            ),
+          )
+        ]);
       },
     );
   }
