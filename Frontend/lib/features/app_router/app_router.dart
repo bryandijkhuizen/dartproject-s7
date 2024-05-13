@@ -179,6 +179,15 @@ final router = GoRouter(
                 routes: <RouteBase>[
                   GoRoute(
                     path: '/gameplay',
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: ':matchId',
+                        builder: (context, state) {
+                          final matchId = state.pathParameters['matchId']!;
+                          return GameplayView(matchId: matchId);
+                        },
+                      ),
+                    ],
                     // ignore: prefer_const_constructors
                     builder: (context, state) => GameplayView(
                       matchId: '1',
