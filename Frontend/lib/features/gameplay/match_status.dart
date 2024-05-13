@@ -1,9 +1,11 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
+import 'package:darts_application/stores/match_store.dart';
 import 'package:flutter/material.dart';
 // ignore: implementation_imports
 import 'package:backend/src/dart_game_service.dart'; // Update the import path as needed
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MatchStatus extends StatefulWidget {
@@ -105,6 +107,7 @@ class _MatchStatusState extends State<MatchStatus> {
 
   @override
   Widget build(BuildContext context) {
+MatchStore matchStore = context.read<MatchStore>();
     return _matchData != null
         ? buildMatchUI()
         : const Center(child: CircularProgressIndicator());
