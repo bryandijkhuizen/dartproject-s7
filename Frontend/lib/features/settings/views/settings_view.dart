@@ -81,10 +81,6 @@ class SettingsViewState extends State<SettingsView> {
                     const SizedBox(
                       height: 12,
                     ),
-                    Text(
-                      'Assigned clubs',
-                      style: theme.textTheme.titleMedium,
-                    ),
                     const SettingsClubCard(),
                     const SizedBox(
                       height: 24,
