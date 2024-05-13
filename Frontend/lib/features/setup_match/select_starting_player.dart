@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:darts_application/models/match.dart';
 import 'dart:math';
 
 class SelectStartingPlayerPageWidget extends StatefulWidget {
   final double buttonHeight;
   final double startMatchPosition;
   final Map<String, ButtonStyle> buttonStyles;
-  final Map<String, dynamic> matchDetails;
+  final MatchModel matchDetails;
 
   const SelectStartingPlayerPageWidget({
     super.key,
@@ -18,9 +18,10 @@ class SelectStartingPlayerPageWidget extends StatefulWidget {
   });
 
   @override
-  // ignore: library_private_types_in_public_api
   _SelectStartingPlayerPageWidgetState createState() =>
       _SelectStartingPlayerPageWidgetState();
+
+  Future<void> updateStartingPlayer(String playerId, String matchId) async {}
 }
 
 class _SelectStartingPlayerPageWidgetState
@@ -29,9 +30,10 @@ class _SelectStartingPlayerPageWidgetState
   bool player2Selected = false;
   Random random = Random();
 
-  void redirecToGameplay(matchId) {
-    print('Redirecting to gameplay');
-    context.go('/gameplay/$matchId');
+  Future<void> updateStartingPlayer(playerId, matchId) async {
+    await Supabase.instance.client
+        .from('match')
+        .update({'starting_player_id': playerId}).match({'id': matchId});
   }
 
   @override
@@ -56,8 +58,7 @@ class _SelectStartingPlayerPageWidgetState
                 color: Colors.white,
               ),
             ),
-            SizedBox(
-                height: widget.buttonHeight * 0.15), // Space below the heading
+            SizedBox(height: widget.buttonHeight * 0.15),
             ElevatedButton(
               onPressed: () {
                 setState(() {
@@ -68,7 +69,7 @@ class _SelectStartingPlayerPageWidgetState
               style: player1Selected
                   ? widget.buttonStyles['joined']
                   : widget.buttonStyles['notJoined'],
-              child: Text(widget.matchDetails['player_1_last_name']),
+              child: Text(widget.matchDetails.player1LastName),
             ),
             SizedBox(
                 height: widget.buttonHeight * 0.15), // Space between buttons
@@ -82,27 +83,23 @@ class _SelectStartingPlayerPageWidgetState
               style: player2Selected
                   ? widget.buttonStyles['joined']
                   : widget.buttonStyles['notJoined'],
-              child: Text(widget.matchDetails['player_2_last_name']),
+              child: Text(widget.matchDetails.player2LastName),
             ),
             SizedBox(height: widget.buttonHeight * 0.15), // Space
             ElevatedButton(
               onPressed: () async {
                 final playerId = random.nextBool()
-                    ? widget.matchDetails['player_1_id']
-                    : widget.matchDetails['player_2_id'];
+                    ? widget.matchDetails.player1Id
+                    : widget.matchDetails.player2Id;
 
-                // get the according player name with the id
-                final playerName =
-                    playerId == widget.matchDetails['player_1_id']
-                        ? widget.matchDetails['player_1_last_name']
-                        : widget.matchDetails['player_2_last_name'];
+                final playerName = playerId == widget.matchDetails.player1Id
+                    ? widget.matchDetails.player1LastName
+                    : widget.matchDetails.player2LastName;
 
-                await Supabase.instance.client
-                    .from('match')
-                    .update({'starting_player_id': playerId}).match(
-                        {'id': widget.matchDetails['id']});
+                updateStartingPlayer(playerId, widget.matchDetails.id);
 
-                // ignore: use_build_context_synchronously
+                // directly redirect to gameplay here...
+
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -110,8 +107,6 @@ class _SelectStartingPlayerPageWidgetState
                     ),
                   ),
                 );
-
-                redirecToGameplay(widget.matchDetails['id']);
               },
               style: widget.buttonStyles['random'],
               child: const Text('Random'),
@@ -125,24 +120,18 @@ class _SelectStartingPlayerPageWidgetState
             ElevatedButton(
               onPressed: () async {
                 final playerId = player1Selected
-                    ? widget.matchDetails['player_1_id']
-                    : widget.matchDetails['player_2_id'];
+                    ? widget.matchDetails.player1Id
+                    : widget.matchDetails.player2Id;
 
-                await Supabase.instance.client
-                    .from('match')
-                    .update({'starting_player_id': playerId}).match(
-                        {'id': widget.matchDetails['id']});
+                updateStartingPlayer(playerId, widget.matchDetails.id);
 
-                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Starting player selected: ${player1Selected ? widget.matchDetails['player_1_last_name'] : widget.matchDetails['player_2_last_name']}',
+                      'Starting player selected: ${player1Selected ? widget.matchDetails.player1LastName : widget.matchDetails.player2LastName}',
                     ),
                   ),
                 );
-
-                redirecToGameplay(widget.matchDetails['id']);
               },
               style: widget.buttonStyles['notJoined'],
               child: const Text('Confirm'),
