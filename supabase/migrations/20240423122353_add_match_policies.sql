@@ -49,3 +49,40 @@ ON public.user
 AS PERMISSIVE
 FOR UPDATE
 USING (auth.uid() = id);
+
+CREATE POLICY "select_all_sets"
+ON public.set
+AS PERMISSIVE
+FOR SELECT
+USING (true);
+
+CREATE POLICY "update_sets_by_players"
+ON public.set
+AS PERMISSIVE
+FOR UPDATE
+USING (EXISTS (
+    SELECT 1 FROM public.match 
+    WHERE match.id = set.match_id 
+    AND (match.player_1_id = auth.uid() OR match.player_2_id = auth.uid())
+));
+
+CREATE POLICY "create_set_by_players"
+ON public.set
+AS PERMISSIVE
+FOR INSERT
+USING (EXISTS (
+    SELECT 1 FROM public.match 
+    WHERE match.id = set.match_id 
+    AND (match.player_1_id = auth.uid() OR match.player_2_id = auth.uid())
+));
+
+CREATE POLICY "create_leg_by_players"
+ON public.leg
+FOR INSERT
+WITH CHECK (EXISTS (
+    SELECT 1 FROM public.set
+    JOIN public.match ON public.match.id = public.set.match_id
+    WHERE public.set.id = set_id 
+    AND (public.match.player_1_id = auth.uid() OR public.match.player_2_id = auth.uid())
+));
+
