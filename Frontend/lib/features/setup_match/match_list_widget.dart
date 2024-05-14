@@ -31,6 +31,7 @@ class MatchListWidget extends StatelessWidget {
   }
 
   Future<bool> matchAlreadyStarted(matchID) async {
+    print("Checking if match has already started");
     try {
       final response = await Supabase.instance.client
           .from('set')
@@ -80,10 +81,12 @@ class MatchListWidget extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         vertical: 4.0, horizontal: 16.0),
                     child: ElevatedButton(
-                      onPressed: () {
-                        if (matchAlreadyStarted(matchId) == true) {
-                          context.go('/match/$matchId');
+                      onPressed: () async {
+                        if (await matchAlreadyStarted(matchId) == true) {
+                          print("Match already started");
+                          context.go('/gameplay/$matchId');
                         } else {
+                          print("Match not started yet");
                           context.go('/matches/$matchId');
                         }
                       },
