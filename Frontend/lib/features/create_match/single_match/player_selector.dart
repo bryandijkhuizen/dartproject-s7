@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:darts_application/models/club_member.dart';
+import 'dart:convert';
 
 class PlayerSelector extends StatefulWidget {
   final Function(String, String, String, String) onSelectionChanged;
@@ -17,7 +19,7 @@ class _PlayerSelectorState extends State<PlayerSelector> {
   int? currentClub;
   String? clubName;
 
-  Map<String, String> clubPlayerList = {};
+  List<ClubMember> clubMembers = [];
 
   @override
   void initState() {
@@ -27,45 +29,30 @@ class _PlayerSelectorState extends State<PlayerSelector> {
 
   Future<void> fetchClubMembers() async {
     try {
-      final userClub = await Supabase.instance.client
-          .from('user_club')
-          .select()
-          .eq('user_id', Supabase.instance.client.auth.currentUser!.id)
-          .single();
+      final userId = Supabase.instance.client.auth.currentUser!.id;
 
-      final clubInfo = await Supabase.instance.client
-          .from('club')
-          .select()
-          .eq('id', userClub['club_id'])
-          .single();
+      final response = await Supabase.instance.client
+          .rpc('get_club_members', params: {'p_user_id': userId});
 
-      final clubMembers = await Supabase.instance.client
-          .from('user_club')
-          .select()
-          .eq('club_id', userClub['club_id']);
+      final data = response as List<dynamic>;
 
-      Map<String, String> members = {};
-      for (var user in clubMembers) {
-        final memberName = await Supabase.instance.client
-            .from('user')
-            .select()
-            .eq('id', user['user_id'])
-            .single();
-
-        members[user['user_id'].toString()] = memberName['last_name'];
-      }
+      List<ClubMember> members = data.map((row) {
+        return ClubMember.fromJson(row);
+      }).toList();
 
       setState(() {
-        currentClub = userClub['club_id'];
-        clubName = clubInfo['name'];
-        clubPlayerList = members;
+        if (members.isNotEmpty) {
+          currentClub = members[0].clubId;
+          clubName = members[0].clubName;
+        }
+        clubMembers = members;
       });
     } catch (e) {
-      throw Exception(('Failed to fetch users: $e'));
+      print('Error fetching club members: $e');
     }
   }
 
-  void _handleTap(String playerId) {
+  void updateSelected(String playerId) {
     setState(() {
       if (selectedOne == null || selectedOne == playerId) {
         selectedOne = playerId;
@@ -76,11 +63,14 @@ class _PlayerSelectorState extends State<PlayerSelector> {
         selectedTwo = playerId;
       }
 
+      final selectedOneMember = clubMembers.firstWhere((member) => member.userId == selectedOne, orElse: () => ClubMember(userId: '', lastName: '', clubId: 0, clubName: ''));
+      final selectedTwoMember = clubMembers.firstWhere((member) => member.userId == selectedTwo, orElse: () => ClubMember(userId: '', lastName: '', clubId: 0, clubName: ''));
+
       widget.onSelectionChanged(
         selectedOne ?? '',
         selectedTwo ?? '',
-        clubPlayerList[selectedOne] ?? '',
-        clubPlayerList[selectedTwo] ?? ''
+        selectedOneMember.lastName,
+        selectedTwoMember.lastName
       );
     });
   }
@@ -98,11 +88,11 @@ class _PlayerSelectorState extends State<PlayerSelector> {
         ),
         ListView(
           shrinkWrap: true,
-          children: clubPlayerList.entries.map((entry) {
+          children: clubMembers.map((member) {
             return ListTile(
-              title: Text(entry.value),
-              onTap: () => _handleTap(entry.key),
-              selected: entry.key == selectedOne || entry.key == selectedTwo,
+              title: Text(member.lastName),
+              onTap: () => updateSelected(member.userId),
+              selected: member.userId == selectedOne || member.userId == selectedTwo,
             );
           }).toList(),
         ),
