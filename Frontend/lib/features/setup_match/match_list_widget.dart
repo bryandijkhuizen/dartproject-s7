@@ -1,3 +1,5 @@
+// ignore_for_file: unrelated_type_equality_checks
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -26,6 +28,23 @@ class MatchListWidget extends StatelessWidget {
     }
 
     return matches;
+  }
+
+  Future<bool> matchAlreadyStarted(matchID) async {
+    try {
+      final response = await Supabase.instance.client
+          .from('set')
+          .select()
+          .eq('match_id', matchID);
+
+      if (response.isNotEmpty) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      throw Exception('Failed to check if match already started: $e');
+    }
   }
 
   @override
@@ -62,7 +81,11 @@ class MatchListWidget extends StatelessWidget {
                         vertical: 4.0, horizontal: 16.0),
                     child: ElevatedButton(
                       onPressed: () {
-                        context.go('/matches/$matchId');
+                        if (matchAlreadyStarted(matchId) == true) {
+                          context.go('/match/$matchId');
+                        } else {
+                          context.go('/matches/$matchId');
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFCD0612),
