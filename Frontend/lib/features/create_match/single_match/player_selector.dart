@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PlayerSelector extends StatefulWidget {
-  final Function(String, String) onSelectionChanged;
+  final Function(String, String, String, String) onSelectionChanged;
 
   const PlayerSelector({super.key, required this.onSelectionChanged});
 
@@ -10,7 +10,7 @@ class PlayerSelector extends StatefulWidget {
   State<PlayerSelector> createState() => _PlayerSelectorState();
 }
 
-class _PlayerSelectorState extends State<PlayerSelector>{
+class _PlayerSelectorState extends State<PlayerSelector> {
   String? selectedOne;
   String? selectedTwo;
 
@@ -33,7 +33,11 @@ class _PlayerSelectorState extends State<PlayerSelector>{
           .eq('user_id', Supabase.instance.client.auth.currentUser!.id)
           .single();
 
-      final clubInfo = await Supabase.instance.client.from('club').select().eq('id', userClub['club_id']).single(); 
+      final clubInfo = await Supabase.instance.client
+          .from('club')
+          .select()
+          .eq('id', userClub['club_id'])
+          .single();
 
       final clubMembers = await Supabase.instance.client
           .from('user_club')
@@ -43,37 +47,41 @@ class _PlayerSelectorState extends State<PlayerSelector>{
       Map<String, String> members = {};
       for (var user in clubMembers) {
         final memberName = await Supabase.instance.client
-          .from('user')
-          .select()
-          .eq('id', user['user_id'])
-          .single();
-        
-        members[user['user_id'].toString()] = memberName['first_name'] + " " + memberName['last_name'];
+            .from('user')
+            .select()
+            .eq('id', user['user_id'])
+            .single();
+
+        members[user['user_id'].toString()] = memberName['last_name'];
       }
 
-    setState(() {
-      currentClub = userClub['club_id'];
-      clubName = clubInfo['name'];
-      clubPlayerList = members;
-    });
-
+      setState(() {
+        currentClub = userClub['club_id'];
+        clubName = clubInfo['name'];
+        clubPlayerList = members;
+      });
     } catch (e) {
       throw Exception(('Failed to fetch users: $e'));
     }
   }
 
   void _handleTap(String playerId) {
-  setState(() {
-    if (selectedOne == null || selectedOne == playerId) {
-      selectedOne = playerId;
-    } else if (selectedTwo == null || selectedTwo == playerId) {
-      selectedTwo = playerId;
-    } else {
-      selectedOne = selectedTwo;
-      selectedTwo = playerId;
-    }
+    setState(() {
+      if (selectedOne == null || selectedOne == playerId) {
+        selectedOne = playerId;
+      } else if (selectedTwo == null || selectedTwo == playerId) {
+        selectedTwo = playerId;
+      } else {
+        selectedOne = selectedTwo;
+        selectedTwo = playerId;
+      }
 
-    widget.onSelectionChanged(selectedOne ?? '', selectedTwo ?? '');
+      widget.onSelectionChanged(
+        selectedOne ?? '',
+        selectedTwo ?? '',
+        clubPlayerList[selectedOne] ?? '',
+        clubPlayerList[selectedTwo] ?? ''
+      );
     });
   }
 
@@ -100,4 +108,5 @@ class _PlayerSelectorState extends State<PlayerSelector>{
         ),
       ],
     );
-  }}
+  }
+}

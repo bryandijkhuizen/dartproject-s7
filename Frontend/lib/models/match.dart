@@ -6,6 +6,7 @@ class MatchModel {
   final String? location;
   final int setTarget;
   final int legTarget;
+  final int startingScore;
   final String? winnerId;
   final String? startingPlayerId;
   late String player1LastName;
@@ -19,6 +20,7 @@ class MatchModel {
     this.location,
     required this.setTarget,
     required this.legTarget,
+    required this.startingScore,
     this.winnerId,
     this.startingPlayerId,
     required this.player1LastName,
@@ -34,10 +36,25 @@ class MatchModel {
       location: json['location'] ?? 'Unknown',
       setTarget: json['set_target'],
       legTarget: json['leg_target'],
+      startingScore: json['starting_score'],
       winnerId: json['winner_id'] ?? 'Unknown',
       startingPlayerId: json['starting_player_id'] ?? 'Unknown',
       player1LastName: json['player_1_last_name'] ?? 'Unknown',
       player2LastName: json['player_2_last_name'] ?? 'Unknown',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'player_1_id': player1Id,
+      'player_2_id': player2Id,
+      'date': date.toIso8601String(),
+      'location': location,
+      'set_target': setTarget,
+      'leg_target': legTarget,
+      'starting_score': startingScore,
+      'winner_id': winnerId,
+      'starting_player_id': startingPlayerId
+    };
   }
 }
