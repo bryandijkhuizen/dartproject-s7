@@ -9,19 +9,53 @@ part of 'match_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$MatchStore on _MatchStore, Store {
-  late final _$lastFiveScoresAtom =
-      Atom(name: '_MatchStore.lastFiveScores', context: context);
+  late final _$setupCompleteAtom =
+      Atom(name: '_MatchStore.setupComplete', context: context);
 
   @override
-  ObservableList<int> get lastFiveScores {
-    _$lastFiveScoresAtom.reportRead();
-    return super.lastFiveScores;
+  bool get setupComplete {
+    _$setupCompleteAtom.reportRead();
+    return super.setupComplete;
   }
 
   @override
-  set lastFiveScores(ObservableList<int> value) {
-    _$lastFiveScoresAtom.reportWrite(value, super.lastFiveScores, () {
-      super.lastFiveScores = value;
+  set setupComplete(bool value) {
+    _$setupCompleteAtom.reportWrite(value, super.setupComplete, () {
+      super.setupComplete = value;
+    });
+  }
+
+  late final _$lastFiveScoresPlayer1Atom =
+      Atom(name: '_MatchStore.lastFiveScoresPlayer1', context: context);
+
+  @override
+  ObservableList<int> get lastFiveScoresPlayer1 {
+    _$lastFiveScoresPlayer1Atom.reportRead();
+    return super.lastFiveScoresPlayer1;
+  }
+
+  @override
+  set lastFiveScoresPlayer1(ObservableList<int> value) {
+    _$lastFiveScoresPlayer1Atom.reportWrite(value, super.lastFiveScoresPlayer1,
+        () {
+      super.lastFiveScoresPlayer1 = value;
+    });
+  }
+
+  late final _$lastFiveScoresPlayer2Atom =
+      Atom(name: '_MatchStore.lastFiveScoresPlayer2', context: context);
+
+  @override
+  ObservableList<int> get lastFiveScoresPlayer2 {
+    _$lastFiveScoresPlayer2Atom.reportRead();
+    return super.lastFiveScoresPlayer2;
+  }
+
+  @override
+  set lastFiveScoresPlayer2(ObservableList<int> value) {
+    _$lastFiveScoresPlayer2Atom.reportWrite(value, super.lastFiveScoresPlayer2,
+        () {
+      super.lastFiveScoresPlayer2 = value;
     });
   }
 
@@ -77,13 +111,13 @@ mixin _$MatchStore on _MatchStore, Store {
       Atom(name: '_MatchStore.legWins', context: context);
 
   @override
-  Map<int, int> get legWins {
+  Map<String, int> get legWins {
     _$legWinsAtom.reportRead();
     return super.legWins;
   }
 
   @override
-  set legWins(Map<int, int> value) {
+  set legWins(Map<String, int> value) {
     _$legWinsAtom.reportWrite(value, super.legWins, () {
       super.legWins = value;
     });
@@ -93,35 +127,57 @@ mixin _$MatchStore on _MatchStore, Store {
       Atom(name: '_MatchStore.setWins', context: context);
 
   @override
-  Map<int, int> get setWins {
+  Map<String, int> get setWins {
     _$setWinsAtom.reportRead();
     return super.setWins;
   }
 
   @override
-  set setWins(Map<int, int> value) {
+  set setWins(Map<String, int> value) {
     _$setWinsAtom.reportWrite(value, super.setWins, () {
       super.setWins = value;
     });
   }
 
-  late final _$currentScoreAtom =
-      Atom(name: '_MatchStore.currentScore', context: context);
+  late final _$currentScorePlayer1Atom =
+      Atom(name: '_MatchStore.currentScorePlayer1', context: context);
 
   @override
-  int get currentScore {
-    _$currentScoreAtom.reportRead();
-    return super.currentScore;
+  int get currentScorePlayer1 {
+    _$currentScorePlayer1Atom.reportRead();
+    return super.currentScorePlayer1;
   }
 
-  bool _currentScoreIsInitialized = false;
+  bool _currentScorePlayer1IsInitialized = false;
 
   @override
-  set currentScore(int value) {
-    _$currentScoreAtom.reportWrite(
-        value, _currentScoreIsInitialized ? super.currentScore : null, () {
-      super.currentScore = value;
-      _currentScoreIsInitialized = true;
+  set currentScorePlayer1(int value) {
+    _$currentScorePlayer1Atom.reportWrite(value,
+        _currentScorePlayer1IsInitialized ? super.currentScorePlayer1 : null,
+        () {
+      super.currentScorePlayer1 = value;
+      _currentScorePlayer1IsInitialized = true;
+    });
+  }
+
+  late final _$currentScorePlayer2Atom =
+      Atom(name: '_MatchStore.currentScorePlayer2', context: context);
+
+  @override
+  int get currentScorePlayer2 {
+    _$currentScorePlayer2Atom.reportRead();
+    return super.currentScorePlayer2;
+  }
+
+  bool _currentScorePlayer2IsInitialized = false;
+
+  @override
+  set currentScorePlayer2(int value) {
+    _$currentScorePlayer2Atom.reportWrite(value,
+        _currentScorePlayer2IsInitialized ? super.currentScorePlayer2 : null,
+        () {
+      super.currentScorePlayer2 = value;
+      _currentScorePlayer2IsInitialized = true;
     });
   }
 
@@ -129,20 +185,15 @@ mixin _$MatchStore on _MatchStore, Store {
       Atom(name: '_MatchStore.currentPlayerId', context: context);
 
   @override
-  int get currentPlayerId {
+  String? get currentPlayerId {
     _$currentPlayerIdAtom.reportRead();
     return super.currentPlayerId;
   }
 
-  bool _currentPlayerIdIsInitialized = false;
-
   @override
-  set currentPlayerId(int value) {
-    _$currentPlayerIdAtom.reportWrite(
-        value, _currentPlayerIdIsInitialized ? super.currentPlayerId : null,
-        () {
+  set currentPlayerId(String? value) {
+    _$currentPlayerIdAtom.reportWrite(value, super.currentPlayerId, () {
       super.currentPlayerId = value;
-      _currentPlayerIdIsInitialized = true;
     });
   }
 
@@ -150,13 +201,13 @@ mixin _$MatchStore on _MatchStore, Store {
       Atom(name: '_MatchStore.matchWinnerId', context: context);
 
   @override
-  int? get matchWinnerId {
+  String? get matchWinnerId {
     _$matchWinnerIdAtom.reportRead();
     return super.matchWinnerId;
   }
 
   @override
-  set matchWinnerId(int? value) {
+  set matchWinnerId(String? value) {
     _$matchWinnerIdAtom.reportWrite(value, super.matchWinnerId, () {
       super.matchWinnerId = value;
     });
@@ -262,7 +313,7 @@ mixin _$MatchStore on _MatchStore, Store {
       AsyncAction('_MatchStore.endCurrentLeg', context: context);
 
   @override
-  Future<void> endCurrentLeg(int legWinnerId) {
+  Future<void> endCurrentLeg(String legWinnerId) {
     return _$endCurrentLegAsyncAction
         .run(() => super.endCurrentLeg(legWinnerId));
   }
@@ -271,7 +322,7 @@ mixin _$MatchStore on _MatchStore, Store {
       AsyncAction('_MatchStore.checkSetWinner', context: context);
 
   @override
-  Future<void> checkSetWinner(int setWinnerId) {
+  Future<void> checkSetWinner(String setWinnerId) {
     return _$checkSetWinnerAsyncAction
         .run(() => super.checkSetWinner(setWinnerId));
   }
@@ -304,13 +355,16 @@ mixin _$MatchStore on _MatchStore, Store {
   @override
   String toString() {
     return '''
-lastFiveScores: ${lastFiveScores},
+setupComplete: ${setupComplete},
+lastFiveScoresPlayer1: ${lastFiveScoresPlayer1},
+lastFiveScoresPlayer2: ${lastFiveScoresPlayer2},
 currentLegScores: ${currentLegScores},
 currentLegId: ${currentLegId},
 currentSetId: ${currentSetId},
 legWins: ${legWins},
 setWins: ${setWins},
-currentScore: ${currentScore},
+currentScorePlayer1: ${currentScorePlayer1},
+currentScorePlayer2: ${currentScorePlayer2},
 currentPlayerId: ${currentPlayerId},
 matchWinnerId: ${matchWinnerId},
 matchEnded: ${matchEnded},
