@@ -14,6 +14,9 @@ class MatchView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Match', style: TextStyle(color: Colors.white)),
+      ),
       body: Provider(
         create: (context) => MatchStore(Supabase.instance.client, matchId),
         child: Container(
@@ -26,7 +29,36 @@ class MatchView extends StatelessWidget {
           child: Builder(builder: (context) {
             return Observer(builder: (_) {
               MatchStore matchStore = context.read<MatchStore>();
-              print("appel: ${matchStore.isLoading}");
+
+              if (matchStore.errorMessage.isNotEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      const Icon(Icons.error, color: Colors.red, size: 80),
+                      const SizedBox(height: 20),
+                      Text(
+                        matchStore.errorMessage,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
+                        child: const Text('Go Back', style: TextStyle(color: Colors.white)),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
               if (matchStore.isLoading) {
                 return loadingScreen(matchStore.loadingMessage);
               }
@@ -46,6 +78,7 @@ class MatchView extends StatelessWidget {
   Widget endOfMatchScreen(MatchStore matchStore, BuildContext context) {
     bool isPlayer1Winner =
         matchStore.matchWinnerId == matchStore.matchModel.player1Id;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -55,17 +88,17 @@ class MatchView extends StatelessWidget {
               style: TextStyle(
                   color: isPlayer1Winner ? Colors.yellow : Colors.white,
                   fontSize: 24)),
-          Text('vs', style: TextStyle(color: Colors.white, fontSize: 24)),
+          const Text('vs', style: TextStyle(color: Colors.white, fontSize: 24)),
           Text(
               '${matchStore.matchModel.player2LastName}: ${matchStore.legWins[matchStore.matchModel.player2Id] ?? 0}',
               style: TextStyle(
                   color: !isPlayer1Winner ? Colors.yellow : Colors.white,
                   fontSize: 24)),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text('Quit and Save Game',
+            child: const Text('Quit and Save Game',
                 style: TextStyle(color: Colors.white)),
           )
         ],
@@ -89,9 +122,23 @@ class MatchView extends StatelessWidget {
   Widget gameScreen(MatchStore matchStore) {
     return Column(
       children: <Widget>[
-        Scoreboard(matchStore: matchStore),
-        ScoreInput(matchStore: matchStore),
-        Expanded(child: Numpad(matchStore: matchStore)),
+        Expanded(
+          flex: 3,
+          child: Scoreboard(matchStore: matchStore),
+        ),
+        Container(
+          height: 90,
+          padding: const EdgeInsets.only(top: 5),
+          child: ScoreInput(matchStore: matchStore),
+        ),
+        Expanded(
+          flex: 3,
+          child: Container(
+            padding: const EdgeInsets.only(
+                top: 5, bottom: 10),
+            child: Numpad(matchStore: matchStore),
+          ),
+        ),
       ],
     );
   }

@@ -10,17 +10,16 @@ class ScoreInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Column(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      height: 80, // Vaste hoogte
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              undoButton(),
-              scoreDisplay(),
-              enterButton(),
-            ],
-          ),
+          Expanded(child: undoButton()),
+          const SizedBox(width: 10), // Add spacing between buttons
+          Expanded(child: scoreDisplay()),
+          const SizedBox(width: 10), // Add spacing between buttons
+          Expanded(child: enterButton()),
         ],
       ),
     );
@@ -32,17 +31,29 @@ class ScoreInput extends StatelessWidget {
         matchStore.undoLastScore();
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red, // Background color
+        backgroundColor: const Color(0xFFCD0612),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.zero,
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 15),
       ),
-      child: const Icon(Icons.undo, color: Colors.white),
+      child: const Text('Undo', style: TextStyle(color: Colors.white)),
     );
   }
 
   Widget scoreDisplay() {
-    return Observer(
-      builder: (_) => Text(
-        matchStore.temporaryScore.toString(),
-        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+    return Container(
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(vertical: 15),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.white, width: 2),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Observer(
+        builder: (_) => Text(
+          matchStore.temporaryScore.toString(),
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
       ),
     );
   }
@@ -52,9 +63,14 @@ class ScoreInput extends StatelessWidget {
       onPressed: () {
         // Logic to validate and submit the score
         matchStore.recordScore(int.parse(matchStore.temporaryScore.toString()));
+        matchStore.updateTemporaryScore(''); // Reset temporary score after submitting
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.green, // Background color
+        backgroundColor: const Color(0xFFCD0612),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.zero,
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 15),
       ),
       child: const Text('Enter', style: TextStyle(color: Colors.white)),
     );
