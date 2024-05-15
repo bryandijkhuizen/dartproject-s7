@@ -1,9 +1,11 @@
+import 'package:darts_application/features/app_router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:darts_application/stores/match_store.dart';
 import 'package:darts_application/features/gameplay/numpad.dart';
 import 'package:darts_application/features/gameplay/score_input.dart';
 import 'package:darts_application/features/gameplay/scoreboard.dart';
+import 'package:go_router/go_router.dart';
 import 'package:darts_application/features/gameplay/score_suggestion.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -20,6 +22,12 @@ class MatchView extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Match', style: TextStyle(color: Colors.white)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            router.push('/matches');
+          },
+        ),
             actions: [
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
