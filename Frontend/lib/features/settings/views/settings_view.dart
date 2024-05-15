@@ -44,6 +44,7 @@ class SettingsViewState extends State<SettingsView> {
                       style: theme.textTheme.titleMedium,
                     ),
                     Card(
+                      elevation: 0,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                           vertical: 16.0,
@@ -83,15 +84,17 @@ class SettingsViewState extends State<SettingsView> {
                     ),
                     const SettingsClubCard(),
                     const SizedBox(
-                      height: 24,
+                      height: 8,
                     ),
                     ElevatedButton(
                       onPressed: () {
                         context.push('/clubs');
                       },
                       style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStatePropertyAll(theme.colorScheme.surface),
+                        elevation: const MaterialStatePropertyAll(0),
+                        backgroundColor: MaterialStatePropertyAll(
+                          theme.colorScheme.surface,
+                        ),
                       ),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -101,15 +104,18 @@ class SettingsViewState extends State<SettingsView> {
                         ],
                       ),
                     ),
+                    const SizedBox(
+                      height: 24,
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          Supabase.instance.client.auth.signOut();
+                        },
+                        child: const Text('Sign out'))
                   ],
                 ),
               ),
             ),
-            ElevatedButton(
-                onPressed: () {
-                  Supabase.instance.client.auth.signOut();
-                },
-                child: const Text('Sign out'))
           ],
         ),
       ),
