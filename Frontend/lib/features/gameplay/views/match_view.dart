@@ -4,6 +4,7 @@ import 'package:darts_application/stores/match_store.dart';
 import 'package:darts_application/features/gameplay/numpad.dart';
 import 'package:darts_application/features/gameplay/score_input.dart';
 import 'package:darts_application/features/gameplay/scoreboard.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -16,6 +17,12 @@ class MatchView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Match', style: TextStyle(color: Colors.white)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            context.go('/matches');
+          },
+        ),
       ),
       body: Provider(
         create: (context) => MatchStore(Supabase.instance.client, matchId),
@@ -52,7 +59,8 @@ class MatchView extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
                         ),
-                        child: const Text('Go Back', style: TextStyle(color: Colors.white)),
+                        child: const Text('Go Back',
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),
@@ -134,8 +142,7 @@ class MatchView extends StatelessWidget {
         Expanded(
           flex: 3,
           child: Container(
-            padding: const EdgeInsets.only(
-                top: 5, bottom: 10),
+            padding: const EdgeInsets.only(top: 5, bottom: 10),
             child: Numpad(matchStore: matchStore),
           ),
         ),
