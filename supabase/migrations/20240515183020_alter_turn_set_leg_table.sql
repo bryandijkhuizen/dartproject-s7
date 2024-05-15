@@ -9,3 +9,6 @@ ALTER TABLE set ALTER COLUMN winner_id DROP NOT NULL;
 -- alter column winner_id (uuid) in leg table to be default null and nullable
 ALTER TABLE leg ALTER COLUMN winner_id SET DEFAULT NULL;
 ALTER TABLE leg ALTER COLUMN winner_id DROP NOT NULL;
+
+-- add is_dead_throw (bool) to turn table
+ALTER TABLE turn ADD COLUMN is_dead_throw BOOL;
