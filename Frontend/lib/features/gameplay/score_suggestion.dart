@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 
 class AnimatedAngledBox extends StatefulWidget {
+  final bool isPlayer1;
+
+  const AnimatedAngledBox({super.key, required this.isPlayer1});
+
   @override
-  _AnimatedAngledBoxState createState() => _AnimatedAngledBoxState();
+  AnimatedAngledBoxState createState() => AnimatedAngledBoxState();
 }
 
-class _AnimatedAngledBoxState extends State<AnimatedAngledBox> with SingleTickerProviderStateMixin {
+class AnimatedAngledBoxState extends State<AnimatedAngledBox> with SingleTickerProviderStateMixin {
   AnimationController? _controller;
   Animation<Offset>? _animation;
 
@@ -18,14 +22,20 @@ class _AnimatedAngledBoxState extends State<AnimatedAngledBox> with SingleTicker
     );
 
     _animation = Tween<Offset>(
-      begin: Offset(1.5, 0.0),
-      end: Offset(0.0, 0.0),
+      begin: widget.isPlayer1 ? const Offset(-1.5, 0.0) : const Offset(1.5, 0.0),
+      end: const Offset(0.0, 0.0),
     ).animate(CurvedAnimation(
       parent: _controller!,
       curve: Curves.easeInOut,
     ));
+  }
 
+  void show() {
     _controller!.forward();
+  }
+
+  void hide() {
+    _controller!.reverse();
   }
 
   @override
@@ -39,20 +49,17 @@ class _AnimatedAngledBoxState extends State<AnimatedAngledBox> with SingleTicker
     return SlideTransition(
       position: _animation!,
       child: Align(
-        alignment: Alignment.topRight,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 30), // Adjust top padding to move down
-          child: CustomPaint(
-            painter: AngledBoxPainter(),
-            child: Container(
-              height: 30, // Adjust height
-              width: MediaQuery.of(context).size.width * 1, // Adjust width
-              alignment: Alignment.centerRight,
-              padding: EdgeInsets.only(right: 10),
-              child: Text(
-                'T20, D20',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
-              ),
+        alignment: widget.isPlayer1 ? Alignment.centerLeft : Alignment.centerRight,
+        child: CustomPaint(
+          painter: AngledBoxPainter(),
+          child: Container(
+            height: 30, // Adjust height
+            width: MediaQuery.of(context).size.width * 0.5, // Adjust width
+            alignment: widget.isPlayer1 ? Alignment.centerLeft : Alignment.centerRight,
+            padding: EdgeInsets.only(left: widget.isPlayer1 ? 10 : 0, right: widget.isPlayer1 ? 0 : 10),
+            child: const Text(
+              'T20, D20',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ),
         ),
@@ -65,13 +72,13 @@ class AngledBoxPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Color(0xFFCD0612)
+      ..color = const Color(0xFFCD0612)
       ..style = PaintingStyle.fill;
 
     final path = Path()
       ..moveTo(size.width, 0)
-      ..lineTo(size.width * 0.7, 0)
-      ..lineTo(size.width * 0.6, size.height)
+      ..lineTo(size.width * 0.8, 0)
+      ..lineTo(size.width * 0.7, size.height)
       ..lineTo(size.width, size.height)
       ..close();
 

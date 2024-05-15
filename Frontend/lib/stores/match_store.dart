@@ -1,6 +1,7 @@
 import 'package:mobx/mobx.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/match.dart';
+import 'package:backend/src/finish_calculator.dart';
 
 part 'match_store.g.dart';
 
@@ -22,14 +23,11 @@ abstract class _MatchStore with Store {
   bool isCreatingLeg = false;
 
   @observable
-  ObservableList<Map<String, dynamic>> lastFiveScoresPlayer1 =
-      ObservableList<Map<String, dynamic>>();
+  ObservableList<Map<String, dynamic>> lastFiveScoresPlayer1 = ObservableList<Map<String, dynamic>>();
   @observable
-  ObservableList<Map<String, dynamic>> lastFiveScoresPlayer2 =
-      ObservableList<Map<String, dynamic>>();
+  ObservableList<Map<String, dynamic>> lastFiveScoresPlayer2 = ObservableList<Map<String, dynamic>>();
   @observable
-  ObservableList<Map<String, dynamic>> currentLegScores =
-      ObservableList<Map<String, dynamic>>();
+  ObservableList<Map<String, dynamic>> currentLegScores = ObservableList<Map<String, dynamic>>();
 
   @observable
   int currentLegId = -1;
@@ -60,6 +58,13 @@ abstract class _MatchStore with Store {
   @observable
   String temporaryScore = '';
 
+  @observable
+  bool showPlayer1Suggestion = true;
+  @observable
+  bool showPlayer2Suggestion = true;
+
+  final FinishCalculator _finishCalculator = FinishCalculator();
+
   _MatchStore(this._supabaseClient, this.matchId) {
     _init();
   }
@@ -71,11 +76,7 @@ abstract class _MatchStore with Store {
     isLoading = true;
     loadingMessage = 'Initializing match details...';
     try {
-      var response = await _supabaseClient
-          .from('match')
-          .select('*')
-          .eq('id', matchId)
-          .single();
+      var response = await _supabaseClient.from('match').select('*').eq('id', matchId).single();
       matchModel = MatchModel.fromJson(response);
 
       await _fetchPlayerDetails();
@@ -95,17 +96,9 @@ abstract class _MatchStore with Store {
 
   Future<void> _fetchPlayerDetails() async {
     try {
-      var player1Response = await _supabaseClient
-          .from('user')
-          .select('last_name')
-          .eq('id', matchModel.player1Id)
-          .single();
+      var player1Response = await _supabaseClient.from('user').select('last_name').eq('id', matchModel.player1Id).single();
       matchModel.player1LastName = player1Response['last_name'] ?? 'Unknown';
-      var player2Response = await _supabaseClient
-          .from('user')
-          .select('last_name')
-          .eq('id', matchModel.player2Id)
-          .single();
+      var player2Response = await _supabaseClient.from('user').select('last_name').eq('id', matchModel.player2Id).single();
       matchModel.player2LastName = player2Response['last_name'] ?? 'Unknown';
 
       currentScorePlayer1 = matchModel.startingScore;
@@ -119,8 +112,7 @@ abstract class _MatchStore with Store {
 
   Future<void> _checkForActiveSetOrCreateNew() async {
     try {
-      var response = await _supabaseClient
-          .rpc('get_active_set', params: {'p_match_id': matchModel.id});
+      var response = await _supabaseClient.rpc('get_active_set', params: {'p_match_id': matchModel.id});
       if (response.isEmpty) {
         await _startNewSet();
       } else {
@@ -140,8 +132,7 @@ abstract class _MatchStore with Store {
 
   Future<void> _checkForActiveLegOrCreateNew() async {
     try {
-      var response = await _supabaseClient
-          .rpc('get_active_leg', params: {'p_set_id': currentSetId});
+      var response = await _supabaseClient.rpc('get_active_leg', params: {'p_set_id': currentSetId});
       if (response.isEmpty) {
         await _startNewLeg();
       } else {
@@ -166,8 +157,7 @@ abstract class _MatchStore with Store {
     isLoading = true;
     loadingMessage = 'Starting new set...';
     try {
-      var response = await _supabaseClient
-          .rpc('create_set', params: {'p_match_id': matchModel.id});
+      var response = await _supabaseClient.rpc('create_set', params: {'p_match_id': matchModel.id});
       currentSetId = response[0]['set_id'];
       await _startNewLeg();
     } catch (error) {
@@ -186,8 +176,7 @@ abstract class _MatchStore with Store {
     isLoading = true;
     loadingMessage = 'Starting new leg...';
     try {
-      var response = await _supabaseClient
-          .rpc('create_leg', params: {'p_set_id': currentSetId});
+      var response = await _supabaseClient.rpc('create_leg', params: {'p_set_id': currentSetId});
       currentLegId = response[0]['leg_id'];
 
       // Set the current player to the starting player for this leg
@@ -209,15 +198,11 @@ abstract class _MatchStore with Store {
 
   Future<void> _calculateWins() async {
     try {
-      var legWinsResponse = await _supabaseClient
-          .rpc('get_leg_wins', params: {'p_set_id': currentSetId});
-      legWins =
-          _aggregateWins(List<Map<String, dynamic>>.from(legWinsResponse));
+      var legWinsResponse = await _supabaseClient.rpc('get_leg_wins', params: {'p_set_id': currentSetId});
+      legWins = _aggregateWins(List<Map<String, dynamic>>.from(legWinsResponse));
 
-      var setWinsResponse = await _supabaseClient
-          .rpc('get_set_wins', params: {'p_match_id': matchId});
-      setWins =
-          _aggregateWins(List<Map<String, dynamic>>.from(setWinsResponse));
+      var setWinsResponse = await _supabaseClient.rpc('get_set_wins', params: {'p_match_id': matchId});
+      setWins = _aggregateWins(List<Map<String, dynamic>>.from(setWinsResponse));
     } catch (error) {
       errorMessage = 'Error calculating wins: $error';
       print('Error calculating wins: $error');
@@ -237,8 +222,7 @@ abstract class _MatchStore with Store {
 
   Future<void> _restoreLatestScores() async {
     try {
-      var turnResponse = await _supabaseClient
-          .rpc('get_latest_scores', params: {'p_leg_id': currentLegId});
+      var turnResponse = await _supabaseClient.rpc('get_latest_scores', params: {'p_leg_id': currentLegId});
       if (turnResponse.isNotEmpty) {
         currentScorePlayer1 = turnResponse.first['current_score'];
         currentScorePlayer2 = turnResponse.first['current_score2'];
@@ -249,7 +233,7 @@ abstract class _MatchStore with Store {
         for (var turn in turnResponse) {
           final scoreEntry = {
             'score': turn['score'],
-            'isDeadThrow': turn['score'] == 0
+            'isDeadThrow': turn['score'] == 0,
           };
           if (turn['player_id'] == matchModel.player1Id) {
             lastFiveScoresPlayer1.insert(0, scoreEntry);
@@ -259,15 +243,11 @@ abstract class _MatchStore with Store {
         }
 
         // Correctly sort and limit the scores
-        lastFiveScoresPlayer1 =
-            ObservableList.of(lastFiveScoresPlayer1.take(5));
-        lastFiveScoresPlayer2 =
-            ObservableList.of(lastFiveScoresPlayer2.take(5));
+        lastFiveScoresPlayer1 = ObservableList.of(lastFiveScoresPlayer1.take(5));
+        lastFiveScoresPlayer2 = ObservableList.of(lastFiveScoresPlayer2.take(5));
 
         // Ensure currentPlayerId is set correctly for the next turn
-        currentPlayerId = turnResponse.first['player_id'] == matchModel.player1Id
-            ? matchModel.player2Id
-            : matchModel.player1Id;
+        currentPlayerId = turnResponse.first['player_id'] == matchModel.player1Id ? matchModel.player2Id : matchModel.player1Id;
       }
     } catch (error) {
       errorMessage = 'Failed to restore scores: $error';
@@ -285,7 +265,7 @@ abstract class _MatchStore with Store {
       final response = await _supabaseClient.rpc('record_turn', params: {
         'p_player_id': currentPlayerId,
         'p_new_leg_id': currentLegId,
-        'p_score': score
+        'p_score': score,
       });
 
       final legWinnerId = response[0]['leg_winner_id'];
@@ -299,9 +279,7 @@ abstract class _MatchStore with Store {
         await _updateLegWinner(legWinnerId.toString());
         await _endCurrentLeg(legWinnerId.toString());
       } else {
-        currentPlayerId = currentPlayerId == matchModel.player1Id
-            ? matchModel.player2Id
-            : matchModel.player1Id;
+        currentPlayerId = currentPlayerId == matchModel.player1Id ? matchModel.player2Id : matchModel.player1Id;
       }
 
       updateTemporaryScore('');
@@ -311,8 +289,7 @@ abstract class _MatchStore with Store {
     }
   }
 
-  void _updateScores(
-      dynamic newScore, dynamic newScore2, int score, bool isDeadThrow) {
+  void _updateScores(dynamic newScore, dynamic newScore2, int score, bool isDeadThrow) {
     final scoreEntry = {'score': score, 'isDeadThrow': isDeadThrow};
     if (currentPlayerId == matchModel.player1Id) {
       currentScorePlayer1 = newScore is int ? newScore : int.parse(newScore);
@@ -331,9 +308,7 @@ abstract class _MatchStore with Store {
 
   Future<void> _updateLegWinner(String legWinnerId) async {
     try {
-      await _supabaseClient
-          .from('leg')
-          .update({'winner_id': legWinnerId}).eq('id', currentLegId);
+      await _supabaseClient.from('leg').update({'winner_id': legWinnerId}).eq('id', currentLegId);
     } catch (error) {
       errorMessage = 'Failed to update leg winner: $error';
       print('Error updating leg winner: $error');
@@ -344,17 +319,12 @@ abstract class _MatchStore with Store {
   Future<void> undoLastScore() async {
     try {
       final lastScoreEntry = currentPlayerId == matchModel.player1Id
-          ? (lastFiveScoresPlayer1.isNotEmpty
-              ? lastFiveScoresPlayer1.last
-              : {'score': 0})
-          : (lastFiveScoresPlayer2.isNotEmpty
-              ? lastFiveScoresPlayer2.last
-              : {'score': 0});
+          ? (lastFiveScoresPlayer1.isNotEmpty ? lastFiveScoresPlayer1.last : {'score': 0})
+          : (lastFiveScoresPlayer2.isNotEmpty ? lastFiveScoresPlayer2.last : {'score': 0});
 
       final lastScore = lastScoreEntry['score'] as int;
 
-      final response = await _supabaseClient
-          .rpc('undo_last_score', params: {'p_leg_id': currentLegId});
+      final response = await _supabaseClient.rpc('undo_last_score', params: {'p_leg_id': currentLegId});
       if (response != null) {
         _undoScore(lastScore);
       }
@@ -393,9 +363,7 @@ abstract class _MatchStore with Store {
 
   Future<void> _prepareForNextLeg(String legWinnerId) async {
     // Alternate the starting player
-    matchModel.startingPlayerId = matchModel.startingPlayerId == matchModel.player1Id
-        ? matchModel.player2Id
-        : matchModel.player1Id;
+    matchModel.startingPlayerId = matchModel.startingPlayerId == matchModel.player1Id ? matchModel.player2Id : matchModel.player1Id;
 
     // Update the starting player ID in the match table in the database
     await _supabaseClient.from('match').update({
@@ -427,9 +395,7 @@ abstract class _MatchStore with Store {
 
   Future<void> _updateSetWinner(String setWinnerId) async {
     try {
-      await _supabaseClient
-          .from('set')
-          .update({'winner_id': setWinnerId}).eq('id', currentSetId);
+      await _supabaseClient.from('set').update({'winner_id': setWinnerId}).eq('id', currentSetId);
     } catch (error) {
       errorMessage = 'Failed to update set winner: $error';
       print('Error updating set winner: $error');
@@ -438,9 +404,7 @@ abstract class _MatchStore with Store {
 
   Future<void> _updateMatchWinner(String matchWinnerId) async {
     try {
-      await _supabaseClient
-          .from('match')
-          .update({'winner_id': matchWinnerId}).eq('id', matchModel.id);
+      await _supabaseClient.from('match').update({'winner_id': matchWinnerId}).eq('id', matchModel.id);
     } catch (error) {
       errorMessage = 'Failed to update match winner: $error';
       print('Error updating match winner: $error');
@@ -450,13 +414,25 @@ abstract class _MatchStore with Store {
   void _endMatch(String matchWinnerId) {
     matchEnded = true;
     this.matchWinnerId = matchWinnerId;
-    loadingMessage =
-        "Match has ended. Winner: Player ${matchWinnerId == matchModel.player1Id ? 1 : 2}";
+    loadingMessage = "Match has ended. Winner: Player ${matchWinnerId == matchModel.player1Id ? 1 : 2}";
   }
 
   @action
   void updateTemporaryScore(String score) {
     temporaryScore = score;
+    if (currentPlayerId == matchModel.player1Id) {
+      showPlayer1Suggestion = score.isEmpty;
+    } else {
+      showPlayer2Suggestion = score.isEmpty;
+    }
+  }
+
+  String getPlayer1Suggestion() {
+    return _finishCalculator.getThrowSuggestion(currentScorePlayer1, 3)?.join(', ') ?? '';
+  }
+
+  String getPlayer2Suggestion() {
+    return _finishCalculator.getThrowSuggestion(currentScorePlayer2, 3)?.join(', ') ?? '';
   }
 
   void subscribeToScores() {

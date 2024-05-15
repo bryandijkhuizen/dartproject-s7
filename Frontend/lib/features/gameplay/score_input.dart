@@ -1,27 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:darts_application/stores/match_store.dart';
+import 'package:darts_application/features/gameplay/score_suggestion.dart';
 
 class ScoreInput extends StatelessWidget {
   final MatchStore matchStore;
+  final GlobalKey<AnimatedAngledBoxState> player1SuggestionBoxKey = GlobalKey<AnimatedAngledBoxState>();
+  final GlobalKey<AnimatedAngledBoxState> player2SuggestionBoxKey = GlobalKey<AnimatedAngledBoxState>();
 
-  const ScoreInput({super.key, required this.matchStore});
+  ScoreInput({
+    super.key,
+    required this.matchStore,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-      height: 80, // Vaste hoogte
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Expanded(child: undoButton()),
-          const SizedBox(width: 10), // Add spacing between buttons
-          Expanded(child: scoreDisplay()),
-          const SizedBox(width: 10), // Add spacing between buttons
-          Expanded(child: enterButton()),
-        ],
-      ),
+    return Column(
+      children: [
+        Stack(
+          children: [
+            Observer(
+              builder: (_) {
+                if (matchStore.currentPlayerId == matchStore.matchModel.player1Id) {
+                  player1SuggestionBoxKey.currentState?.show();
+                  player2SuggestionBoxKey.currentState?.hide();
+                } else {
+                  player1SuggestionBoxKey.currentState?.hide();
+                  player2SuggestionBoxKey.currentState?.show();
+                }
+                return Container();
+              },
+            ),
+            AnimatedAngledBox(key: player1SuggestionBoxKey, isPlayer1: true),
+            AnimatedAngledBox(key: player2SuggestionBoxKey, isPlayer1: false),
+          ],
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          height: 80, // Fixed height
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Expanded(child: undoButton()),
+              const SizedBox(width: 10), // Add spacing between buttons
+              Expanded(child: scoreDisplay()),
+              const SizedBox(width: 10), // Add spacing between buttons
+              Expanded(child: enterButton()),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

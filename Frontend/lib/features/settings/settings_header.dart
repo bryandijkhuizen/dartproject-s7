@@ -6,7 +6,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
 
 class SettingsHeader extends StatefulWidget {
-  SettingsHeader({super.key});
+  const SettingsHeader({super.key});
 
   @override
   State<SettingsHeader> createState() => _SettingsHeaderState();
