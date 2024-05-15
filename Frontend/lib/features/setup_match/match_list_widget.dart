@@ -67,7 +67,7 @@ class _MatchListWidgetState extends State<MatchListWidget> {
         title: const Text('Matches', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: _fetchMatches,
           ),
         ],
