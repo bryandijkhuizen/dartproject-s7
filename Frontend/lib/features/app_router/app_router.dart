@@ -2,6 +2,10 @@ import 'package:darts_application/components/scaffolding.dart';
 import 'package:darts_application/features/app_router/app_router_redirect.dart';
 import 'package:darts_application/features/auth/auth_notifier.dart';
 import 'package:darts_application/features/auth/auth_view.dart';
+import 'package:darts_application/features/settings/views/settings_email_view.dart';
+import 'package:darts_application/features/settings/views/settings_name_view.dart';
+import 'package:darts_application/features/settings/views/settings_password_view.dart';
+import 'package:darts_application/features/settings/views/settings_view.dart';
 import 'package:darts_application/features/user_management/user_management_assign.dart';
 import 'package:darts_application/features/user_management/user_management_view.dart';
 import 'package:darts_application/helpers.dart';
@@ -10,9 +14,12 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/features/setup_match/start_match.dart';
 import 'package:darts_application/features/setup_match/match_list_widget.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 Widget getPlaceholderComponent(
     String currentRoute, List<String> routes, BuildContext context) {
+        String yourToken = "${Supabase.instance.client.auth.currentSession?.accessToken}";
+  Map<String, dynamic> decodedToken = JwtDecoder.decode(yourToken);
   return Center(
     child: Column(
       children: [
@@ -24,6 +31,8 @@ Widget getPlaceholderComponent(
             },
             child: Text('Go to $route'),
           ),
+ 
+          Text(decodedToken.toString()),
         TextButton(
             onPressed: () {
               Supabase.instance.client.auth.signOut();
@@ -37,6 +46,32 @@ Widget getPlaceholderComponent(
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
+
+// SettingsRoute is identical on mobile and desktop
+final settingsRoute = StatefulShellBranch(
+  routes: <RouteBase>[
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) {
+        return const SettingsView();
+      },
+      routes: <RouteBase>[
+        GoRoute(
+          path: 'name',
+          builder: (context, state) => const SettingsNameView(),
+        ),
+        GoRoute(
+          path: 'email',
+          builder: (context, state) => const SettingsEmailView(),
+        ),
+        GoRoute(
+          path: 'password',
+          builder: (context, state) => const SettingsPasswordView(),
+        )
+      ],
+    ),
+  ],
+);
 
 final router = GoRouter(
   navigatorKey: _rootNavigatorKey,
@@ -123,24 +158,7 @@ final router = GoRouter(
               ),
 
               // Mobile user settings
-              StatefulShellBranch(
-                routes: <RouteBase>[
-                  GoRoute(
-                    path: '/settings',
-                    builder: (context, state) {
-                      // Ignore this for now
-                      return getPlaceholderComponent(
-                          '/settings',
-                          [
-                            '/',
-                            '/statistics',
-                            '/matches',
-                          ],
-                          context);
-                    },
-                  ),
-                ],
-              ),
+              settingsRoute,
             ]
           // Desktop branches
           : [
@@ -242,6 +260,8 @@ final router = GoRouter(
                   ),
                 ],
               ),
+
+              settingsRoute
             ],
     ),
   ],
