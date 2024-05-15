@@ -325,6 +325,72 @@ mixin _$MatchStore on _MatchStore, Store {
     });
   }
 
+  late final _$player1SuggestionAtom =
+      Atom(name: '_MatchStore.player1Suggestion', context: context);
+
+  @override
+  String get player1Suggestion {
+    _$player1SuggestionAtom.reportRead();
+    return super.player1Suggestion;
+  }
+
+  @override
+  set player1Suggestion(String value) {
+    _$player1SuggestionAtom.reportWrite(value, super.player1Suggestion, () {
+      super.player1Suggestion = value;
+    });
+  }
+
+  late final _$player2SuggestionAtom =
+      Atom(name: '_MatchStore.player2Suggestion', context: context);
+
+  @override
+  String get player2Suggestion {
+    _$player2SuggestionAtom.reportRead();
+    return super.player2Suggestion;
+  }
+
+  @override
+  set player2Suggestion(String value) {
+    _$player2SuggestionAtom.reportWrite(value, super.player2Suggestion, () {
+      super.player2Suggestion = value;
+    });
+  }
+
+  late final _$showPlayer1SuggestionAtom =
+      Atom(name: '_MatchStore.showPlayer1Suggestion', context: context);
+
+  @override
+  bool get showPlayer1Suggestion {
+    _$showPlayer1SuggestionAtom.reportRead();
+    return super.showPlayer1Suggestion;
+  }
+
+  @override
+  set showPlayer1Suggestion(bool value) {
+    _$showPlayer1SuggestionAtom.reportWrite(value, super.showPlayer1Suggestion,
+        () {
+      super.showPlayer1Suggestion = value;
+    });
+  }
+
+  late final _$showPlayer2SuggestionAtom =
+      Atom(name: '_MatchStore.showPlayer2Suggestion', context: context);
+
+  @override
+  bool get showPlayer2Suggestion {
+    _$showPlayer2SuggestionAtom.reportRead();
+    return super.showPlayer2Suggestion;
+  }
+
+  @override
+  set showPlayer2Suggestion(bool value) {
+    _$showPlayer2SuggestionAtom.reportWrite(value, super.showPlayer2Suggestion,
+        () {
+      super.showPlayer2Suggestion = value;
+    });
+  }
+
   late final _$_initAsyncAction =
       AsyncAction('_MatchStore._init', context: context);
 
@@ -364,6 +430,17 @@ mixin _$MatchStore on _MatchStore, Store {
   }
 
   @override
+  void _updateThrowSuggestions() {
+    final _$actionInfo = _$_MatchStoreActionController.startAction(
+        name: '_MatchStore._updateThrowSuggestions');
+    try {
+      return super._updateThrowSuggestions();
+    } finally {
+      _$_MatchStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 setupComplete: ${setupComplete},
@@ -384,7 +461,11 @@ matchEnded: ${matchEnded},
 errorMessage: ${errorMessage},
 isLoading: ${isLoading},
 loadingMessage: ${loadingMessage},
-temporaryScore: ${temporaryScore}
+temporaryScore: ${temporaryScore},
+player1Suggestion: ${player1Suggestion},
+player2Suggestion: ${player2Suggestion},
+showPlayer1Suggestion: ${showPlayer1Suggestion},
+showPlayer2Suggestion: ${showPlayer2Suggestion}
     ''';
   }
 }

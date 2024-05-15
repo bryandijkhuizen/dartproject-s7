@@ -5,10 +5,8 @@ import 'package:darts_application/features/gameplay/score_suggestion.dart';
 
 class ScoreInput extends StatelessWidget {
   final MatchStore matchStore;
-  final GlobalKey<AnimatedAngledBoxState> player1SuggestionBoxKey = GlobalKey<AnimatedAngledBoxState>();
-  final GlobalKey<AnimatedAngledBoxState> player2SuggestionBoxKey = GlobalKey<AnimatedAngledBoxState>();
 
-  ScoreInput({
+  const ScoreInput({
     super.key,
     required this.matchStore,
   });
@@ -21,18 +19,20 @@ class ScoreInput extends StatelessWidget {
           children: [
             Observer(
               builder: (_) {
-                if (matchStore.currentPlayerId == matchStore.matchModel.player1Id) {
-                  player1SuggestionBoxKey.currentState?.show();
-                  player2SuggestionBoxKey.currentState?.hide();
-                } else {
-                  player1SuggestionBoxKey.currentState?.hide();
-                  player2SuggestionBoxKey.currentState?.show();
-                }
-                return Container();
+                return AnimatedAngledBox(
+                  isPlayer1: true,
+                  suggestion: matchStore.showPlayer1Suggestion ? matchStore.player1Suggestion : '',
+                );
               },
             ),
-            AnimatedAngledBox(key: player1SuggestionBoxKey, isPlayer1: true),
-            AnimatedAngledBox(key: player2SuggestionBoxKey, isPlayer1: false),
+            Observer(
+              builder: (_) {
+                return AnimatedAngledBox(
+                  isPlayer1: false,
+                  suggestion: matchStore.showPlayer2Suggestion ? matchStore.player2Suggestion : '',
+                );
+              },
+            ),
           ],
         ),
         Container(

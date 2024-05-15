@@ -1,4 +1,3 @@
-
 import 'package:backend/backend.dart';
 import 'package:test/test.dart';
 
@@ -13,9 +12,9 @@ void main() {
     });
 
     test('Second Test', () {
-      finishCalculator.findSolutions([], 15, 3);
-      var solutions =
-          finishCalculator.chooseBestSolutions(finishCalculator.suggestions);
+      List<List<String>> suggestions = [];
+      finishCalculator.findSolutions([], 15, 3, suggestions);
+      var solutions = finishCalculator.chooseBestSolutions(suggestions);
       expect(solutions.length, 23);
     });
 
@@ -36,9 +35,9 @@ void main() {
       print('suggestion calculation took:${elapsed.inMilliseconds} miliseconds');
       if (elapsed.inMilliseconds > 500) {
         result = false;
-    } else {
-      result = true;
-    }
+      } else {
+        result = true;
+      }
       expect(result, true);
     });
   });
