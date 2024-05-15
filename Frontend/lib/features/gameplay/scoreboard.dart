@@ -23,7 +23,8 @@ class Scoreboard extends StatelessWidget {
                     matchStore.matchModel.player1LastName,
                     matchStore.matchModel.startingPlayerId ==
                         matchStore.matchModel.player1Id,
-                    matchStore.currentPlayerId == matchStore.matchModel.player1Id,
+                    matchStore.currentPlayerId ==
+                        matchStore.matchModel.player1Id,
                     Alignment.centerLeft,
                   ),
                   scoreDisplay(context, matchStore),
@@ -32,7 +33,8 @@ class Scoreboard extends StatelessWidget {
                     matchStore.matchModel.player2LastName,
                     matchStore.matchModel.startingPlayerId ==
                         matchStore.matchModel.player2Id,
-                    matchStore.currentPlayerId == matchStore.matchModel.player2Id,
+                    matchStore.currentPlayerId ==
+                        matchStore.matchModel.player2Id,
                     Alignment.centerRight,
                   ),
                 ],
@@ -104,11 +106,12 @@ class Scoreboard extends StatelessWidget {
               fontSize: fontSizeScore,
               fontWeight: FontWeight.bold),
         ),
-        Text(
-          '${matchStore.setWins[matchStore.matchModel.player1Id] ?? 0} - ${matchStore.setWins[matchStore.matchModel.player2Id] ?? 0}',
-          style:
-              TextStyle(color: Colors.white70, fontSize: fontSizeScore * 0.85),
-        ),
+        if (matchStore.matchModel.setTarget != 1)
+          Text(
+            '${matchStore.setWins[matchStore.matchModel.player1Id] ?? 0} - ${matchStore.setWins[matchStore.matchModel.player2Id] ?? 0}',
+            style:
+                TextStyle(color: Colors.white70, fontSize: fontSizeScore * 0.85),
+          ),
       ],
     );
   }
@@ -160,19 +163,30 @@ class Scoreboard extends StatelessWidget {
     );
   }
 
-  Widget latestScoresColumn(BuildContext context, MatchStore matchStore, bool isPlayer1) {
+  Widget latestScoresColumn(
+      BuildContext context, MatchStore matchStore, bool isPlayer1) {
     double fontSize = MediaQuery.of(context).size.width / 24;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(5, (index) {
-        final scores = isPlayer1 ? matchStore.lastFiveScoresPlayer1 : matchStore.lastFiveScoresPlayer2;
+        final scores = isPlayer1
+            ? matchStore.lastFiveScoresPlayer1
+            : matchStore.lastFiveScoresPlayer2;
+        final scoreEntry =
+            index < scores.length ? scores[index] : {};
+        final isDeadThrow = scoreEntry['isDeadThrow'] ?? false;
+        final score = scoreEntry['score'] ?? '';
         return Container(
           height: 40,
           alignment: Alignment.center,
           child: Text(
-            index < scores.length ? scores[index].toString() : '',
+            score.toString(),
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white, fontSize: fontSize, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: isDeadThrow ? Colors.red : Colors.white,
+              fontSize: fontSize,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         );
       }),

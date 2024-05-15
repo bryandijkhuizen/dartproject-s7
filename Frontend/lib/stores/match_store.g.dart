@@ -25,17 +25,49 @@ mixin _$MatchStore on _MatchStore, Store {
     });
   }
 
+  late final _$isCreatingSetAtom =
+      Atom(name: '_MatchStore.isCreatingSet', context: context);
+
+  @override
+  bool get isCreatingSet {
+    _$isCreatingSetAtom.reportRead();
+    return super.isCreatingSet;
+  }
+
+  @override
+  set isCreatingSet(bool value) {
+    _$isCreatingSetAtom.reportWrite(value, super.isCreatingSet, () {
+      super.isCreatingSet = value;
+    });
+  }
+
+  late final _$isCreatingLegAtom =
+      Atom(name: '_MatchStore.isCreatingLeg', context: context);
+
+  @override
+  bool get isCreatingLeg {
+    _$isCreatingLegAtom.reportRead();
+    return super.isCreatingLeg;
+  }
+
+  @override
+  set isCreatingLeg(bool value) {
+    _$isCreatingLegAtom.reportWrite(value, super.isCreatingLeg, () {
+      super.isCreatingLeg = value;
+    });
+  }
+
   late final _$lastFiveScoresPlayer1Atom =
       Atom(name: '_MatchStore.lastFiveScoresPlayer1', context: context);
 
   @override
-  ObservableList<int> get lastFiveScoresPlayer1 {
+  ObservableList<Map<String, dynamic>> get lastFiveScoresPlayer1 {
     _$lastFiveScoresPlayer1Atom.reportRead();
     return super.lastFiveScoresPlayer1;
   }
 
   @override
-  set lastFiveScoresPlayer1(ObservableList<int> value) {
+  set lastFiveScoresPlayer1(ObservableList<Map<String, dynamic>> value) {
     _$lastFiveScoresPlayer1Atom.reportWrite(value, super.lastFiveScoresPlayer1,
         () {
       super.lastFiveScoresPlayer1 = value;
@@ -46,13 +78,13 @@ mixin _$MatchStore on _MatchStore, Store {
       Atom(name: '_MatchStore.lastFiveScoresPlayer2', context: context);
 
   @override
-  ObservableList<int> get lastFiveScoresPlayer2 {
+  ObservableList<Map<String, dynamic>> get lastFiveScoresPlayer2 {
     _$lastFiveScoresPlayer2Atom.reportRead();
     return super.lastFiveScoresPlayer2;
   }
 
   @override
-  set lastFiveScoresPlayer2(ObservableList<int> value) {
+  set lastFiveScoresPlayer2(ObservableList<Map<String, dynamic>> value) {
     _$lastFiveScoresPlayer2Atom.reportWrite(value, super.lastFiveScoresPlayer2,
         () {
       super.lastFiveScoresPlayer2 = value;
@@ -293,6 +325,14 @@ mixin _$MatchStore on _MatchStore, Store {
     });
   }
 
+  late final _$_initAsyncAction =
+      AsyncAction('_MatchStore._init', context: context);
+
+  @override
+  Future<void> _init() {
+    return _$_initAsyncAction.run(() => super._init());
+  }
+
   late final _$recordScoreAsyncAction =
       AsyncAction('_MatchStore.recordScore', context: context);
 
@@ -309,37 +349,8 @@ mixin _$MatchStore on _MatchStore, Store {
     return _$undoLastScoreAsyncAction.run(() => super.undoLastScore());
   }
 
-  late final _$endCurrentLegAsyncAction =
-      AsyncAction('_MatchStore.endCurrentLeg', context: context);
-
-  @override
-  Future<void> endCurrentLeg(String legWinnerId) {
-    return _$endCurrentLegAsyncAction
-        .run(() => super.endCurrentLeg(legWinnerId));
-  }
-
-  late final _$checkSetWinnerAsyncAction =
-      AsyncAction('_MatchStore.checkSetWinner', context: context);
-
-  @override
-  Future<void> checkSetWinner(String setWinnerId) {
-    return _$checkSetWinnerAsyncAction
-        .run(() => super.checkSetWinner(setWinnerId));
-  }
-
   late final _$_MatchStoreActionController =
       ActionController(name: '_MatchStore', context: context);
-
-  @override
-  void endMatch() {
-    final _$actionInfo =
-        _$_MatchStoreActionController.startAction(name: '_MatchStore.endMatch');
-    try {
-      return super.endMatch();
-    } finally {
-      _$_MatchStoreActionController.endAction(_$actionInfo);
-    }
-  }
 
   @override
   void updateTemporaryScore(String score) {
@@ -356,6 +367,8 @@ mixin _$MatchStore on _MatchStore, Store {
   String toString() {
     return '''
 setupComplete: ${setupComplete},
+isCreatingSet: ${isCreatingSet},
+isCreatingLeg: ${isCreatingLeg},
 lastFiveScoresPlayer1: ${lastFiveScoresPlayer1},
 lastFiveScoresPlayer2: ${lastFiveScoresPlayer2},
 currentLegScores: ${currentLegScores},
