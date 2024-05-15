@@ -1,5 +1,5 @@
+import 'package:darts_application/features/app_router/app_router.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/match.dart';
 import 'dart:math';
@@ -33,7 +33,7 @@ class _SelectStartingPlayerPageWidgetState
   Random random = Random();
 
   void redirecToGameplay(matchId) {
-    context.go('/gameplay/$matchId');
+    router.push('/gameplay/$matchId');
   }
 
   Future<void> updateStartingPlayer(playerId, matchId) async {
