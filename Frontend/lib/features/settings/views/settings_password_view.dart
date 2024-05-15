@@ -23,12 +23,12 @@ class _SettingsPasswordViewState extends State<SettingsPasswordView> {
   TextEditingController repeatPasswordController = TextEditingController();
 
   String? Function(String?)? passwordValidator =
-      ValidationBuilder(requiredMessage: 'Please enter your first name')
+      ValidationBuilder(requiredMessage: 'Please enter your new password')
           .minLength(2, 'Your first name must be a minimum of 2 characters')
           .build();
 
   String? Function(String?)? repeatPasswordValidator =
-      ValidationBuilder(requiredMessage: 'Please enter your last name')
+      ValidationBuilder(requiredMessage: 'Please re-enter your new password')
           .minLength(2, 'Your last name must be a minimum of 2 characters')
           .build();
 
