@@ -91,7 +91,7 @@ class SettingsViewState extends State<SettingsView> {
                       },
                       style: ButtonStyle(
                         backgroundColor:
-                            MaterialStatePropertyAll(theme.colorScheme.surface),
+                            WidgetStatePropertyAll(theme.colorScheme.surface),
                       ),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

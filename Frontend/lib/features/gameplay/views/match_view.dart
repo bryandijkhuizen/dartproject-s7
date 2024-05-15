@@ -55,13 +55,13 @@ class MatchView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          const Icon(Icons.error, color: Colors.red, size: 80),
+          const Icon(Icons.error, color: Color(0xFFCD0612), size: 80),
           const SizedBox(height: 20),
           Text(
             errorMessage,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              color: Colors.red,
+              color: Colors.white,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
@@ -73,7 +73,7 @@ class MatchView extends StatelessWidget {
               Navigator.of(context).maybePop();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: const Color(0xFFCD0612),
             ),
             child: const Text('Go Back', style: TextStyle(color: Colors.white)),
           ),
