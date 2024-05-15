@@ -24,6 +24,8 @@ class MatchList extends StatelessWidget {
 
       if (response.length > 0 && match.startingPlayerId != null) {
         return true;
+      } else if (match.startingPlayerId != null && response.length <= 0) {
+        return true;
       } else {
         return false;
       }
