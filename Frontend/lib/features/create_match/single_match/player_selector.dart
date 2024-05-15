@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/club_member.dart';
-import 'dart:convert';
 
 class PlayerSelector extends StatefulWidget {
   final Function(String, String, String, String) onSelectionChanged;

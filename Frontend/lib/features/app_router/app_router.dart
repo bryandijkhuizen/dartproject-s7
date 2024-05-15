@@ -190,30 +190,21 @@ final router = GoRouter(
                 routes: <RouteBase>[
                   GoRoute(
                     path: '/matches',
-                    builder: (context, state) {
-                      // return const CreateSelector();
-                      // Ignore this for now
-                      return getPlaceholderComponent(
-                          '/matches',
-                          [
-                            '/',
-                            '/matches',
-                            '/settings',
-                            '/matches/upcoming',
-                            '/matches/create/single',
-                            '/matches/create/tournament'
-                          ],
-                          context);
-                    },
-                  ),
-                ],
-              ),
-
-              // Desktop upcoming matches overview
-              StatefulShellBranch(
-                routes: <RouteBase>[
-                  GoRoute(
-                    path: '/matches/upcoming',
+                    // builder: (context, state) {
+                    //   // return const CreateSelector();
+                    //   // Ignore this for now
+                    //   return getPlaceholderComponent(
+                    //       '/matches',
+                    //       [
+                    //         '/',
+                    //         '/matches',
+                    //         '/settings',
+                    //         '/matches/upcoming',
+                    //         '/matches/create/single',
+                    //         '/matches/create/tournament'
+                    //       ],
+                    //       context);
+                    // },
                     builder: (context, state) {
                       return const UpcomingMatchesPage();
                     },
