@@ -22,7 +22,7 @@ class MatchList extends StatelessWidget {
 
       final match = matches.where((match) => match.id == matchID).first;
 
-      if (response.length > 0) {
+      if (response.length > 0 && match.startingPlayerId != null) {
         return true;
       } else {
         return false;
