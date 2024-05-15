@@ -37,9 +37,8 @@ class _SelectStartingPlayerPageWidgetState
   }
 
   Future<void> updateStartingPlayer(playerId, matchId) async {
-    await Supabase.instance.client
-        .from('match')
-        .update({'starting_player_id': playerId}).match({'id': matchId});
+    await Supabase.instance.client.rpc('update_starting_player',
+        params: {'current_match_id': matchId, 'player_id': playerId});
   }
 
   @override
@@ -103,8 +102,6 @@ class _SelectStartingPlayerPageWidgetState
                     : widget.matchDetails.player2LastName;
 
                 updateStartingPlayer(playerId, widget.matchDetails.id);
-
-                // directly redirect to gameplay here...
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
