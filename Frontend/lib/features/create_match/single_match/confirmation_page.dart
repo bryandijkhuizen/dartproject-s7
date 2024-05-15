@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:darts_application/models/match.dart';
 
@@ -17,7 +18,7 @@ class ConfirmationPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Match Confirmation'),
+        title: const Text('Match Confirmation'),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -47,6 +48,16 @@ class ConfirmationPage extends StatelessWidget {
               const SizedBox(height: 20),
               const Text('Number of Sets', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               Text(match.setTarget.toString(), style: const TextStyle(fontSize: 16)),
+              const SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    context.go('/matches');
+                  },
+                  child: const Text('Back to match overview'),
+                ),
+              ),
             ],
           ),
         ),
