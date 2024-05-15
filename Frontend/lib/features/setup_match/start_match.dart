@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-import 'select_starting_player.dart';
+import 'package:darts_application/features/setup_match/select_starting_player.dart';
+import 'package:darts_application/models/match.dart';
+import 'package:darts_application/models/player.dart';
 
 class StartMatch extends StatefulWidget {
   final String matchId;
@@ -16,8 +17,16 @@ class _StartMatchState extends State<StartMatch> {
   bool player1Joined = false;
   bool player2Joined = false;
   bool markerJoined = false;
-
-  Map<String, dynamic> matchDetails = {};
+  MatchModel matchDetails = MatchModel(
+    id: '',
+    player1Id: '',
+    player2Id: '',
+    date: DateTime.now(),
+    setTarget: 0,
+    legTarget: 0,
+    player1LastName: '',
+    player2LastName: '',
+  );
 
   @override
   void initState() {
@@ -40,25 +49,22 @@ class _StartMatchState extends State<StartMatch> {
           .eq('id', widget.matchId)
           .single();
 
+      MatchModel match = MatchModel.fromJson(matchResponse);
+
       final userResponse = await Supabase.instance.client.from('user').select();
 
-      Map<String, String> players = {};
-      for (var user in userResponse) {
-        players[user['id'].toString()] = user['last_name'];
-      }
+      List<PlayerModel> players = userResponse
+          .map<PlayerModel>((user) => PlayerModel.fromJson(user))
+          .toList();
+
+      match.player1LastName =
+          players.firstWhere((player) => player.id == match.player1Id).lastName;
+
+      match.player2LastName =
+          players.firstWhere((player) => player.id == match.player2Id).lastName;
 
       setState(() {
-        matchDetails = {
-          'id': matchResponse['id'],
-          'player_1_last_name':
-              players[matchResponse['player_1_id'].toString()],
-          'player_2_last_name':
-              players[matchResponse['player_2_id'].toString()],
-          'player_1_id': matchResponse['player_1_id'],
-          'player_2_id': matchResponse['player_2_id'],
-          'set_target': matchResponse['set_target'],
-          'leg_target': matchResponse['leg_target'],
-        };
+        matchDetails = match;
       });
     } catch (e) {
       throw Exception('Failed to fetch match details: $e');
@@ -126,17 +132,16 @@ class _StartMatchState extends State<StartMatch> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(height: buttonHeight * 0.2), // Top padding
+            SizedBox(height: buttonHeight * 0.2),
             Text(
-              'Match ID: ${widget.matchId}', // Display the match ID on the screen
-
+              'Match ID: ${widget.matchId}',
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
-            SizedBox(height: buttonHeight * 0.15), // Space below the match ID
+            SizedBox(height: buttonHeight * 0.15),
             ElevatedButton(
               style: buttonStyles[player1Joined ? 'joined' : 'notJoined'],
               onPressed: () {
@@ -145,10 +150,10 @@ class _StartMatchState extends State<StartMatch> {
                 });
               },
               child: Text(player1Joined
-                  ? 'Joined as ${matchDetails['player_1_last_name']}'
-                  : 'Join as ${matchDetails['player_1_last_name']}'),
+                  ? 'Joined as ${matchDetails.player1LastName}'
+                  : 'Join as ${matchDetails.player1LastName}'),
             ),
-            SizedBox(height: buttonHeight * 0.15), // Space between buttons
+            SizedBox(height: buttonHeight * 0.15),
             ElevatedButton(
               style: buttonStyles[player2Joined ? 'joined' : 'notJoined'],
               onPressed: () {
@@ -157,8 +162,8 @@ class _StartMatchState extends State<StartMatch> {
                 });
               },
               child: Text(player2Joined
-                  ? 'Joined as ${matchDetails['player_2_last_name']}'
-                  : 'Join as ${matchDetails['player_2_last_name']}'),
+                  ? 'Joined as ${matchDetails.player2LastName}'
+                  : 'Join as ${matchDetails.player2LastName}'),
             ),
             SizedBox(height: buttonHeight * 0.15), // Space between buttons
             ElevatedButton(
