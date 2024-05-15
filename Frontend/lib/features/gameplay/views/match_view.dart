@@ -75,10 +75,7 @@ class MatchView extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () {
-              context.read<MatchStore>().errorMessage = '';
-              Navigator.of(context).maybePop();
-            },
+            onPressed: () => router.push('/gameplay/$matchId'),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFCD0612),
             ),
@@ -127,7 +124,7 @@ class MatchView extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () => router.push('/matches'),
+            onPressed: () => router.push('/'),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text(
               'Quit and Save Game',
