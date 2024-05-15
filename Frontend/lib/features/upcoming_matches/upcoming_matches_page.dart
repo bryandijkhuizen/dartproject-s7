@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:intl/intl.dart'; // Import intl package
 import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
 import 'package:darts_application/features/create_match/tournament/create_tournament_page.dart';
+import 'package:darts_application/models/player.dart';
 
 class UpcomingMatchesPage extends StatefulWidget {
   const UpcomingMatchesPage({super.key});
@@ -13,12 +15,14 @@ class UpcomingMatchesPage extends StatefulWidget {
 class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
   late Future<List<Map<String, dynamic>>> upcomingMatches;
   late Future<List<Map<String, dynamic>>> upcomingTournaments;
+  late Future<List<PlayerModel>> players;
 
   @override
   void initState() {
     super.initState();
     upcomingMatches = fetchUpcomingMatches();
     upcomingTournaments = fetchUpcomingTournaments();
+    players = fetchPlayers();
   }
 
   Future<List<Map<String, dynamic>>> fetchUpcomingMatches() async {
@@ -39,6 +43,11 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
       .order('start_time', ascending: true);
 
     return List<Map<String, dynamic>>.from(response);
+  }
+
+  Future<List<PlayerModel>> fetchPlayers() async {
+    final response = await Supabase.instance.client.from('user').select();
+    return response.map<PlayerModel>((player) => PlayerModel.fromJson(player)).toList();
   }
 
   @override
@@ -64,15 +73,16 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
               padding: EdgeInsets.all(8.0),
               child: Text('Single matches', style: TextStyle(fontSize: 16)),
             ),
-            FutureBuilder<List<Map<String, dynamic>>>(
-              future: upcomingMatches,
+            FutureBuilder<List<dynamic>>(
+              future: Future.wait([upcomingMatches, players]),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (snapshot.hasData) {
-                  final matches = snapshot.data!;
+                  final matches = snapshot.data![0] as List<Map<String, dynamic>>;
+                  final playersList = snapshot.data![1] as List<PlayerModel>;
                   return ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
@@ -80,9 +90,11 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
                     itemBuilder: (context, index) {
                       var match = matches[index];
                       DateTime matchDate = DateTime.parse(match['date']);
+                      var player1 = playersList.firstWhere((player) => player.id == match['player_1_id']);
+                      var player2 = playersList.firstWhere((player) => player.id == match['player_2_id']);
                       return ListTile(
-                        title: Text('Match on ${matchDate.toLocal()}'),
-                        subtitle: Text('Location: ${match['location']} - ${match['player_1_id']} vs ${match['player_2_id']}'),
+                        title: Text('Match on ${DateFormat('EEEE, MMM d, y - HH:mm').format(matchDate)}'),
+                        subtitle: Text('Location: ${match['location']} - ${player1.lastName} vs ${player2.lastName}'),
                       );
                     },
                   );
@@ -112,7 +124,7 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
                       var tournament = tournaments[index];
                       DateTime tournamentDate = DateTime.parse(tournament['start_time']);
                       return ListTile(
-                        title: Text('${tournament['name']} on ${tournamentDate.toLocal()}'),
+                        title: Text('${tournament['name']} on ${DateFormat('EEEE, MMM d, y - HH:mm').format(tournamentDate)}'),
                         subtitle: Text('Location: ${tournament['location']} - Club: ${tournament['club_id']}'),
                       );
                     },
