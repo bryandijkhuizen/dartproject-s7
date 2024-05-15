@@ -78,14 +78,6 @@ $function$
 ;
 
 create policy "Enable read access for all users"
-on "public"."avatar"
-as permissive
-for select
-to public
-using (true);
-
-
-create policy "Enable read access for all users"
 on "public"."role"
 as permissive
 for select

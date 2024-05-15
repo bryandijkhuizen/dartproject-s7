@@ -5,16 +5,16 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:backend/backend.dart';
 
-class UserManagementAssign extends StatefulWidget {
-  UserManagementAssign({Key? key, required this.uuid}) : super(key: key);
+class UserManagementAssignView extends StatefulWidget {
+  UserManagementAssignView({Key? key, required this.uuid}) : super(key: key);
 
   final String uuid;
 
   @override
-  _UserManagementAssignState createState() => _UserManagementAssignState();
+  _UserManagementAssignViewState createState() => _UserManagementAssignViewState();
 }
 
-class _UserManagementAssignState extends State<UserManagementAssign> {
+class _UserManagementAssignViewState extends State<UserManagementAssignView> {
   late RoleAssignmentController controller;
   @override
   void initState() {
