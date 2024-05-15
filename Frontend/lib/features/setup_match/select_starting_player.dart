@@ -32,7 +32,7 @@ class _SelectStartingPlayerPageWidgetState
   bool player2Selected = false;
   Random random = Random();
 
-  void redirecToGameplay(matchId) {
+  void redirectToGameplay(matchId) {
     router.push('/gameplay/$matchId');
   }
 
@@ -110,7 +110,7 @@ class _SelectStartingPlayerPageWidgetState
                     ),
                   ),
                 );
-                redirecToGameplay(widget.matchDetails.id);
+                redirectToGameplay(widget.matchDetails.id);
               },
               style: widget.buttonStyles['random'],
               child: const Text('Random'),
@@ -137,7 +137,7 @@ class _SelectStartingPlayerPageWidgetState
                   ),
                 );
 
-                redirecToGameplay(widget.matchDetails.id);
+                redirectToGameplay(widget.matchDetails.id);
               },
               style: widget.buttonStyles['notJoined'],
               child: const Text('Confirm'),
