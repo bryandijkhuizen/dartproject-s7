@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:backend/backend.dart';
 import 'package:test/test.dart';

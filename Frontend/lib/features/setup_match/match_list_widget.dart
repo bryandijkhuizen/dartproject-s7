@@ -5,7 +5,7 @@ import 'package:darts_application/models/player.dart';
 import 'package:darts_application/features/setup_match/match_list.dart';
 
 class MatchListWidget extends StatefulWidget {
-  const MatchListWidget({Key? key}) : super(key: key);
+  const MatchListWidget({super.key});
 
   @override
   _MatchListWidgetState createState() => _MatchListWidgetState();
