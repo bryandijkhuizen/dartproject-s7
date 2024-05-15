@@ -1,3 +1,4 @@
+import 'package:darts_application/features/app_router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:darts_application/stores/match_store.dart';
@@ -16,6 +17,12 @@ class MatchView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Match', style: TextStyle(color: Colors.white)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            router.push('/matches');
+          },
+        ),
       ),
       body: Provider(
         create: (context) => MatchStore(Supabase.instance.client, matchId),
@@ -120,7 +127,8 @@ class MatchView extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false),
+            onPressed: () => Navigator.of(context)
+                .pushNamedAndRemoveUntil('/', (route) => false),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text(
               'Quit and Save Game',
