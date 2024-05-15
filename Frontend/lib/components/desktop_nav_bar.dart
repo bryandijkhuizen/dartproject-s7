@@ -1,7 +1,12 @@
 import 'package:darts_application/components/navigation_divider.dart';
 import 'package:darts_application/components/navigation_item.dart';
+import 'package:darts_application/models/permission.dart';
+import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gotrue/src/types/session.dart';
+import 'package:provider/provider.dart';
 
 class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
   final double height;
@@ -16,45 +21,78 @@ class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(height);
 
-  @override
-  Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
+  void _goBranch(int index) {
+    currentShell.goBranch(
+      index,
+      // A common pattern when using bottom navigation bars is to support
+      // navigating to the initial location when tapping the item that is
+      // already active.
+      initialLocation: index == currentShell.currentIndex,
+    );
+  }
+
+  List<NavigationItem> getNavigationItems(List<String> systemPermissions) {
     var navigationItems = [
-      const NavigationItem(
+      NavigationItem(
         label: 'Home',
         location: '/',
+        active: currentShell.currentIndex == 0,
+        callback: () {
+          _goBranch(0);
+        },
       ),
-      const NavigationItem(
+      NavigationItem(
         label: 'Statistics',
         location: '/statistics',
+        active: currentShell.currentIndex == 1,
+        callback: () {
+          _goBranch(1);
+        },
       ),
-      const NavigationItem(
+      NavigationItem(
         label: 'Matches',
         location: '/matches',
+        active: currentShell.currentIndex == 2,
+        callback: () {
+          _goBranch(2);
+        },
       ),
-      const NavigationItem(
+      NavigationItem(
+        enabled: systemPermissions
+            .contains(SystemPermission.assignRole.permissionName),
         label: 'User management',
         location: '/user-management',
+        active: currentShell.currentIndex == 3,
+        callback: () {
+          _goBranch(3);
+        },
       ),
-      const NavigationItem(
+      NavigationItem(
         label: 'Club management',
         location: '/club-management',
+        active: currentShell.currentIndex == 4,
+        callback: () {
+          _goBranch(4);
+        },
       ),
-      const NavigationItem(
+      NavigationItem(
         label: 'Settings',
         location: '/settings',
+        active: currentShell.currentIndex == 5,
+        callback: () {
+          _goBranch(5);
+        },
       ),
     ];
 
-    // Get current navigationItem (synced with router's branches)
-    var currentItem = navigationItems[currentShell.currentIndex];
+    print("pp time");
+    print(systemPermissions);
+    return navigationItems;
+  }
 
-    // Replace navigationItem to make it active (Replace because its immutable)
-    navigationItems[currentShell.currentIndex] = NavigationItem(
-      label: currentItem.label,
-      location: currentItem.location,
-      active: true,
-    );
+  @override
+  Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
 
     return Container(
       color: theme.colorScheme.primary,
@@ -68,15 +106,26 @@ class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
             width: 60,
           ),
           Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (BuildContext _, int index) {
-                return navigationItems[index];
+            child: Observer(
+              builder: (context) {
+                UserStore userStore = context.read();
+                List<NavigationItem> navigationItems =
+                    getNavigationItems(userStore.systemPermissions);
+                return ListView.separated(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (BuildContext _, int index) {
+                    return navigationItems[index];
+                  },
+                  separatorBuilder: (BuildContext context, int index) {
+                    if (navigationItems[index].enabled) {
+                      return const NavigationDivider();
+                    }
+                    return Container();
+                  },
+                  itemCount: navigationItems.length,
+                );
               },
-              separatorBuilder: (BuildContext context, int index) =>
-                  const NavigationDivider(),
-              itemCount: navigationItems.length,
             ),
           ),
           const Text(

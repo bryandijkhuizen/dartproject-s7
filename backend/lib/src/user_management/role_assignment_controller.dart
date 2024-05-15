@@ -12,7 +12,7 @@ class RoleAssignmentController {
 
   static Future<RoleAssignmentModel> _fetchCurrentUserRoles(String id) async {
     final response = await Supabase.instance.client.rpc(
-      "get_current_user_roles",
+      "get_current_user_and_role_information",
       params: {'current_user_id': id},
     );
 

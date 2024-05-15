@@ -6,20 +6,21 @@ import 'package:darts_application/features/settings/views/settings_email_view.da
 import 'package:darts_application/features/settings/views/settings_name_view.dart';
 import 'package:darts_application/features/settings/views/settings_password_view.dart';
 import 'package:darts_application/features/settings/views/settings_view.dart';
-import 'package:darts_application/features/user_management/user_management_assign.dart';
-import 'package:darts_application/features/user_management/user_management_view.dart';
+import 'package:darts_application/features/user_management/views/user_management_assign_view.dart';
+import 'package:darts_application/features/user_management/views/user_management_view.dart';
 import 'package:darts_application/helpers.dart';
+import 'package:darts_application/models/permission.dart';
+import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/features/setup_match/start_match.dart';
 import 'package:darts_application/features/setup_match/match_list_widget.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 
 Widget getPlaceholderComponent(
     String currentRoute, List<String> routes, BuildContext context) {
-        String yourToken = "${Supabase.instance.client.auth.currentSession?.accessToken}";
-  Map<String, dynamic> decodedToken = JwtDecoder.decode(yourToken);
+
   return Center(
     child: Column(
       children: [
@@ -31,8 +32,8 @@ Widget getPlaceholderComponent(
             },
             child: Text('Go to $route'),
           ),
- 
-          Text(decodedToken.toString()),
+          //Text(Supabase.instance.client.auth.currentSession?.toJson().toString() ?? 'no claim'),
+          
         TextButton(
             onPressed: () {
               Supabase.instance.client.auth.signOut();
@@ -221,20 +222,28 @@ final router = GoRouter(
                   ),
                 ],
               ),
-
+              
               // Branch for user management
               StatefulShellBranch(
                 routes: <RouteBase>[
                   GoRoute(
+                    redirect: (context, state) {
+                        UserStore userStore = context.read<UserStore>();
+                        if(!userStore.systemPermissions.contains(SystemPermission.assignRole.permissionName)){
+                            return '/';
+                        }
+                        return null;
+                    },
                     path: '/user-management',
                     builder: (context, state) {
+                    
                       // Ignore this for now
                       return UserManagementView();
                     },
                     routes: [
                       GoRoute(path: 'edit/:uuid',
                       builder: (context, state) {
-                        return UserManagementAssign(uuid: state.pathParameters['uuid']!);
+                        return UserManagementAssignView(uuid: state.pathParameters['uuid']!);
                       },)
                     ],
                   ),
