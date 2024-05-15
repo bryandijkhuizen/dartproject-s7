@@ -37,10 +37,16 @@ class MobileNavBar extends StatelessWidget {
       ),
     ];
 
-    return NavigationBar(
-      onDestinationSelected: _goBranch,
-      selectedIndex: currentShell.currentIndex,
-      destinations: platformDestinations,
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(10),
+        topRight: Radius.circular(10),
+      ),
+      child: NavigationBar(
+        onDestinationSelected: _goBranch,
+        selectedIndex: currentShell.currentIndex,
+        destinations: platformDestinations,
+      ),
     );
   }
 }
