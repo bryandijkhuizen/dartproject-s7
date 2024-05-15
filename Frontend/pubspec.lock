@@ -312,7 +312,7 @@ packages:
       sha256: a70b0dd9a1c35d05d1141557f7e49ffe4de5f450ffde31755a9eeeadca03b8ee
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.0"
+    version: "2.0.0"
   glob:
     dependency: transitive
     description:
@@ -392,7 +392,7 @@ packages:
       sha256: c9c984f088320a5c5e87c7a34571e3de3982cca4cbd8b978e59d36baf748edfb
       url: "https://pub.dev"
     source: hosted
-    version: "2.6.1"
+    version: "2.6.0"
   graphs:
     dependency: transitive
     description:
