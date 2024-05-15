@@ -11,8 +11,8 @@ class FormSaveButton extends StatelessWidget {
   final void Function()? onSave;
   final bool loading;
 
-  WidgetStateProperty<Color?> getMaterialStateOverlayColor(ThemeData theme) =>
-      WidgetStateProperty.resolveWith(
+  MaterialStateProperty<Color?> getMaterialStateOverlayColor(ThemeData theme) =>
+      MaterialStateProperty.resolveWith(
         (states) => theme.colorScheme.onPrimary.withOpacity(0.1),
       );
 
@@ -31,14 +31,14 @@ class FormSaveButton extends StatelessWidget {
     ThemeData theme = Theme.of(context);
 
     Color? cancelBackgroundColorResolver(states) {
-      if (states.contains(WidgetState.disabled)) {
+      if (states.contains(MaterialState.disabled)) {
         return theme.colorScheme.primary.withAlpha(128);
       }
       return theme.colorScheme.primary;
     }
 
     Color? saveBackgroundColorResolver(states) {
-      if (states.contains(WidgetState.disabled)) {
+      if (states.contains(MaterialState.disabled)) {
         return theme.colorScheme.secondary.withAlpha(128);
       }
       return theme.colorScheme.secondary;
@@ -49,10 +49,10 @@ class FormSaveButton extends StatelessWidget {
         Expanded(
           child: ElevatedButton(
             style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.resolveWith(
+              backgroundColor: MaterialStateProperty.resolveWith(
                   cancelBackgroundColorResolver),
               overlayColor: getMaterialStateOverlayColor(theme),
-              shape: WidgetStateProperty.resolveWith(
+              shape: MaterialStateProperty.resolveWith(
                 (states) => RoundedRectangleBorder(
                   borderRadius: leftButtonBorderRadius,
                 ),
@@ -69,10 +69,10 @@ class FormSaveButton extends StatelessWidget {
         Expanded(
           child: ElevatedButton(
             style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.resolveWith(
+              backgroundColor: MaterialStateProperty.resolveWith(
                   saveBackgroundColorResolver),
               overlayColor: getMaterialStateOverlayColor(theme),
-              shape: WidgetStateProperty.resolveWith(
+              shape: MaterialStateProperty.resolveWith(
                 (states) => RoundedRectangleBorder(
                   borderRadius: rightButtonBorderRadius,
                 ),

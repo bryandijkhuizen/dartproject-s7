@@ -9,8 +9,8 @@ class AuthView extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
 
-    Color getColor(Set<WidgetState> states) {
-      if (states.contains(WidgetState.hovered)) {
+    Color getColor(Set<MaterialState> states) {
+      if (states.contains(MaterialState.hovered)) {
         return theme.colorScheme.primary.withOpacity(0.4);
       }
 
@@ -63,9 +63,9 @@ class AuthView extends StatelessWidget {
                         elevatedButtonTheme: ElevatedButtonThemeData(
                           style: ButtonStyle(
                             backgroundColor:
-                                WidgetStateProperty.resolveWith(getColor),
+                                MaterialStateProperty.resolveWith(getColor),
                             foregroundColor:
-                                const WidgetStatePropertyAll(Colors.white),
+                                const MaterialStatePropertyAll(Colors.white),
                             splashFactory: InkSplash.splashFactory,
                           ),
                         ),
