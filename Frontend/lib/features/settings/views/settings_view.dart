@@ -30,7 +30,7 @@ class SettingsViewState extends State<SettingsView> {
       body: GenericScreen(
         child: Column(
           children: [
-            SettingsHeader(),
+            const SettingsHeader(),
             const SizedBox(
               height: 24,
             ),

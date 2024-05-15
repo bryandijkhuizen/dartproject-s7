@@ -1,4 +1,3 @@
-import 'package:backend/backend.dart';
 
 class FinishCalculator {
   List<List<String>> suggestions = [];
@@ -42,14 +41,14 @@ class FinishCalculator {
         for (int j = 1; j <= 20; j++) {
           List<String> newTree = List.from(currentTree);
 
-          newTree.add('${modifiers[i]}${j}');
+          newTree.add('${modifiers[i]}$j');
           findSolutions(newTree, remainingScore - j * i, dartsLeft - 1);
         }
       }
       if (dartsLeft == 1 && i == 2) {
         for (int j = 1; j <= 20; j++) {
           List<String> newTree = List.from(currentTree);
-          newTree.add('D${j}');
+          newTree.add('D$j');
           findSolutions(newTree, remainingScore - j * i, dartsLeft - 1);
         }
       }
