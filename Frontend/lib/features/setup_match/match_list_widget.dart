@@ -32,6 +32,9 @@ class _MatchListWidgetState extends State<MatchListWidget> {
     final matchResponseActive =
         await Supabase.instance.client.rpc('get_active_matches');
 
+    matchResponsePending.removeWhere((match) => match['winner_id'] != null);
+    matchResponseActive.removeWhere((match) => match['winner_id'] != null);
+
     final userResponse = await Supabase.instance.client.rpc('get_users');
     List<PlayerModel> players = userResponse
         .map<PlayerModel>((user) => PlayerModel.fromJson(user))
