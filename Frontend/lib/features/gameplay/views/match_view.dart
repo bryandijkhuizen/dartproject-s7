@@ -127,8 +127,7 @@ class MatchView extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () => Navigator.of(context)
-                .pushNamedAndRemoveUntil('/', (route) => false),
+            onPressed: () => router.push('/matches'),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text(
               'Quit and Save Game',
