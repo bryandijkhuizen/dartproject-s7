@@ -33,13 +33,46 @@ END;
 $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION get_matches() 
+CREATE OR REPLACE FUNCTION get_pending_matches()
 RETURNS SETOF "match" AS
 $$
 BEGIN
     RETURN QUERY
     SELECT *
-    FROM "match";
+    FROM "match"
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM "set"
+        WHERE match_id = "match".id
+    );
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_completed_matches()
+RETURNS SETOF "match" AS
+$$
+BEGIN
+    RETURN QUERY
+    SELECT *
+    FROM "match"
+    WHERE winner_id IS NOT NULL;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_active_matches()
+RETURNS SETOF "match" AS
+$$
+BEGIN
+    RETURN QUERY
+    SELECT *
+    FROM "match"
+    WHERE EXISTS (
+        SELECT 1
+        FROM "set"
+        WHERE match_id = "match".id
+    );
 END;
 $$
 LANGUAGE plpgsql;
