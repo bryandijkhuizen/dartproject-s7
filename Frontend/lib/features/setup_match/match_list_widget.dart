@@ -10,12 +10,12 @@ class MatchListWidget extends StatelessWidget {
   const MatchListWidget({super.key});
 
   Future<List<MatchModel>> fetchMatches() async {
-    final matchResponse = await Supabase.instance.client.from('match').select();
+    final matchResponse = await Supabase.instance.client.rpc('get_matches');
     List<MatchModel> matches = matchResponse
         .map<MatchModel>((match) => MatchModel.fromJson(match))
         .toList();
 
-    final userResponse = await Supabase.instance.client.from('user').select();
+    final userResponse = await Supabase.instance.client.rpc('get_users');
     List<PlayerModel> players = userResponse
         .map<PlayerModel>((user) => PlayerModel.fromJson(user))
         .toList();
@@ -31,12 +31,9 @@ class MatchListWidget extends StatelessWidget {
   }
 
   Future<bool> matchAlreadyStarted(matchID) async {
-    print("Checking if match has already started");
     try {
       final response = await Supabase.instance.client
-          .from('set')
-          .select()
-          .eq('match_id', matchID);
+          .rpc('get_sets_by_match_id', params: {'current_match_id': matchID});
 
       if (response.isNotEmpty) {
         return true;
@@ -83,10 +80,8 @@ class MatchListWidget extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () async {
                         if (await matchAlreadyStarted(matchId) == true) {
-                          print("Match already started");
                           context.go('/gameplay/$matchId');
                         } else {
-                          print("Match not started yet");
                           context.go('/matches/$matchId');
                         }
                       },
