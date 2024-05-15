@@ -60,10 +60,12 @@ BEGIN
         GROUP BY match_id
     ) s ON m.id = s.match_id
     WHERE s.match_id IS NULL
-    AND m.winner_id IS NULL;
+    AND m.winner_id IS NULL
+    AND m.starting_player_id IS NULL;
 END;
 $$
 LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE FUNCTION get_active_matches()
 RETURNS SETOF "match" AS
@@ -78,10 +80,12 @@ BEGIN
         GROUP BY match_id
     ) s ON m.id = s.match_id
     WHERE s.match_id IS NOT NULL
-    AND m.winner_id IS NULL;
+    AND m.winner_id IS NULL
+    OR m.starting_player_id IS NOT NULL;
 END;
 $$
 LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE FUNCTION get_sets_by_match_id(current_match_id INT)
 RETURNS SETOF "set" AS
