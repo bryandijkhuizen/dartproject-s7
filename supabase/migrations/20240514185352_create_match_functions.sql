@@ -55,3 +55,18 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION update_starting_player(current_match_id INT, player_id UUID)
+RETURNS SETOF "match" AS
+$$
+BEGIN
+    UPDATE "match"
+    SET starting_player_id = player_id
+    WHERE id = current_match_id;
+    RETURN QUERY
+    SELECT *
+    FROM "match"
+    WHERE id = current_match_id;
+END;
+$$
+LANGUAGE plpgsql;
