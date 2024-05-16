@@ -2,6 +2,7 @@ import 'package:darts_application/components/scaffolding.dart';
 import 'package:darts_application/features/app_router/app_router_redirect.dart';
 import 'package:darts_application/features/auth/auth_notifier.dart';
 import 'package:darts_application/features/auth/auth_view.dart';
+import 'package:darts_application/features/clubs/views/club_overview.dart';
 import 'package:darts_application/features/settings/views/settings_email_view.dart';
 import 'package:darts_application/features/settings/views/settings_name_view.dart';
 import 'package:darts_application/features/settings/views/settings_password_view.dart';
@@ -152,6 +153,23 @@ final router = GoRouter(
 
               // Mobile user settings
               settingsRoute,
+
+              StatefulShellBranch(
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: '/clubs',
+                    builder: (context, state) => const ClubOverview(),
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: ':id',
+                        builder: (context, state) {
+                          return Placeholder();
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ]
           // Desktop branches
           : [
