@@ -132,17 +132,18 @@ final router = GoRouter(
                 routes: <RouteBase>[
                   GoRoute(
                     path: '/statistics',
-                    routes: <RouteBase>[
-                      GoRoute(
-                        path: ':matchId',
-                        builder: (context, state) {
-                          final matchId = state.pathParameters['matchId']!;
-                          return MatchStatisticsWidget(matchId: matchId);
-                        },
-                      ),
-                    ],
+                    // routes: <RouteBase>[
+                    //   GoRoute(
+                    //     path: ':matchId',
+                    //     builder: (context, state) {
+                    //       final int matchId =
+                    //           state.pathParameters['matchId']! as int;
+                    //       return MatchStatisticsWidget(matchId: matchId);
+                    //     },
+                    //   ),
+                    // ],
                     builder: (context, state) {
-                      return const MatchStatisticsWidget(matchId: '1');
+                      return MatchStatisticsWidget();
                     },
                   ),
                 ],
