@@ -23,10 +23,8 @@ class MatchList extends StatelessWidget {
       final match = matches.where((match) => match.id == matchID).first;
 
       if (response.length > 0 && match.startingPlayerId != null) {
-        print('Match already started1');
         return true;
       } else {
-        print('Match not started');
         return false;
       }
     } catch (e) {
