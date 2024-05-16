@@ -12,7 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/features/setup_match/start_match.dart';
-import 'package:darts_application/features/setup_match/match_list_widget.dart';
+import 'package:darts_application/features/setup_match/views/match_list_widget.dart';
+import 'package:darts_application/features/statistics/views/match_statistics_widget.dart';
 
 Widget getPlaceholderComponent(
     String currentRoute, List<String> routes, BuildContext context) {
@@ -131,16 +132,17 @@ final router = GoRouter(
                 routes: <RouteBase>[
                   GoRoute(
                     path: '/statistics',
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: ':matchId',
+                        builder: (context, state) {
+                          final matchId = state.pathParameters['matchId']!;
+                          return MatchStatisticsWidget(matchId: matchId);
+                        },
+                      ),
+                    ],
                     builder: (context, state) {
-                      // Ignore this for now
-                      return getPlaceholderComponent(
-                          '/statistics',
-                          [
-                            '/',
-                            '/matches',
-                            '/settings',
-                          ],
-                          context);
+                      return const MatchStatisticsWidget(matchId: '1');
                     },
                   ),
                 ],
