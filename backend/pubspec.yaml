@@ -14,8 +14,6 @@ dependencies:
   provider: ^6.1.2
   mockito: ^5.4.4
   # path: ^1.8.0
-  darts_application:
-    path: ../frontend
 
 dev_dependencies:
   lints: ^3.0.0
