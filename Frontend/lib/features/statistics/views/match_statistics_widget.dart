@@ -9,7 +9,7 @@ import 'package:darts_application/models/match.dart';
 import 'package:darts_application/models/turn.dart';
 
 class MatchStatisticsWidget extends StatefulWidget {
-  final String matchId;
+  final int matchId;
   const MatchStatisticsWidget({super.key, required this.matchId});
 
   @override
@@ -35,57 +35,94 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
   @override
   void initState() {
     super.initState();
-    _matchStatisticsFuture = fetchMatchStatistics(widget.matchId);
+    _matchStatisticsFuture = fetchMatchStatistics(1);
   }
 
-  Future<MatchStatisticsModel> fetchMatchStatistics(matchId) async {
+  Future<MatchStatisticsModel> fetchMatchStatistics(currentMatchId) async {
     final client = Supabase.instance.client;
 
-    final matchResponse = await client.rpc('get_completed_match_by_id',
-        params: {'match_id': matchId}).single();
+    print('Fetching match statistics for match ID: $currentMatchId');
 
-    final setsResponse = await client
-        .rpc('get_sets_by_match_id', params: {'current_match_id': matchId});
+    final matchResponse = await client.rpc('get_completed_match_by_id',
+        params: {'match_id': currentMatchId}).single();
+
+    print('Match response: $matchResponse');
+
+    final setsResponse = await client.rpc('get_sets_by_match_id',
+        params: {'current_match_id': currentMatchId});
+
+    print('Sets response: $setsResponse');
 
     final setsData = setsResponse as List<dynamic>? ?? [];
-    setIds = setsData.map<int>((set) => set['id'] as int).toList();
+    final setIds = setsData.map<int>((set) => set['id'] as int).toList();
+
+    final legDataBySet = <int, List<Map<String, dynamic>>>{};
 
     for (final setId in setIds) {
       final legsResponse = await client
           .rpc('get_legs_by_set_id', params: {'current_set_id': setId});
 
+      print('Legs response: $legsResponse');
+
       final legsData = legsResponse as List<dynamic>? ?? [];
+
+      print('Legs data: $legsData');
+
       legDataBySet[setId] = legsData
           .map((leg) => {
                 'id': leg['id'] as int,
                 'winner_id': leg['winner_id'] as String,
               })
           .toList();
+
+      print('Leg data by set: $legDataBySet');
     }
 
-    turns = await Future.wait(setIds.expand((setId) {
+    final turns = await Future.wait(setIds.expand((setId) {
       return legDataBySet[setId]!.map((leg) async {
         final legId = leg['id'];
         final turnsResponse = await client
             .rpc('get_turns_by_leg_id', params: {'current_leg_id': legId});
 
-        return (turnsResponse as List<dynamic>? ?? [])
-            .map((turn) => TurnModel(
-                  id: turn['id'] as int,
-                  playerId: turn['player_id'] as String,
-                  legId: turn['leg_id'] as int,
-                  score: turn['score'] as int,
-                  doubleAttempts: turn['double_attempts'] as int? ?? 0,
-                  doubleHits: turn['double_hits'] as int? ?? 0,
-                  isDeadThrow: turn['is_dead_throw'] as bool,
-                ))
-            .toList();
+        return (turnsResponse as List<dynamic>? ?? []).map((turn) {
+          // Ensure turn fields are not null and handle them properly
+          final id = turn['id'];
+          final playerId = turn['player_id'];
+          final legId = turn['leg_id'];
+          final score = turn['score'];
+          final doubleAttempts = turn['double_attempts'];
+          final doubleHits = turn['double_hits'];
+          final isDeadThrow = turn['is_dead_throw'];
+
+          if (id == null ||
+              playerId == null ||
+              legId == null ||
+              score == null ||
+              isDeadThrow == null) {
+            throw Exception('Invalid turn data');
+          }
+
+          return TurnModel(
+            id: id as int,
+            playerId: playerId as String,
+            legId: legId as int,
+            score: score as int,
+            doubleAttempts: doubleAttempts as int? ?? 0,
+            doubleHits: doubleHits as int? ?? 0,
+            isDeadThrow: isDeadThrow as bool,
+          );
+        }).toList();
       });
     }).toList())
         .then((turnLists) => turnLists.expand((turnList) => turnList).toList());
 
     final userResponse = await Supabase.instance.client.rpc('get_users');
-    List<PlayerModel> players = userResponse
+
+    if (userResponse == null) {
+      throw Exception('Failed to load users');
+    }
+
+    final players = userResponse
         .map<PlayerModel>((user) => PlayerModel.fromJson(user))
         .toList();
 
@@ -93,7 +130,6 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
 
     match.player1LastName =
         players.firstWhere((player) => player.id == match.player1Id).lastName;
-
     match.player2LastName =
         players.firstWhere((player) => player.id == match.player2Id).lastName;
 
@@ -136,16 +172,31 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
         }
 
         final matchStatistics = snapshot.data!;
+
+        if (matchStatistics.setIds.isEmpty) {
+          return Center(
+            child: Text('No sets available for this match.'),
+          );
+        }
+
         final player1Average = matchStatistics.calculateAverageScore(player1Id);
         final player2Average = matchStatistics.calculateAverageScore(player2Id);
 
         // Get current set ID and leg ID based on the current indices
-        int currentSetId = setIds[currentSet];
-        int currentLegId = legDataBySet[currentSetId]![currentLeg]['id'];
+        int currentSetId = matchStatistics.setIds[currentSet];
+        if (matchStatistics.legDataBySet[currentSetId] == null ||
+            matchStatistics.legDataBySet[currentSetId]!.isEmpty) {
+          return Center(
+            child: Text('No legs available for the selected set.'),
+          );
+        }
+        int currentLegId =
+            matchStatistics.legDataBySet[currentSetId]![currentLeg]['id'];
 
         // Filter turns for the current set and leg
-        List<TurnModel> filteredTurns =
-            turns.where((turn) => turn.legId == currentLegId).toList();
+        List<TurnModel> filteredTurns = matchStatistics.turns
+            .where((turn) => turn.legId == currentLegId)
+            .toList();
 
         final turnRows = _buildTurnRows(filteredTurns);
 
@@ -194,8 +245,8 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
                 ),
                 const SizedBox(height: 16),
                 DropdownSelection(
-                  setIds: setIds,
-                  legDataBySet: legDataBySet,
+                  setIds: matchStatistics.setIds,
+                  legDataBySet: matchStatistics.legDataBySet,
                   currentSet: currentSet,
                   currentLeg: currentLeg,
                   onSetChanged: _onSetChanged,

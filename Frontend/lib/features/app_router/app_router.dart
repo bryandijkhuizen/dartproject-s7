@@ -137,7 +137,9 @@ final router = GoRouter(
                       GoRoute(
                         path: ':matchId',
                         builder: (context, state) {
-                          final matchId = state.pathParameters['matchId']!;
+                          final matchIdString =
+                              state.pathParameters['matchId']!;
+                          final matchId = int.parse(matchIdString);
                           return MatchStatisticsWidget(matchId: matchId);
                         },
                       ),
