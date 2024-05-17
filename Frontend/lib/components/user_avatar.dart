@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-const iconSize = 36.0;
-
 class UserAvatar extends StatefulWidget {
-  const UserAvatar({super.key, this.userId});
+  const UserAvatar({super.key, this.userId, this.iconSize = 36.0});
 
   final String? userId;
+  final double iconSize;
 
   @override
   State<UserAvatar> createState() => _UserAvatarState();
@@ -21,8 +20,8 @@ class _UserAvatarState extends State<UserAvatar> {
   Widget getDefaultUserIcon(ThemeData theme) {
     return ClipOval(
       child: Container(
-        height: iconSize,
-        width: iconSize,
+        height: widget.iconSize,
+        width: widget.iconSize,
         color: theme.colorScheme.secondary,
         child: Icon(
           Icons.person,
@@ -38,8 +37,8 @@ class _UserAvatarState extends State<UserAvatar> {
     UserStore userStore = context.read<UserStore>();
 
     return SizedBox(
-      height: iconSize,
-      width: iconSize,
+      height: widget.iconSize,
+      width: widget.iconSize,
       child: FutureBuilder(
         future: getUserIconURL(widget.userId ?? userStore.currentUser?.id),
         builder: (context, snapshot) {
