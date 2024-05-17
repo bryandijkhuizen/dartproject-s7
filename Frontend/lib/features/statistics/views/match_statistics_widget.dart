@@ -1,13 +1,16 @@
-import 'package:darts_application/models/match.dart';
+import 'package:darts_application/features/statistics/components/dropdown_selection.dart';
+import 'package:darts_application/features/statistics/components/match.header.dart';
+import 'package:darts_application/features/statistics/components/turn_row.dart';
+import 'package:darts_application/models/player.dart';
 import 'package:flutter/material.dart';
-import 'package:darts_application/models/match_statistics.dart';
-import 'package:darts_application/models/set.dart';
-import 'package:darts_application/models/leg.dart';
-import 'package:darts_application/models/turn.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:darts_application/models/match_statistics.dart';
+import 'package:darts_application/models/match.dart';
+import 'package:darts_application/models/turn.dart';
 
 class MatchStatisticsWidget extends StatefulWidget {
-  const MatchStatisticsWidget({super.key});
+  final String matchId;
+  const MatchStatisticsWidget({super.key, required this.matchId});
 
   @override
   State<MatchStatisticsWidget> createState() => _MatchStatisticsWidgetState();
@@ -15,62 +18,104 @@ class MatchStatisticsWidget extends StatefulWidget {
 
 class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
   late Future<MatchStatisticsModel> _matchStatisticsFuture;
+  late int startingScore =
+      501; // Assuming 501 as the starting score for both players
 
-  late List<int> setIds;
-  late List<int> legIds;
-  late List<TurnModel> turns;
-  late String player1Id = "9b2b4f5e-e0d9-4f9b-bf9c-a5774fb12f8d";
-  late String player2Id = "48cfd5f7-727f-478b-b808-03365c325567";
+  late List<int> setIds = [];
+  late Map<int, List<Map<String, dynamic>>> legDataBySet =
+      {}; // Maps setId to list of leg data
+  late List<TurnModel> turns = [];
+
+  late String player1Id = "4d4026e9-f979-4055-962c-063b5a7d1997";
+  late String player2Id = "13902fd6-2bca-4461-a68b-9d40eb026954";
+
+  int currentSet = 0;
+  int currentLeg = 0;
 
   @override
   void initState() {
     super.initState();
-    _matchStatisticsFuture = fetchMatchStatistics();
+    _matchStatisticsFuture = fetchMatchStatistics(widget.matchId);
   }
 
-  Future<MatchStatisticsModel> fetchMatchStatistics() async {
-    final setsResponse = await Supabase.instance.client
-        .rpc('get_sets_by_match_id', params: {'current_match_id': 1});
+  Future<MatchStatisticsModel> fetchMatchStatistics(matchId) async {
+    final client = Supabase.instance.client;
+
+    final matchResponse = await client.rpc('get_completed_match_by_id',
+        params: {'match_id': matchId}).single();
+
+    final setsResponse = await client
+        .rpc('get_sets_by_match_id', params: {'current_match_id': matchId});
 
     final setsData = setsResponse as List<dynamic>? ?? [];
+    setIds = setsData.map<int>((set) => set['id'] as int).toList();
 
-    final List<int> setIds =
-        setsData.map<int>((set) => set['id'] as int).toList();
-
-    final List<int> legIds = [];
     for (final setId in setIds) {
-      final legsResponse = await Supabase.instance.client
+      final legsResponse = await client
           .rpc('get_legs_by_set_id', params: {'current_set_id': setId});
 
       final legsData = legsResponse as List<dynamic>? ?? [];
-
-      final List<int> legIdsForSet =
-          legsData.map<int>((leg) => leg['id'] as int).toList();
-
-      legIds.addAll(legIdsForSet);
-    }
-    late List<TurnModel> turns = [];
-
-    for (final legId in legIds) {
-      final turnsResponse = await Supabase.instance.client
-          .rpc('get_turns_by_leg_id', params: {'current_leg_id': legId});
-
-      final turnData = turnsResponse as List<dynamic>? ?? [];
-
-      for (final turn in turnData) {
-        turns.add(TurnModel(
-          id: turn['id'] as int,
-          playerId: turn['player_id'] as String,
-          legId: turn['leg_id'] as int,
-          score: turn['score'] as int,
-          doubleAttempts: turn['double_attempts'] as int? ?? 0,
-          doubleHits: turn['double_hits'] as int? ?? 0,
-          isDeadThrow: turn['is_dead_throw'] as bool,
-        ));
-      }
+      legDataBySet[setId] = legsData
+          .map((leg) => {
+                'id': leg['id'] as int,
+                'winner_id': leg['winner_id'] as String,
+              })
+          .toList();
     }
 
-    return MatchStatisticsModel(turns: turns);
+    turns = await Future.wait(setIds.expand((setId) {
+      return legDataBySet[setId]!.map((leg) async {
+        final legId = leg['id'];
+        final turnsResponse = await client
+            .rpc('get_turns_by_leg_id', params: {'current_leg_id': legId});
+
+        return (turnsResponse as List<dynamic>? ?? [])
+            .map((turn) => TurnModel(
+                  id: turn['id'] as int,
+                  playerId: turn['player_id'] as String,
+                  legId: turn['leg_id'] as int,
+                  score: turn['score'] as int,
+                  doubleAttempts: turn['double_attempts'] as int? ?? 0,
+                  doubleHits: turn['double_hits'] as int? ?? 0,
+                  isDeadThrow: turn['is_dead_throw'] as bool,
+                ))
+            .toList();
+      });
+    }).toList())
+        .then((turnLists) => turnLists.expand((turnList) => turnList).toList());
+
+    final userResponse = await Supabase.instance.client.rpc('get_users');
+    List<PlayerModel> players = userResponse
+        .map<PlayerModel>((user) => PlayerModel.fromJson(user))
+        .toList();
+
+    final match = MatchModel.fromJson(matchResponse);
+
+    match.player1LastName =
+        players.firstWhere((player) => player.id == match.player1Id).lastName;
+
+    match.player2LastName =
+        players.firstWhere((player) => player.id == match.player2Id).lastName;
+
+    return MatchStatisticsModel(
+      turns: turns,
+      match: match,
+      legDataBySet: legDataBySet,
+      setIds: setIds,
+    );
+  }
+
+  void _onSetChanged(int? newValue) {
+    setState(() {
+      currentSet = newValue ?? 0;
+      currentLeg = 0; // Reset to the first leg when the set changes
+    });
+  }
+
+  void _onLegChanged(int? newValue) {
+    setState(() {
+      currentLeg = newValue ?? 0;
+    });
   }
 
   @override
@@ -91,33 +136,168 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
         }
 
         final matchStatistics = snapshot.data!;
+        final player1Average = matchStatistics.calculateAverageScore(player1Id);
+        final player2Average = matchStatistics.calculateAverageScore(player2Id);
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(top: 16.0),
-              child: Text(
-                'Match Statistics',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+        // Get current set ID and leg ID based on the current indices
+        int currentSetId = setIds[currentSet];
+        int currentLegId = legDataBySet[currentSetId]![currentLeg]['id'];
+
+        // Filter turns for the current set and leg
+        List<TurnModel> filteredTurns =
+            turns.where((turn) => turn.legId == currentLegId).toList();
+
+        final turnRows = _buildTurnRows(filteredTurns);
+
+        // Calculate legs and sets won
+        int player1SetsWon = matchStatistics.calculateSetsWon(player1Id);
+        int player2SetsWon = matchStatistics.calculateSetsWon(player2Id);
+        int player1LegsWonInCurrentSet =
+            matchStatistics.calculateLegsWon(currentSetId, player1Id);
+        int player2LegsWonInCurrentSet =
+            matchStatistics.calculateLegsWon(currentSetId, player2Id);
+
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Statistics'),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  matchStatistics.match.setTarget > 1
+                      ? 'First to ${matchStatistics.match.setTarget} sets'
+                      : 'First to ${matchStatistics.match.legTarget} leg(s)',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                textAlign: TextAlign.center,
-              ),
+                const SizedBox(height: 8),
+                Text(
+                  matchStatistics.match.date.toString().substring(0, 10),
+                  style: const TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                MatchHeader(
+                  matchStatistics: matchStatistics,
+                  player1Average: player1Average,
+                  player2Average: player2Average,
+                  player1SetsWon: player1SetsWon,
+                  player2SetsWon: player2SetsWon,
+                  player1LegsWonInCurrentSet: player1LegsWonInCurrentSet,
+                  player2LegsWonInCurrentSet: player2LegsWonInCurrentSet,
+                ),
+                const SizedBox(height: 16),
+                DropdownSelection(
+                  setIds: setIds,
+                  legDataBySet: legDataBySet,
+                  currentSet: currentSet,
+                  currentLeg: currentLeg,
+                  onSetChanged: _onSetChanged,
+                  onLegChanged: _onLegChanged,
+                ),
+                const SizedBox(height: 24),
+                const Divider(),
+                Expanded(
+                  child: ListView(
+                    children: turnRows,
+                  ),
+                ),
+              ],
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.75,
-              child: const Divider(),
-            ),
-            // Add your widgets to display match statistics here
-            Text(
-                'Player 1 Average Score: ${matchStatistics.calculateAverageScore(player1Id)}'),
-            Text(
-                'Player 2 Average Score: ${matchStatistics.calculateAverageScore(player2Id)}'),
-          ],
+          ),
         );
       },
+    );
+  }
+
+  List<Widget> _buildTurnRows(List<TurnModel> turns) {
+    if (turns.isEmpty) {
+      return [
+        const Center(
+          child: Text('No turns available for this set and leg.'),
+        ),
+      ];
+    }
+
+    List<Widget> rows = [];
+
+    // Initial scores
+    int player1CurrentScore = startingScore;
+    int player2CurrentScore = startingScore;
+
+    // First display the current score of both players and the number of turn
+    rows.add(buildScoreRow(
+      'Score',
+      player1CurrentScore.toString(),
+      '0',
+      player2CurrentScore.toString(),
+      'Score',
+    ));
+
+    // Get all the turns for this leg and put them in 2 lists (one for each player)
+    // Sort them by id and give them a turn number (1, 2, 3, ...)
+    List<TurnModel> player1Turns = turns
+        .where((turn) => turn.playerId == player1Id)
+        .toList()
+      ..sort((a, b) => a.id.compareTo(b.id));
+    List<TurnModel> player2Turns = turns
+        .where((turn) => turn.playerId == player2Id)
+        .toList()
+      ..sort((a, b) => a.id.compareTo(b.id));
+
+    // Display the turns in the correct order
+    int turnNumber = 1;
+    for (int i = 0; i < player1Turns.length || i < player2Turns.length; i++) {
+      String player1Score = '';
+      String player2Score = '';
+      bool isPlayer1WinningTurn = false;
+      bool isPlayer2WinningTurn = false;
+
+      if (i < player1Turns.length) {
+        player1CurrentScore -= player1Turns[i].score;
+        player1Score = player1Turns[i].score.toString();
+        isPlayer1WinningTurn = player1CurrentScore == 0;
+      }
+
+      if (i < player2Turns.length) {
+        player2CurrentScore -= player2Turns[i].score;
+        player2Score = player2Turns[i].score.toString();
+        isPlayer2WinningTurn = player2CurrentScore == 0;
+      }
+
+      rows.add(buildScoreRow(
+        player1Score,
+        player1CurrentScore.toString(),
+        turnNumber.toString(),
+        player2CurrentScore.toString(),
+        player2Score,
+        isPlayer1WinningTurn: isPlayer1WinningTurn,
+        isPlayer2WinningTurn: isPlayer2WinningTurn,
+      ));
+
+      turnNumber++;
+    }
+
+    return rows;
+  }
+
+  Widget buildScoreRow(String score1, String remainingScore, String turnNumber,
+      String remainingScore2, String score2,
+      {bool isPlayer1WinningTurn = false, bool isPlayer2WinningTurn = false}) {
+    return TurnRow(
+      score1: score1,
+      remainingScore: remainingScore,
+      turnNumber: turnNumber,
+      remainingScore2: remainingScore2,
+      score2: score2,
+      isPlayer1WinningTurn: isPlayer1WinningTurn,
+      isPlayer2WinningTurn: isPlayer2WinningTurn,
     );
   }
 }
