@@ -32,10 +32,10 @@ class _SearchInputState extends State<SearchInput> {
   Widget build(BuildContext context) {
     return TextField(
       controller: widget.controller,
+      onSubmitted: (val) => widget.onSearch?.call(),
       decoration: InputDecoration(
         hintText: 'Café op de hoek',
         suffixIcon: _getSearchButton(),
-        suffixIconConstraints: BoxConstraints(),
       ),
     );
   }

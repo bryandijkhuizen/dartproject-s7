@@ -41,7 +41,7 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 
 // SettingsRoute is identical on mobile and desktop
-final settingsRoute = StatefulShellBranch(
+final settingsBranch = StatefulShellBranch(
   routes: <RouteBase>[
     GoRoute(
       path: '/settings',
@@ -61,6 +61,23 @@ final settingsRoute = StatefulShellBranch(
           path: 'password',
           builder: (context, state) => const SettingsPasswordView(),
         )
+      ],
+    ),
+  ],
+);
+
+final clubsBranch = StatefulShellBranch(
+  routes: <RouteBase>[
+    GoRoute(
+      path: '/clubs',
+      builder: (context, state) => const ClubOverview(),
+      routes: <RouteBase>[
+        GoRoute(
+          path: ':id',
+          builder: (context, state) {
+            return Placeholder();
+          },
+        ),
       ],
     ),
   ],
@@ -151,24 +168,8 @@ final router = GoRouter(
               ),
 
               // Mobile user settings
-              settingsRoute,
-
-              StatefulShellBranch(
-                routes: <RouteBase>[
-                  GoRoute(
-                    path: '/clubs',
-                    builder: (context, state) => const ClubOverview(),
-                    routes: <RouteBase>[
-                      GoRoute(
-                        path: ':id',
-                        builder: (context, state) {
-                          return Placeholder();
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              settingsBranch,
+              clubsBranch,
             ]
           // Desktop branches
           : [
@@ -272,7 +273,8 @@ final router = GoRouter(
                 ],
               ),
 
-              settingsRoute
+              settingsBranch,
+              clubsBranch,
             ],
     ),
   ],
