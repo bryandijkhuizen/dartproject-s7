@@ -6,6 +6,7 @@ import 'package:darts_application/features/settings/views/settings_email_view.da
 import 'package:darts_application/features/settings/views/settings_name_view.dart';
 import 'package:darts_application/features/settings/views/settings_password_view.dart';
 import 'package:darts_application/features/settings/views/settings_view.dart';
+import 'package:darts_application/features/statistics/views/completed_matches_list.dart';
 import 'package:darts_application/helpers.dart';
 import 'package:darts_application/features/gameplay//views/match_view.dart';
 import 'package:flutter/material.dart';
@@ -132,18 +133,17 @@ final router = GoRouter(
                 routes: <RouteBase>[
                   GoRoute(
                     path: '/statistics',
-                    // routes: <RouteBase>[
-                    //   GoRoute(
-                    //     path: ':matchId',
-                    //     builder: (context, state) {
-                    //       final int matchId =
-                    //           state.pathParameters['matchId']! as int;
-                    //       return MatchStatisticsWidget(matchId: matchId);
-                    //     },
-                    //   ),
-                    // ],
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: ':matchId',
+                        builder: (context, state) {
+                          final matchId = state.pathParameters['matchId']!;
+                          return MatchStatisticsWidget(matchId: matchId);
+                        },
+                      ),
+                    ],
                     builder: (context, state) {
-                      return MatchStatisticsWidget();
+                      return const CompletedMatchesListWidget();
                     },
                   ),
                 ],
