@@ -9,14 +9,14 @@ class DropdownSelection extends StatelessWidget {
   final ValueChanged<int?> onLegChanged;
 
   const DropdownSelection({
-    Key? key,
+    super.key,
     required this.setIds,
     required this.legDataBySet,
     required this.currentSet,
     required this.currentLeg,
     required this.onSetChanged,
     required this.onLegChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
