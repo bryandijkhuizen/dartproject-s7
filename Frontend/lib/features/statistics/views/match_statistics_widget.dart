@@ -41,17 +41,11 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
   Future<MatchStatisticsModel> fetchMatchStatistics(currentMatchId) async {
     final client = Supabase.instance.client;
 
-    print('Fetching match statistics for match ID: $currentMatchId');
-
     final matchResponse = await client.rpc('get_completed_match_by_id',
         params: {'match_id': currentMatchId}).single();
 
-    print('Match response: $matchResponse');
-
     final setsResponse = await client.rpc('get_sets_by_match_id',
         params: {'current_match_id': currentMatchId});
-
-    print('Sets response: $setsResponse');
 
     final setsData = setsResponse as List<dynamic>? ?? [];
     final setIds = setsData.map<int>((set) => set['id'] as int).toList();
@@ -62,11 +56,7 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
       final legsResponse = await client
           .rpc('get_legs_by_set_id', params: {'current_set_id': setId});
 
-      print('Legs response: $legsResponse');
-
       final legsData = legsResponse as List<dynamic>? ?? [];
-
-      print('Legs data: $legsData');
 
       legDataBySet[setId] = legsData
           .map((leg) => {
@@ -74,8 +64,6 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
                 'winner_id': leg['winner_id'] as String,
               })
           .toList();
-
-      print('Leg data by set: $legDataBySet');
     }
 
     final turns = await Future.wait(setIds.expand((setId) {
@@ -174,7 +162,7 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
         final matchStatistics = snapshot.data!;
 
         if (matchStatistics.setIds.isEmpty) {
-          return Center(
+          return const Center(
             child: Text('No sets available for this match.'),
           );
         }
@@ -186,7 +174,7 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
         int currentSetId = matchStatistics.setIds[currentSet];
         if (matchStatistics.legDataBySet[currentSetId] == null ||
             matchStatistics.legDataBySet[currentSetId]!.isEmpty) {
-          return Center(
+          return const Center(
             child: Text('No legs available for the selected set.'),
           );
         }
