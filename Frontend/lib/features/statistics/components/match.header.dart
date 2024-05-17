@@ -11,7 +11,7 @@ class MatchHeader extends StatelessWidget {
   final int player2LegsWonInCurrentSet;
 
   const MatchHeader({
-    Key? key,
+    super.key,
     required this.matchStatistics,
     required this.player1Average,
     required this.player2Average,
@@ -19,7 +19,7 @@ class MatchHeader extends StatelessWidget {
     required this.player2SetsWon,
     required this.player1LegsWonInCurrentSet,
     required this.player2LegsWonInCurrentSet,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

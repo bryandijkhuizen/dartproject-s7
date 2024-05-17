@@ -10,7 +10,7 @@ class TurnRow extends StatelessWidget {
   final bool isPlayer2WinningTurn;
 
   const TurnRow({
-    Key? key,
+    super.key,
     required this.score1,
     required this.remainingScore,
     required this.turnNumber,
@@ -18,7 +18,7 @@ class TurnRow extends StatelessWidget {
     required this.score2,
     this.isPlayer1WinningTurn = false,
     this.isPlayer2WinningTurn = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
