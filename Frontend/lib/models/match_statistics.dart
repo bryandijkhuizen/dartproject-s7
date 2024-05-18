@@ -33,6 +33,27 @@ class MatchStatisticsModel {
     return average;
   }
 
+  double calculateFirstNineAverage(String playerId) {
+    List<int> scores = turns
+        .where((turn) => turn.playerId == playerId)
+        .map((turn) => turn.score)
+        .toList();
+
+    if (scores.length < 3) {
+      double average = scores.reduce((a, b) => a + b) / scores.length;
+
+      return double.parse((average).toStringAsFixed(2));
+    } else {
+      scores = scores.sublist(0, 3);
+
+      double average = scores.reduce((a, b) => a + b) / scores.length;
+
+      average = double.parse((average).toStringAsFixed(2));
+
+      return average;
+    }
+  }
+
   int calculateLegsWon(int setId, String playerId) {
     int legsWon = 0;
     for (final leg in legDataBySet[setId]!) {
