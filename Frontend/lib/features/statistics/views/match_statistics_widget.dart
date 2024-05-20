@@ -1,12 +1,11 @@
-import 'package:darts_application/features/statistics/components/dropdown_selection.dart';
 import 'package:darts_application/features/statistics/components/match.header.dart';
+import 'package:flutter/material.dart';
+import 'package:darts_application/features/statistics/components/dropdown_selection.dart';
 import 'package:darts_application/features/statistics/components/turn_row.dart';
 import 'package:darts_application/features/statistics/controllers/statistics_data_controller.dart';
-import 'package:darts_application/features/statistics/match_statistics_state.dart';
 import 'package:darts_application/models/match_statistics.dart';
 import 'package:darts_application/models/player_stats.dart';
 import 'package:darts_application/models/turn.dart';
-import 'package:flutter/material.dart';
 
 class MatchStatisticsWidget extends StatefulWidget {
   final int matchId;
@@ -83,18 +82,21 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
               .calculateAverageScore(matchStatistics.match.player1Id),
           firstNineAverage: matchStatistics
               .calculateFirstNineAverage(matchStatistics.match.player1Id),
+          averagePerDart: matchStatistics
+              .calculateAveragePerDart(matchStatistics.match.player1Id),
         );
 
         final player2Stats = PlayerStats(
-          setsWon:
-              matchStatistics.calculateSetsWon(matchStatistics.match.player2Id),
-          legsWonInCurrentSet: matchStatistics.calculateLegsWon(
-              currentSetId, matchStatistics.match.player2Id),
-          averageScore: matchStatistics
-              .calculateAverageScore(matchStatistics.match.player2Id),
-          firstNineAverage: matchStatistics
-              .calculateFirstNineAverage(matchStatistics.match.player2Id),
-        );
+            setsWon: matchStatistics
+                .calculateSetsWon(matchStatistics.match.player2Id),
+            legsWonInCurrentSet: matchStatistics.calculateLegsWon(
+                currentSetId, matchStatistics.match.player2Id),
+            averageScore: matchStatistics
+                .calculateAverageScore(matchStatistics.match.player2Id),
+            firstNineAverage: matchStatistics
+                .calculateFirstNineAverage(matchStatistics.match.player2Id),
+            averagePerDart: matchStatistics
+                .calculateAveragePerDart(matchStatistics.match.player2Id));
 
         List<TurnModel> filteredTurns = matchStatistics.turns
             .where((turn) => turn.legId == currentLegId)
@@ -134,6 +136,8 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
                   player2Average: player2Stats.averageScore,
                   player1FirstNineAverage: player1Stats.firstNineAverage,
                   player2FirstNineAverage: player2Stats.firstNineAverage,
+                  player1AveragePerDart: player1Stats.averagePerDart,
+                  player2AveragePerDart: player2Stats.averagePerDart,
                   player1SetsWon: player1Stats.setsWon,
                   player2SetsWon: player2Stats.setsWon,
                   player1LegsWonInCurrentSet: player1Stats.legsWonInCurrentSet,

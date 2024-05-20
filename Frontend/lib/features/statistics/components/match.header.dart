@@ -7,6 +7,8 @@ class MatchHeader extends StatelessWidget {
   final double player2Average;
   final double player1FirstNineAverage;
   final double player2FirstNineAverage;
+  final double player1AveragePerDart;
+  final double player2AveragePerDart;
   final int player1SetsWon;
   final int player2SetsWon;
   final int player1LegsWonInCurrentSet;
@@ -19,6 +21,8 @@ class MatchHeader extends StatelessWidget {
     required this.player2Average,
     required this.player1FirstNineAverage,
     required this.player2FirstNineAverage,
+    required this.player1AveragePerDart,
+    required this.player2AveragePerDart,
     required this.player1SetsWon,
     required this.player2SetsWon,
     required this.player1LegsWonInCurrentSet,
@@ -27,64 +31,98 @@ class MatchHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(8.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 5,
+            blurRadius: 7,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          PlayerStatisticsWidget(
+            playerName: matchStatistics.match.player1LastName,
+            average: player1Average,
+            firstNineAverage: player1FirstNineAverage,
+            averagePerDart: player1AveragePerDart,
+          ),
+          Text(
+            matchStatistics.match.setTarget > 1
+                ? '$player1SetsWon-$player2SetsWon'
+                : '$player1LegsWonInCurrentSet-$player2LegsWonInCurrentSet',
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.yellow,
+            ),
+          ),
+          PlayerStatisticsWidget(
+            playerName: matchStatistics.match.player2LastName,
+            average: player2Average,
+            firstNineAverage: player2FirstNineAverage,
+            averagePerDart: player2AveragePerDart,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class PlayerStatisticsWidget extends StatelessWidget {
+  final String playerName;
+  final double average;
+  final double firstNineAverage;
+  final double averagePerDart;
+
+  const PlayerStatisticsWidget({
+    super.key,
+    required this.playerName,
+    required this.average,
+    required this.firstNineAverage,
+    required this.averagePerDart,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
       children: [
-        Column(
-          children: [
-            Text(
-              matchStatistics.match.player1LastName,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              player1Average.toString(),
-              style: const TextStyle(
-                fontSize: 36,
-              ),
-            ),
-            Text(
-              '(first 9: ${player1FirstNineAverage.toStringAsFixed(2)})',
-              style: const TextStyle(
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
         Text(
-          matchStatistics.match.setTarget > 1
-              ? '$player1SetsWon-$player2SetsWon'
-              : '$player1LegsWonInCurrentSet-$player2LegsWonInCurrentSet',
+          playerName,
           style: const TextStyle(
-            fontSize: 18,
+            fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.yellow, // Set this to yellow
+            color: Colors.white,
           ),
         ),
-        Column(
-          children: [
-            Text(
-              matchStatistics.match.player2LastName,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              player2Average.toString(),
-              style: const TextStyle(
-                fontSize: 36,
-              ),
-            ),
-            Text(
-              '(first 9: ${player2FirstNineAverage.toStringAsFixed(2)})',
-              style: const TextStyle(
-                fontSize: 12,
-              ),
-            ),
-          ],
+        Text(
+          average.toString(),
+          style: const TextStyle(
+            fontSize: 36,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        Text(
+          'First 9: ${firstNineAverage.toStringAsFixed(2)}',
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.white70,
+          ),
+        ),
+        Text(
+          'Per Dart: ${averagePerDart.toStringAsFixed(2)}',
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.white70,
+          ),
         ),
       ],
     );
