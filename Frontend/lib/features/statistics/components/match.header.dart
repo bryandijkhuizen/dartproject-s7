@@ -1,3 +1,4 @@
+import 'package:darts_application/features/statistics/components/player_statistics_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:darts_application/models/match_statistics.dart';
 
@@ -9,6 +10,8 @@ class MatchHeader extends StatelessWidget {
   final double player2FirstNineAverage;
   final double player1AveragePerDart;
   final double player2AveragePerDart;
+  final String player1Checkouts;
+  final String player2Checkouts;
   final int player1SetsWon;
   final int player2SetsWon;
   final int player1LegsWonInCurrentSet;
@@ -23,6 +26,8 @@ class MatchHeader extends StatelessWidget {
     required this.player2FirstNineAverage,
     required this.player1AveragePerDart,
     required this.player2AveragePerDart,
+    required this.player1Checkouts,
+    required this.player2Checkouts,
     required this.player1SetsWon,
     required this.player2SetsWon,
     required this.player1LegsWonInCurrentSet,
@@ -53,6 +58,7 @@ class MatchHeader extends StatelessWidget {
             average: player1Average,
             firstNineAverage: player1FirstNineAverage,
             averagePerDart: player1AveragePerDart,
+            checkouts: player1Checkouts,
           ),
           Text(
             matchStatistics.match.setTarget > 1
@@ -69,62 +75,10 @@ class MatchHeader extends StatelessWidget {
             average: player2Average,
             firstNineAverage: player2FirstNineAverage,
             averagePerDart: player2AveragePerDart,
+            checkouts: player2Checkouts,
           ),
         ],
       ),
-    );
-  }
-}
-
-class PlayerStatisticsWidget extends StatelessWidget {
-  final String playerName;
-  final double average;
-  final double firstNineAverage;
-  final double averagePerDart;
-
-  const PlayerStatisticsWidget({
-    super.key,
-    required this.playerName,
-    required this.average,
-    required this.firstNineAverage,
-    required this.averagePerDart,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          playerName,
-          style: const TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        Text(
-          average.toString(),
-          style: const TextStyle(
-            fontSize: 36,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        Text(
-          'First 9: ${firstNineAverage.toStringAsFixed(2)}',
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.white70,
-          ),
-        ),
-        Text(
-          'Per Dart: ${averagePerDart.toStringAsFixed(2)}',
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.white70,
-          ),
-        ),
-      ],
     );
   }
 }

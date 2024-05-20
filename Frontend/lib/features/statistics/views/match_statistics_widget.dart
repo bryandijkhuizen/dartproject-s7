@@ -84,6 +84,8 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
               .calculateFirstNineAverage(matchStatistics.match.player1Id),
           averagePerDart: matchStatistics
               .calculateAveragePerDart(matchStatistics.match.player1Id),
+          checkouts: matchStatistics
+              .checkoutOutsVsAttempts(matchStatistics.match.player1Id),
         );
 
         final player2Stats = PlayerStats(
@@ -96,7 +98,9 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
             firstNineAverage: matchStatistics
                 .calculateFirstNineAverage(matchStatistics.match.player2Id),
             averagePerDart: matchStatistics
-                .calculateAveragePerDart(matchStatistics.match.player2Id));
+                .calculateAveragePerDart(matchStatistics.match.player2Id),
+            checkouts: matchStatistics
+                .checkoutOutsVsAttempts(matchStatistics.match.player2Id));
 
         List<TurnModel> filteredTurns = matchStatistics.turns
             .where((turn) => turn.legId == currentLegId)
@@ -138,6 +142,8 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
                   player2FirstNineAverage: player2Stats.firstNineAverage,
                   player1AveragePerDart: player1Stats.averagePerDart,
                   player2AveragePerDart: player2Stats.averagePerDart,
+                  player1Checkouts: player1Stats.checkouts,
+                  player2Checkouts: player2Stats.checkouts,
                   player1SetsWon: player1Stats.setsWon,
                   player2SetsWon: player2Stats.setsWon,
                   player1LegsWonInCurrentSet: player1Stats.legsWonInCurrentSet,
