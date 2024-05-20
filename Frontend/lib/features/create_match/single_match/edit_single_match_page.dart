@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:intl/intl.dart';
 
 import 'package:darts_application/components/input_fields/time_picker.dart';
 import 'package:darts_application/components/input_fields/date_picker.dart';
@@ -74,7 +73,8 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
     });
   }
 
-  void updateSelectedPlayer(String selectedOne, String selectedTwo, String selectedOneName, String selectedTwoName) {
+  void updateSelectedPlayer(String selectedOne, String selectedTwo,
+      String selectedOneName, String selectedTwoName) {
     setState(() {
       playerOne = selectedOne;
       playerTwo = selectedTwo;
@@ -107,7 +107,7 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
             .from('match')
             .update(match.toJson())
             .eq('id', match.id);
-            
+
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => ConfirmationPage(match: match),
@@ -123,7 +123,8 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You did not fill in all the required fields!')),
+        const SnackBar(
+            content: Text('You did not fill in all the required fields!')),
       );
     }
   }
@@ -209,7 +210,8 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
-        DatePicker(onDateSelected: updateSelectedDate, initialDate: selectedDate),
+        DatePicker(
+            onDateSelected: updateSelectedDate, initialDate: selectedDate),
         const Padding(
           padding: EdgeInsets.all(8.0),
           child: Text(
@@ -217,7 +219,8 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
-        TimePicker(onTimeSelected: updateSelectedTime, initialTime: selectedTime),
+        TimePicker(
+            onTimeSelected: updateSelectedTime, initialTime: selectedTime),
       ],
     );
   }
