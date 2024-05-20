@@ -5,6 +5,8 @@ class MatchHeader extends StatelessWidget {
   final MatchStatisticsModel matchStatistics;
   final double player1Average;
   final double player2Average;
+  final double player1FirstNineAverage;
+  final double player2FirstNineAverage;
   final int player1SetsWon;
   final int player2SetsWon;
   final int player1LegsWonInCurrentSet;
@@ -15,6 +17,8 @@ class MatchHeader extends StatelessWidget {
     required this.matchStatistics,
     required this.player1Average,
     required this.player2Average,
+    required this.player1FirstNineAverage,
+    required this.player2FirstNineAverage,
     required this.player1SetsWon,
     required this.player2SetsWon,
     required this.player1LegsWonInCurrentSet,
@@ -39,6 +43,12 @@ class MatchHeader extends StatelessWidget {
               player1Average.toString(),
               style: const TextStyle(
                 fontSize: 36,
+              ),
+            ),
+            Text(
+              '(first 9: ${player1FirstNineAverage.toStringAsFixed(2)})',
+              style: const TextStyle(
+                fontSize: 12,
               ),
             ),
           ],
@@ -66,6 +76,12 @@ class MatchHeader extends StatelessWidget {
               player2Average.toString(),
               style: const TextStyle(
                 fontSize: 36,
+              ),
+            ),
+            Text(
+              '(first 9: ${player2FirstNineAverage.toStringAsFixed(2)})',
+              style: const TextStyle(
+                fontSize: 12,
               ),
             ),
           ],
