@@ -11,11 +11,13 @@ class TurnModel {
     required this.id,
     required this.playerId,
     required this.legId,
-    required this.score,
+    required int score,
     this.doubleAttempts,
     this.doubleHits,
     required this.isDeadThrow,
-  });
+  }) : score = isDeadThrow
+            ? 0
+            : score; // [REMOVE WHEN BUSTED SCORES ARE IMPLEMENTED]
 
   factory TurnModel.fromJson(Map<String, dynamic> json) {
     return TurnModel(
