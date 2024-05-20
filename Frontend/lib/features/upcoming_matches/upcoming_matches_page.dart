@@ -3,7 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
 import 'package:darts_application/features/create_match/single_match/edit_single_match_page.dart';
-import 'package:darts_application/features/create_match/tournament/create_tournament_page.dart';
+// import 'package:darts_application/features/create_match/tournament/create_tournament_page.dart';
 import 'package:darts_application/models/player.dart';
 
 class UpcomingMatchesPage extends StatefulWidget {
@@ -61,10 +61,10 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CreateSingleMatchPage())),
             child: const Text('Create Match', style: TextStyle(color: Colors.white)),
           ),
-          TextButton(
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTournamentPage())),
-            child: const Text('Create Tournament', style: TextStyle(color: Colors.white)),
-          ),
+          // TextButton(
+          //   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTournamentPage())),
+          //   child: const Text('Create Tournament', style: TextStyle(color: Colors.white)),
+          // ),
         ],
       ),
       body: SingleChildScrollView(
@@ -97,7 +97,7 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
                         title: Text('Match on ${DateFormat('EEEE, MMM d, y - HH:mm').format(matchDate)}'),
                         subtitle: Text('Location: ${match['location']} - ${player1.lastName} vs ${player2.lastName}'),
                         trailing: IconButton(
-                          icon: Icon(Icons.edit),
+                          icon: const Icon(Icons.edit),
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
