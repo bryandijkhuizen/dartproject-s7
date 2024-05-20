@@ -208,7 +208,7 @@ abstract class _MatchStore with Store {
           .rpc('create_leg', params: {'p_set_id': currentSetId});
       currentLegId = response[0]['leg_id'];
 
-      currentPlayerId = matchModel.startingPlayerId; // Ensure this is set correctly
+      currentPlayerId = matchModel.startingPlayerId;
 
       currentScorePlayer1 = matchModel.startingScore;
       currentScorePlayer2 = matchModel.startingScore;
