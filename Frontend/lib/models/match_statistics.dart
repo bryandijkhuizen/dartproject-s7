@@ -54,6 +54,10 @@ class MatchStatisticsModel {
     }
   }
 
+  double calculateAveragePerDart(String playerId) {
+    return calculateAverageScore(playerId) / 3;
+  }
+
   int calculateLegsWon(int setId, String playerId) {
     int legsWon = 0;
     for (final leg in legDataBySet[setId]!) {
