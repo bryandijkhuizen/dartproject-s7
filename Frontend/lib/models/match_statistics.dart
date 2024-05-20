@@ -58,6 +58,51 @@ class MatchStatisticsModel {
     return calculateAverageScore(playerId) / 3;
   }
 
+  int calculateCheckoutPercentage(String playerId) {
+    // use turn.doubleAttempts and turn.doubleHits to calculate the checkout percentage no decimal places
+    List<TurnModel> playerTurns =
+        turns.where((turn) => turn.playerId == playerId).toList();
+
+    int checkoutAttempts = 0;
+    int checkoutHits = 0;
+
+    for (final turn in playerTurns) {
+      if (turn.doubleAttempts != null && turn.doubleHits != null) {
+        checkoutAttempts += turn.doubleAttempts!;
+        checkoutHits += turn.doubleHits!;
+      }
+    }
+
+    if (checkoutAttempts == 0) {
+      return 0;
+    }
+
+    return ((checkoutHits / checkoutAttempts) * 100).round();
+  }
+
+  String checkoutOutsVsAttempts(String playerId) {
+    List<TurnModel> playerTurns =
+        turns.where((turn) => turn.playerId == playerId).toList();
+
+    int checkoutAttempts = 0;
+    int checkoutHits = 0;
+
+    for (final turn in playerTurns) {
+      if (turn.doubleAttempts != null && turn.doubleHits != null) {
+        checkoutAttempts += turn.doubleAttempts!;
+        checkoutHits += turn.doubleHits!;
+      } else {
+        checkoutAttempts += 0;
+        checkoutHits += 0;
+      }
+    }
+
+    if (checkoutAttempts == 0 && checkoutHits == 0) {
+      return '0/0';
+    }
+    return '$checkoutHits/$checkoutAttempts';
+  }
+
   int calculateLegsWon(int setId, String playerId) {
     int legsWon = 0;
     for (final leg in legDataBySet[setId]!) {
