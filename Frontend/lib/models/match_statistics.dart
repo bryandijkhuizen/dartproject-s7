@@ -103,6 +103,37 @@ class MatchStatisticsModel {
     return '$checkoutHits/$checkoutAttempts';
   }
 
+  double calculateSetAverage(String playerId, int setId) {
+    List<int> scores = turns
+        .where((turn) => turn.playerId == playerId)
+        .where((turn) => legDataBySet[setId]!
+            .map((leg) => leg['id'])
+            .toList()
+            .contains(turn.legId))
+        .map((turn) => turn.score)
+        .toList();
+
+    double average = scores.reduce((a, b) => a + b) / scores.length;
+
+    average = double.parse((average).toStringAsFixed(2));
+
+    return average;
+  }
+
+  double calculateLegAverage(String playerId, int legId) {
+    List<int> scores = turns
+        .where((turn) => turn.playerId == playerId)
+        .where((turn) => turn.legId == legId)
+        .map((turn) => turn.score)
+        .toList();
+
+    double average = scores.reduce((a, b) => a + b) / scores.length;
+
+    average = double.parse((average).toStringAsFixed(2));
+
+    return average;
+  }
+
   int calculateLegsWon(int setId, String playerId) {
     int legsWon = 0;
     for (final leg in legDataBySet[setId]!) {

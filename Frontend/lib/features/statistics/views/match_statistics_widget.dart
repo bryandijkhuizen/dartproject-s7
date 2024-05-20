@@ -45,31 +45,26 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
       future: _matchStatisticsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {
           return Center(
-            child: Text('Failed to load match statistics: ${snapshot.error}'),
-          );
+              child:
+                  Text('Failed to load match statistics: ${snapshot.error}'));
         }
 
         final matchStatistics = snapshot.data!;
 
         if (matchStatistics.setIds.isEmpty) {
-          return const Center(
-            child: Text('No sets available for this match.'),
-          );
+          return const Center(child: Text('No sets available for this match.'));
         }
 
         int currentSetId = matchStatistics.setIds[currentSet];
         final legData = matchStatistics.legDataBySet[currentSetId] ?? [];
         if (legData.isEmpty) {
           return const Center(
-            child: Text('No legs available for the selected set.'),
-          );
+              child: Text('No legs available for the selected set.'));
         }
         int currentLegId = legData[currentLeg]['id'];
 
@@ -89,29 +84,27 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
         );
 
         final player2Stats = PlayerStats(
-            setsWon: matchStatistics
-                .calculateSetsWon(matchStatistics.match.player2Id),
-            legsWonInCurrentSet: matchStatistics.calculateLegsWon(
-                currentSetId, matchStatistics.match.player2Id),
-            averageScore: matchStatistics
-                .calculateAverageScore(matchStatistics.match.player2Id),
-            firstNineAverage: matchStatistics
-                .calculateFirstNineAverage(matchStatistics.match.player2Id),
-            averagePerDart: matchStatistics
-                .calculateAveragePerDart(matchStatistics.match.player2Id),
-            checkouts: matchStatistics
-                .checkoutOutsVsAttempts(matchStatistics.match.player2Id));
+          setsWon:
+              matchStatistics.calculateSetsWon(matchStatistics.match.player2Id),
+          legsWonInCurrentSet: matchStatistics.calculateLegsWon(
+              currentSetId, matchStatistics.match.player2Id),
+          averageScore: matchStatistics
+              .calculateAverageScore(matchStatistics.match.player2Id),
+          firstNineAverage: matchStatistics
+              .calculateFirstNineAverage(matchStatistics.match.player2Id),
+          averagePerDart: matchStatistics
+              .calculateAveragePerDart(matchStatistics.match.player2Id),
+          checkouts: matchStatistics
+              .checkoutOutsVsAttempts(matchStatistics.match.player2Id),
+        );
 
         List<TurnModel> filteredTurns = matchStatistics.turns
             .where((turn) => turn.legId == currentLegId)
             .toList();
-
         final turnRows = _buildTurnRows(filteredTurns, matchStatistics);
 
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Statistics'),
-          ),
+          appBar: AppBar(title: const Text('Statistics')),
           body: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -122,16 +115,12 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
                       ? 'First to ${matchStatistics.match.setTarget} sets'
                       : 'First to ${matchStatistics.match.legTarget} leg(s)',
                   style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   matchStatistics.match.date.toString().substring(0, 10),
-                  style: const TextStyle(
-                    fontSize: 16,
-                  ),
+                  style: const TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 16),
                 MatchHeader(
@@ -158,13 +147,47 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
                   onSetChanged: _onSetChanged,
                   onLegChanged: _onLegChanged,
                 ),
+                if (matchStatistics.setIds.length > 1) ...[
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Column(
+                        children: [
+                          const Text(
+                            'Set Average (Player 1)',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            matchStatistics
+                                .calculateSetAverage(
+                                    matchStatistics.match.player1Id,
+                                    currentSetId)
+                                .toStringAsFixed(2),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const Text(
+                            'Set Average (Player 2)',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            matchStatistics
+                                .calculateSetAverage(
+                                    matchStatistics.match.player2Id,
+                                    currentSetId)
+                                .toStringAsFixed(2),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 24),
                 const Divider(),
-                Expanded(
-                  child: ListView(
-                    children: turnRows,
-                  ),
-                ),
+                Expanded(child: ListView(children: turnRows)),
               ],
             ),
           ),
@@ -177,9 +200,7 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
       List<TurnModel> turns, MatchStatisticsModel matchStatistics) {
     if (turns.isEmpty) {
       return [
-        const Center(
-          child: Text('No turns available for this set and leg.'),
-        ),
+        const Center(child: Text('No turns available for this set and leg.'))
       ];
     }
 
