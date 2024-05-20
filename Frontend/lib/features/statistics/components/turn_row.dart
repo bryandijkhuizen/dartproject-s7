@@ -22,9 +22,9 @@ class TurnRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle normalStyle = const TextStyle(fontSize: 18);
-    final TextStyle winningStyle =
-        const TextStyle(fontSize: 18, color: Colors.yellow);
+    const TextStyle normalStyle = TextStyle(fontSize: 18);
+    const TextStyle winningStyle =
+        TextStyle(fontSize: 18, color: Colors.yellow);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
