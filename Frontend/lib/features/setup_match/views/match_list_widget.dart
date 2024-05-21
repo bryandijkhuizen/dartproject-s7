@@ -1,3 +1,4 @@
+import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/match.dart';
@@ -82,32 +83,47 @@ class _MatchListWidgetState extends State<MatchListWidget> {
             fit: BoxFit.cover,
           ),
         ),
-        child: FutureBuilder<Map<String, List<MatchModel>>>(
-          future: _matchesFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (snapshot.hasData) {
-              final pendingMatches = snapshot.data!['pending_matches']!;
-              final activeMatches = snapshot.data!['active_matches']!;
-              return ListView(
-                children: [
-                  MatchList(
-                    title: 'Pending Matches',
-                    matches: pendingMatches,
-                  ),
-                  MatchList(
-                    title: 'Active Matches',
-                    matches: activeMatches,
-                  ),
-                ],
-              );
-            } else {
-              return const Center(child: Text('No matches found.'));
-            }
-          },
+        child: Column(
+          children: [
+            FutureBuilder<Map<String, List<MatchModel>>>(
+              future: _matchesFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (snapshot.hasData) {
+                  final pendingMatches = snapshot.data!['pending_matches']!;
+                  final activeMatches = snapshot.data!['active_matches']!;
+                  return Expanded(
+                    child: ListView(
+                      children: [
+                        MatchList(
+                          title: 'Pending Matches',
+                          matches: pendingMatches,
+                        ),
+                        MatchList(
+                          title: 'Active Matches',
+                          matches: activeMatches,
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  return const Center(child: Text('No matches found.'));
+                }
+              },
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CreateSingleMatchPage()));
+              },
+              child: const Text('Create Match'),
+            ),
+          ],
         ),
       ),
     );
