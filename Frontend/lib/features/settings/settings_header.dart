@@ -20,7 +20,9 @@ class _SettingsHeaderState extends State<SettingsHeader> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const UserAvatar(),
+        const UserAvatar(
+          iconSize: 48,
+        ),
         const SizedBox(
           width: 12,
         ),

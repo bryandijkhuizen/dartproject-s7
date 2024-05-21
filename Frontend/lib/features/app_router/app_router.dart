@@ -2,6 +2,7 @@ import 'package:darts_application/components/scaffolding.dart';
 import 'package:darts_application/features/app_router/app_router_redirect.dart';
 import 'package:darts_application/features/auth/auth_notifier.dart';
 import 'package:darts_application/features/auth/auth_view.dart';
+import 'package:darts_application/features/avatar_picker/views/avatar_picker_view.dart';
 import 'package:darts_application/features/settings/views/settings_email_view.dart';
 import 'package:darts_application/features/settings/views/settings_name_view.dart';
 import 'package:darts_application/features/settings/views/settings_password_view.dart';
@@ -59,7 +60,13 @@ final settingsRoute = StatefulShellBranch(
         GoRoute(
           path: 'password',
           builder: (context, state) => const SettingsPasswordView(),
-        )
+        ),
+        GoRoute(
+          path: 'avatar',
+          builder: (context, state) {
+            return const AvatarPickerView();
+          },
+        ),
       ],
     ),
   ],
