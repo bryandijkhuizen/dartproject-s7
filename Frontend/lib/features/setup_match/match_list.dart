@@ -76,7 +76,6 @@ class MatchList extends StatelessWidget {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFCD0612),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
                     vertical: 8,
