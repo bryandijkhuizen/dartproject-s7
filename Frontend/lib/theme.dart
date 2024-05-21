@@ -6,6 +6,7 @@ ColorScheme darkColorScheme = ColorScheme.fromSeed(
 )
     // Overwrite the seeded colors with copyWith
     .copyWith(
+  primary: const Color(0xFFCD0612),
   brightness: Brightness.dark,
   secondary: const Color(0xFF2C4789),
   surface: const Color(0xFF404040),

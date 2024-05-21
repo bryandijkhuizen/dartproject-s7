@@ -66,6 +66,7 @@ class _MatchListWidgetState extends State<MatchListWidget> {
 
   @override
   Widget build(BuildContext context) {
+    print(Theme.of(context).colorScheme.primary);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Matches', style: TextStyle(color: Colors.white)),
