@@ -43,4 +43,18 @@ class MatchModel {
       player2LastName: json['player_2_last_name'] ?? 'Unknown',
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'player_1_id': player1Id,
+      'player_2_id': player2Id,
+      'date': date.toIso8601String(),
+      'location': location,
+      'set_target': setTarget,
+      'leg_target': legTarget,
+      'starting_score': startingScore,
+      'winner_id': winnerId,
+      'starting_player_id': startingPlayerId
+    };
+  }
 }

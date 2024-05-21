@@ -14,8 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/features/setup_match/start_match.dart';
-import 'package:darts_application/features/setup_match/views/match_list_widget.dart';
-import 'package:darts_application/features/statistics/views/match_statistics_widget.dart';
 
 Widget getPlaceholderComponent(
     String currentRoute, List<String> routes, BuildContext context) {
@@ -234,22 +232,35 @@ final router = GoRouter(
                 ],
               ),
 
-              // Desktop statistics
+              // Desktop match overview
               StatefulShellBranch(
                 routes: <RouteBase>[
                   GoRoute(
                     path: '/matches',
                     builder: (context, state) {
-                      // Ignore this for now
-                      return getPlaceholderComponent(
-                          '/matches',
-                          [
-                            '/',
-                            '/matches',
-                            '/settings',
-                          ],
-                          context);
+                      return const UpcomingMatchesPage();
                     },
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: 'edit',
+                        builder: (context, state) {
+                          final match = state.extra as Map<String, dynamic>;
+                          return EditSingleMatchPage(match: match);
+                        },
+                      ),
+                      GoRoute(
+                        path: 'create/single',
+                        builder: (context, state) {
+                          return const CreateSingleMatchPage();
+                        },
+                      ),
+                      // GoRoute(
+                      //   path: 'create/tournament',
+                      //   builder: (context, state) {
+                      //     return const CreateTournamentPage();
+                      //   },
+                      // ),
+                    ],
                   ),
                 ],
               ),
