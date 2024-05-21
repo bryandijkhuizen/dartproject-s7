@@ -66,7 +66,6 @@ class _MatchListWidgetState extends State<MatchListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    print(Theme.of(context).colorScheme.primary);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Matches', style: TextStyle(color: Colors.white)),
@@ -115,14 +114,18 @@ class _MatchListWidgetState extends State<MatchListWidget> {
                 }
               },
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => CreateSingleMatchPage()));
-              },
-              child: const Text('Create Match'),
+            Padding(
+              padding: const EdgeInsets.only(
+                  bottom: 16.0), // Add margin at the bottom
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CreateSingleMatchPage()));
+                },
+                child: const Text('Create Match'),
+              ),
             ),
           ],
         ),
