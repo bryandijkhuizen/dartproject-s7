@@ -24,7 +24,7 @@ class _StartMatchState extends State<StartMatch> {
     date: DateTime.now(),
     setTarget: 0,
     legTarget: 0,
-    startingScore: 501,
+    startingScore: 0,
     player1LastName: '',
     player2LastName: '',
   );
