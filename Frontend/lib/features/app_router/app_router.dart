@@ -111,27 +111,6 @@ final router = GoRouter(
                 ],
               ),
 
-              StatefulShellBranch(
-                routes: <RouteBase>[
-                  GoRoute(
-                    path: '/gameplay',
-                    routes: <RouteBase>[
-                      GoRoute(
-                        path: ':matchId',
-                        builder: (context, state) {
-                          final matchId = state.pathParameters['matchId']!;
-                          return MatchView(matchId: matchId);
-                        },
-                      ),
-                    ],
-                    // ignore: prefer_const_constructors
-                    builder: (context, state) => MatchView(
-                      matchId: '0',
-                    ),
-                  ),
-                ],
-              ),
-
               // Mobile statistics
               StatefulShellBranch(
                 routes: <RouteBase>[
@@ -181,6 +160,26 @@ final router = GoRouter(
             ]
           // Desktop branches
           : [
+              StatefulShellBranch(
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: '/gameplay',
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: ':matchId',
+                        builder: (context, state) {
+                          final matchId = state.pathParameters['matchId']!;
+                          return MatchView(matchId: matchId);
+                        },
+                      ),
+                    ],
+                    // ignore: prefer_const_constructors
+                    builder: (context, state) => MatchView(
+                      matchId: '0',
+                    ),
+                  ),
+                ],
+              ),
               // Desktop Home
               StatefulShellBranch(
                 routes: <RouteBase>[
