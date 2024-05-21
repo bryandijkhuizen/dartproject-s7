@@ -1,5 +1,6 @@
 import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -39,19 +40,21 @@ class _UserAvatarState extends State<UserAvatar> {
     return SizedBox(
       height: widget.iconSize,
       width: widget.iconSize,
-      child: FutureBuilder(
-        future: getUserIconURL(widget.userId ?? userStore.currentUser?.id),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasData && snapshot.data != null) {
-              return CircleAvatar(
-                  foregroundImage: NetworkImage(snapshot.data!),
-                  child: getDefaultUserIcon(theme));
+      child: Observer(
+        builder: (context) => FutureBuilder(
+          future: getUserIconURL(widget.userId ?? userStore.currentUser?.id),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasData && snapshot.data != null) {
+                return CircleAvatar(
+                    foregroundImage: NetworkImage(snapshot.data!),
+                    child: getDefaultUserIcon(theme));
+              }
             }
-          }
 
-          return getDefaultUserIcon(theme);
-        },
+            return getDefaultUserIcon(theme);
+          },
+        ),
       ),
     );
   }
