@@ -10,7 +10,7 @@ on "public"."match"
 as permissive
 for insert
 to public
-using (true);
+with check (true);
 
 create policy "Users can edit matches"
 on "public"."match"
