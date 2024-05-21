@@ -176,9 +176,6 @@ final router = GoRouter(
               // Mobile user settings
               settingsBranch,
               clubsBranch,
-            ]
-          // Desktop branches
-          : [
               StatefulShellBranch(
                 routes: <RouteBase>[
                   GoRoute(
@@ -199,6 +196,9 @@ final router = GoRouter(
                   ),
                 ],
               ),
+            ]
+          // Desktop branches
+          : [
               // Desktop Home
               StatefulShellBranch(
                 routes: <RouteBase>[
