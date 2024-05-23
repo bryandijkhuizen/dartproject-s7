@@ -21,10 +21,13 @@ jobs:
       id: get_version
       working-directory: ./Frontend
       run: |
-        VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //')
+        VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | tr -d '[:space:]')
         echo "VERSION=$VERSION" >> $GITHUB_ENV
-        echo "::set-output name=VERSION::$VERSION"
+        echo "::set-env name=VERSION::$VERSION"
 
+    - name: Print GITHUB_ENV
+      run: cat $GITHUB_ENV
+   
     - name: Create release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -88,9 +91,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-
-    - name: Print GITHUB_ENV
-      run: cat $GITHUB_ENV
 
     - name: Setup Java
       uses: actions/setup-java@v1
