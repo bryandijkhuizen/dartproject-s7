@@ -122,7 +122,7 @@ class _MatchListWidgetState extends State<MatchListWidget> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => CreateSingleMatchPage()));
+                          builder: (context) => const CreateSingleMatchPage()));
                 },
                 child: const Text('Create Match'),
               ),
