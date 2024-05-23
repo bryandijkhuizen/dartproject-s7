@@ -240,16 +240,19 @@ final router = GoRouter(
                 routes: <RouteBase>[
                   GoRoute(
                     path: '/statistics',
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: ':matchId',
+                        builder: (context, state) {
+                          final matchIdString =
+                              state.pathParameters['matchId']!;
+                          final matchId = int.parse(matchIdString);
+                          return MatchStatisticsWidget(matchId: matchId);
+                        },
+                      ),
+                    ],
                     builder: (context, state) {
-                      // Ignore this for now
-                      return getPlaceholderComponent(
-                          '/statistics',
-                          [
-                            '/',
-                            '/matches',
-                            '/settings',
-                          ],
-                          context);
+                      return const CompletedMatchesListWidget();
                     },
                   ),
                 ],
