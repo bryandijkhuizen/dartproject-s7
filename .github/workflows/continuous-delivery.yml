@@ -49,7 +49,7 @@ jobs:
 
     steps:
     - name: Show supabase url
-      run: echo ${{ vars.RELEASE_SUPABASE_URL}
+      run: echo ${{ vars.RELEASE_SUPABASE_URL }}
     
     - name: Checkout repository
       uses: actions/checkout@v2
