@@ -59,6 +59,7 @@ BEGIN
         IF current_score - p_score < 0 THEN
             new_score := current_score; -- Dead throw
             is_dead_throw := true;
+            p_score := 0; -- Record 0 for a dead throw
         ELSE
             new_score := current_score - p_score;
             is_dead_throw := false;
@@ -68,6 +69,7 @@ BEGIN
         IF current_score2 - p_score < 0 THEN
             new_score2 := current_score2; -- Dead throw
             is_dead_throw := true;
+            p_score := 0; -- Record 0 for a dead throw
         ELSE
             new_score2 := current_score2 - p_score;
             is_dead_throw := false;
@@ -91,22 +93,45 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
+
+
 CREATE OR REPLACE FUNCTION undo_last_score(p_leg_id bigint)
-RETURNS TABLE(removed_score bigint, updated_current_score bigint, updated_current_score2 bigint) AS $$
+RETURNS TABLE(removed_score bigint, updated_current_score bigint, updated_current_score2 bigint, last_player_id uuid) AS $$
 DECLARE
     last_turn RECORD;
+    previous_turn RECORD;
 BEGIN
+    -- Get the last turn for the given leg
     SELECT * INTO last_turn FROM turn WHERE leg_id = p_leg_id ORDER BY id DESC LIMIT 1;
 
+    -- Delete the last turn
     DELETE FROM turn WHERE id = last_turn.id;
 
-    UPDATE leg SET current_score = last_turn.current_score + last_turn.score,
-                   current_score2 = last_turn.current_score2 + last_turn.score
-    WHERE id = p_leg_id AND winner_id IS NULL RETURNING current_score, current_score2 INTO updated_current_score, updated_current_score2;
+    -- Get the previous turn to determine the updated current scores
+    SELECT * INTO previous_turn FROM turn WHERE leg_id = p_leg_id ORDER BY id DESC LIMIT 1;
 
-    RETURN QUERY SELECT last_turn.score AS removed_score, updated_current_score, updated_current_score2;
+    -- If there is no previous turn, it means we are back to the starting score
+    IF previous_turn IS NULL THEN
+        SELECT m.starting_score, m.starting_score AS current_score2 
+        INTO updated_current_score, updated_current_score2
+        FROM match m 
+        JOIN set s ON m.id = s.match_id 
+        JOIN leg l ON s.id = l.set_id 
+        WHERE l.id = p_leg_id;
+        last_player_id := NULL;  -- No previous player if we are at the starting state
+    ELSE
+        updated_current_score := previous_turn.current_score;
+        updated_current_score2 := previous_turn.current_score2;
+        last_player_id := previous_turn.player_id;
+    END IF;
+
+    -- Return the removed score, updated current scores, and the last player ID
+    RETURN QUERY SELECT last_turn.score AS removed_score, updated_current_score, updated_current_score2, last_player_id;
 END;
 $$ LANGUAGE plpgsql;
+
+
 
 CREATE OR REPLACE FUNCTION get_active_set(p_match_id bigint)
 RETURNS TABLE(set_id bigint, winner_id uuid) AS $$
