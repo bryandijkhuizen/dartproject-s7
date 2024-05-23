@@ -12,6 +12,8 @@ permissions:
 jobs:
   create-release:
     runs-on: ubuntu-latest
+    outputs:
+        version: ${{ steps.get_version.outputs.VERSION }}
 
     steps:
     - name: Checkout repository
@@ -22,8 +24,7 @@ jobs:
       working-directory: ./Frontend
       run: |
         VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | tr -d '[:space:]')
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-        echo "VERSION=$VERSION" >> version.env
+        echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
    
     - name: Create release
       env:
@@ -51,12 +52,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Load version from file
-      env:
-        VERSION: ${{ env.VERSION }}
-      run: |
-        source version.env
-
     - name: Setup Java
       uses: actions/setup-java@v1
       with:
@@ -81,7 +76,7 @@ jobs:
     - name: Upload APK
       uses: actions/upload-artifact@v2
       with:
-        name: apk-${{ steps.get_version.outputs.VERSION }}  # Include version in artifact name
+        name: apk-${{ needs.create-release.outputs.VERSION }}  # Include version in artifact name
         path: Frontend/build/app/outputs/flutter-apk/app-release.apk
 
   build_windows:
@@ -123,5 +118,5 @@ jobs:
     - name: Upload Windows EXE
       uses: actions/upload-artifact@v2
       with:
-        name: windows-${{ steps.get_version.outputs.VERSION }}  # Include version in artifact name
+        name: windows-${{ needs.create-release.outputs.VERSION }}  # Include version in artifact name
         path: Frontend/build/windows/x64/runner/Release
