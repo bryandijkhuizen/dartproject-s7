@@ -68,17 +68,10 @@ jobs:
     - name: Install dependencies
       working-directory: ./Frontend
       run: flutter pub get
-
-    - name: Create config.json
-      run: ./Frontend/create_config_json.sh ${{ vars.RELEASE_SUPABASE_URL }} ${{ vars.RELEASE_SUPABASE_ANON_KEY }}
-
-    - name: Print config.json
-      working-directory: ./Frontend
-      run: cat config.json
-
+      
     - name: Build APK
       working-directory: ./Frontend
-      run: flutter build apk --dart-define-from-file=config.json
+      run: flutter build apk --dart-define=SUPABASE_URL=${{ vars.RELEASE_SUPABASE_URL }},SUPABASE_ANON_KEY=${{ vars.RELEASE_SUPABASE_ANON_KEY }}
 
     - name: Upload APK
       uses: actions/upload-artifact@v2
@@ -112,12 +105,9 @@ jobs:
       working-directory: ./Frontend
       run: flutter pub get
 
-    - name: Create config.json
-      run: ./Frontend/create_config_json.sh ${{ vars.RELEASE_SUPABASE_URL }} ${{ vars.RELEASE_SUPABASE_ANON_KEY }}
-
     - name: Build Windows EXE
       working-directory: ./Frontend
-      run: flutter build windows --dart-define-from-file=config.json
+      run: flutter build windows --dart-define=SUPABASE_URL=${{ vars.RELEASE_SUPABASE_URL }},SUPABASE_ANON_KEY=${{ vars.RELEASE_SUPABASE_ANON_KEY }}
       
     - name: Upload Windows EXE
       uses: actions/upload-artifact@v2
