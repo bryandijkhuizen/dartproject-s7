@@ -1,5 +1,9 @@
 name: Build and Tag Release
 
+env:
+  SUPABASE_URL: ${{ vars.RELEASE_SUPABASE_URL }}
+  SUPABASE_ANON_KEY: ${{ vars.RELEASE_SUPABASE_ANON_KEY }}
+  
 on:
   push:
     branches:
@@ -49,6 +53,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Echo Supabase URL
+      run: echo $SUPABASE_URL
+
+    - name: Echo Supabase Anon Key
+      run: echo $SUPABASE_ANON_KEY
+      
     - name: Checkout repository
       uses: actions/checkout@v4
 
@@ -71,8 +81,7 @@ jobs:
       
     - name: Build APK
       working-directory: ./Frontend
-      run: flutter build apk --dart-define=SUPABASE_URL=${{ vars.RELEASE_SUPABASE_URL }} --dart-define=SUPABASE_ANON_KEY=${{ vars.RELEASE_SUPABASE_ANON_KEY }}
-
+      run: flutter build apk --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
     - name: Upload APK
       uses: actions/upload-artifact@v2
       with:
@@ -107,7 +116,7 @@ jobs:
 
     - name: Build Windows EXE
       working-directory: ./Frontend
-      run: flutter build windows --dart-define=SUPABASE_URL=${{ vars.RELEASE_SUPABASE_URL }} --dart-define=SUPABASE_ANON_KEY=${{ vars.RELEASE_SUPABASE_ANON_KEY }}
+      run: flutter build windows --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
       
     - name: Upload Windows EXE
       uses: actions/upload-artifact@v2
