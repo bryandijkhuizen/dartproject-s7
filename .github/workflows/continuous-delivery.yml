@@ -72,7 +72,7 @@ jobs:
         flutter-version: '3.19.6'
     
     - name: Setup Android SDK
-      uses: android/setup-android@v2
+      uses: android-actions/setup-android@v2
       with:
         sdk-version: '30'  # Specify the Android SDK version
         ndk-version: '21.0.6113669'  # Specify the NDK version
