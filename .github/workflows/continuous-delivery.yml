@@ -6,6 +6,9 @@ on:
       - main
       - test
 
+permissions:
+  contents: write  # Grant write permission to contents to push tags
+
 jobs:
   create-tag:
     runs-on: ubuntu-latest
