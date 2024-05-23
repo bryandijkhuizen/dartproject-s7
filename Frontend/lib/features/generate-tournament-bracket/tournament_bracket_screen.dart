@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase/supabase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/player.dart';
 
@@ -19,7 +18,7 @@ class TournamentBracketScreen extends StatelessWidget {
     List<PlayerModel>? players,
   }) : players = players ?? [];
 
-  void checkPlayers(TournamentStore tournamentStore) async {
+  Future<void> setTournamentPlayers(TournamentStore tournamentStore) async {
     if (players.isEmpty) {
       // For now use test data
       final List<String> playerIds = [
@@ -41,9 +40,10 @@ class TournamentBracketScreen extends StatelessWidget {
         "01f73f6d-741c-4ef1-afd4-af145336dde2"
       ];
 
-      players = await tournamentStore.loadPlayersByIds(playerIds);
+      players = await tournamentStore.getPlayersByIds(playerIds);
     }
 
+    tournamentStore.players = players;
     tournamentStore.unselectedPlayers = players;
   }
 
@@ -56,90 +56,89 @@ class TournamentBracketScreen extends StatelessWidget {
     var titleMediumWhite =
         theme.textTheme.titleMedium?.copyWith(color: Colors.white);
 
-    // const String avatarUrl = "assets/images/avatar_placeholder.png";
-    // List<Player> players = [];
-
-    // for (var tournamentPlayer in tournamentPlayers) {
-    //   players.add(Player(tournamentPlayer, avatarUrl));
-    // }
-
     return Provider(
       create: (context) => TournamentStore(Supabase.instance.client),
       child: Builder(builder: (context) {
         TournamentStore tournamentStore = context.read<TournamentStore>();
-        // if (!tournamentStore.initialized) {
-        //   return const CircularProgressIndicator();
-        // }
 
-        checkPlayers(tournamentStore);
-
-        return ListView(
-          scrollDirection: Axis.vertical,
-          children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                child: SizedBox(
-                  width: 1200.00,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 30),
-                      Container(
-                        child: Text(
-                          "Edit tournament",
-                          style: titleLargeWhite,
+        return FutureBuilder<void>(
+          future: setTournamentPlayers(tournamentStore),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(
+                  child: Text('An error occurred: ${snapshot.error}'));
+            } else if (snapshot.connectionState == ConnectionState.done) {
+              return ListView(
+                scrollDirection: Axis.vertical,
+                children: [
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                      child: SizedBox(
+                        width: 1200.00,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 30),
+                            Container(
+                              child: Text(
+                                "Edit tournament",
+                                style: titleLargeWhite,
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            Container(
+                              child: Text(
+                                "Review the proposed matches.",
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            Container(
+                              child: Text(
+                                "Matches",
+                                style: titleMediumWhite,
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              children: [
+                                ElevatedButton(
+                                  child: Text("Fill in random"),
+                                  onPressed: () => {},
+                                ),
+                                Spacer(),
+                                ElevatedButton(
+                                  child: Text("Clear"),
+                                  onPressed: () => {},
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20),
+                            TournamentBrackets(context: context),
+                            SizedBox(height: 20),
+                            Row(
+                              children: [
+                                Spacer(),
+                                ElevatedButton(
+                                  child: Text("Create"),
+                                  onPressed: () => {},
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20),
+                          ],
                         ),
                       ),
-                      SizedBox(height: 20),
-                      Container(
-                        child: Text(
-                          "Review the proposed matches.",
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Container(
-                        child: Text(
-                          "Matches",
-                          style: titleMediumWhite,
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Row(
-                        children: [
-                          ElevatedButton(
-                            child: Text("Fill in random"),
-                            onPressed: () => {},
-                          ),
-                          Spacer(),
-                          ElevatedButton(
-                            child: Text("Clear"),
-                            onPressed: () => {},
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                      // TournamentBrackets(
-                      //   context: context,
-                      //   players: players,
-                      // ),
-                      SizedBox(height: 20),
-                      Row(
-                        children: [
-                          Spacer(),
-                          ElevatedButton(
-                            child: Text("Create"),
-                            onPressed: () => {},
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                    ],
+                    ),
                   ),
-                ),
-              ),
-            ),
-          ],
+                ],
+              );
+            } else {
+              return Center(child: Text('Unexpected state'));
+            }
+          },
         );
       }),
     );

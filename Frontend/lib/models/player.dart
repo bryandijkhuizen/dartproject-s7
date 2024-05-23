@@ -19,4 +19,14 @@ class PlayerModel {
       avatarId: json['avatar_id'].toString(),
     );
   }
+
+  factory PlayerModel.placeholderPlayer({
+    String id = "",
+    String firstName = "",
+    String lastName = "",
+    String avatarId = "1",
+  }) {
+    return PlayerModel(
+        id: id, firstName: firstName, lastName: lastName, avatarId: avatarId);
+  }
 }
