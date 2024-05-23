@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/match.dart';
 import 'package:darts_application/models/player.dart';
-import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
+import 'package:darts_application/features/create_match/create_single_match_page.dart';
 
 class MatchListWidget extends StatelessWidget {
   const MatchListWidget({super.key});

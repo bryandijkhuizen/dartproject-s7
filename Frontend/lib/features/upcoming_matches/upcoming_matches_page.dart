@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
-import 'package:darts_application/features/create_match/single_match/edit_single_match_page.dart';
-// import 'package:darts_application/features/create_match/tournament/create_tournament_page.dart';
+import 'package:darts_application/features/create_match/create_single_match_page.dart';
+import 'package:darts_application/features/create_match/edit_single_match_page.dart';
 import 'package:darts_application/models/player.dart';
 
 class UpcomingMatchesPage extends StatefulWidget {
