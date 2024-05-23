@@ -74,7 +74,7 @@ jobs:
 
     - name: Build APK
       working-directory: ./Frontend
-      run: flutter build apk --dart-define=SUPABASE_URL=${SUPABASE_URL} --dart-define=SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      run: flutter build apk --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
 
     - name: Upload APK
       uses: actions/upload-artifact@v2
@@ -114,7 +114,7 @@ jobs:
 
     - name: Build Windows EXE
       working-directory: ./Frontend
-      run: flutter build windows --dart-define=SUPABASE_URL=${SUPABASE_URL} --dart-define=SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      run: flutter build windows --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
 
     - name: Upload Windows EXE
       uses: actions/upload-artifact@v2
