@@ -40,6 +40,10 @@ class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
         label: 'Club management',
         location: '/club-management',
       ),
+      const NavigationItem(
+        label: 'Settings',
+        location: '/settings',
+      ),
     ];
 
     // Get current navigationItem (synced with router's branches)
