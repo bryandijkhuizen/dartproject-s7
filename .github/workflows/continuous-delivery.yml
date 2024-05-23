@@ -23,10 +23,7 @@ jobs:
       run: |
         VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | tr -d '[:space:]')
         echo "VERSION=$VERSION" >> $GITHUB_ENV
-        echo "::set-env name=VERSION::$VERSION"
-
-    - name: Print GITHUB_ENV
-      run: cat $GITHUB_ENV
+        echo "VERSION=$VERSION" >> version.env
    
     - name: Create release
       env:
@@ -51,11 +48,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Show supabase url
-      run: echo ${{ vars.RELEASE_SUPABASE_URL }}
-    
     - name: Checkout repository
       uses: actions/checkout@v2
+
+    - name: Load version from file
+      env:
+        VERSION: ${{ env.VERSION }}
+      run: |
+        source version.env
 
     - name: Setup Java
       uses: actions/setup-java@v1
@@ -91,6 +91,12 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+
+    - name: Load version from file
+      env:
+        VERSION: ${{ env.VERSION }}
+      run: |
+        source version.env
 
     - name: Setup Java
       uses: actions/setup-java@v1
