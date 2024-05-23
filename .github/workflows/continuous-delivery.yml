@@ -55,7 +55,7 @@ jobs:
     - name: Print supabase URL
       run: echo ${{ secrets.RELEASE_SUPABASE_URL }}
 
-    - name: Print supabase URL
+    - name: Print supabase anon key
       run: echo ${{ secrets.RELEASE_SUPABASE_ANON_KEY }}
       
     - name: Checkout repository
