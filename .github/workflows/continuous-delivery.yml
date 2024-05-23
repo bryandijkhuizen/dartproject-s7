@@ -1,55 +1,111 @@
-name: Flutter Build Android APK and Windows EXE
+name: Build and Tag Release
 
-on: 
-  push: [main, test]
-    tags:
-      - 'v*'
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  apk:
+  create-tag:
     runs-on: ubuntu-latest
-    
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Get the version from pubspec.yaml
+      id: get_version
+      working-directory: ./Frontend
+      run: |
+        VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //')
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        echo "::set-output name=VERSION::$VERSION"
+
+    - name: Create and push tag
+      env:
+        VERSION: ${{ steps.get_version.outputs.VERSION }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+        git tag "v${VERSION}"
+        git push origin "v${VERSION}"
+
+  build:
+    needs: create-tag
+    runs-on: ubuntu-latest
+
     env:
       SUPABASE_URL: ${{ secrets.RELEASE_SUPABASE_URL }}
       SUPABASE_ANON_KEY: ${{ secrets.RELEASE_SUPABASE_ANON_KEY }}
-    
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-java@v1
-        with:
-          java-version: '12.x'
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: beta
-      - run: sudo /usr/local/lib/android/sdk/tools/bin/sdkmanager --install "ndk;21.0.6113669" --sdk_root=${ANDROID_SDK_ROOT} <<< y
-      - name: Build APK
-        run: |
-        flutter build apk --dart-define=SUPABASE_URL=${SUPABASE_URL} --dart-define=SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
 
-      - uses: actions/upload-artifact@master
-        with:
-          name: apk
-          path: build/app/outputs/flutter-apk
-  
-  windows:
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Java
+      uses: actions/setup-java@v1
+      with:
+        java-version: '12.x'
+        
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.6'
+
+    - name: Install NDK (if required)
+      run: sudo /usr/local/lib/android/sdk/tools/bin/sdkmanager --install "ndk;21.0.6113669" --sdk_root=${ANDROID_SDK_ROOT} <<< y
+
+    - name: Install dependencies
+      working-directory: ./Frontend
+      run: flutter pub get
+
+    - name: Build APK
+      working-directory: ./Frontend
+      run: flutter build apk --dart-define=SUPABASE_URL=${SUPABASE_URL} --dart-define=SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v2
+      with:
+        name: apk
+        path: Frontend/build/app/outputs/flutter-apk/app-release.apk
+
+  build_windows:
+    needs: create-tag
     runs-on: windows-latest
-    
+
     env:
       SUPABASE_URL: ${{ secrets.RELEASE_SUPABASE_URL }}
       SUPABASE_ANON_KEY: ${{ secrets.RELEASE_SUPABASE_ANON_KEY }}
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-java@v1
-        with:
-          java-version: '12.x'
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: dev
-      - run: flutter config --enable-windows-desktop
-      - run: flutter create .
-      - run: flutter build windows --dart-define=SUPABASE_URL=${SUPABASE_URL} --dart-define=SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
-      - uses: actions/upload-artifact@master
-        with:
-          name: windows
-          path: build\windows\runner\Release
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Java
+      uses: actions/setup-java@v1
+      with:
+        java-version: '12.x'
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.6'
+
+    - name: Enable Windows desktop
+      working-directory: ./Frontend
+      run: flutter config --enable-windows-desktop
+
+    - name: Install dependencies
+      working-directory: ./Frontend
+      run: flutter pub get
+
+    - name: Build Windows EXE
+      working-directory: ./Frontend
+      run: flutter build windows --dart-define=SUPABASE_URL=${SUPABASE_URL} --dart-define=SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+
+    - name: Upload Windows EXE
+      uses: actions/upload-artifact@v2
+      with:
+        name: windows
+        path: Frontend/build/windows/runner/Release
