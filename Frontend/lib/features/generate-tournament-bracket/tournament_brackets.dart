@@ -33,27 +33,33 @@ class TournamentBrackets extends StatelessWidget {
 
     final ScrollController _scrollController = ScrollController();
 
-    Widget roundLayout = Column(
+    Widget roundLayout = Row(
       children: [
-        Text(
-          "Round ${round.toString()}",
-        ),
-        Container(
-          color: Colors.white,
-          height: 400,
-          width: 400,
-          child: Scrollbar(
-            controller: _scrollController,
-            child: ListView.builder(
-              controller: _scrollController,
-              scrollDirection: Axis.vertical,
-              itemCount: matches.length,
-              itemBuilder: (context, index) {
-                return matches[index];
-              },
+        const SizedBox(width: 4),
+        Column(
+          children: [
+            Text(
+              "Round ${round.toString()}",
             ),
-          ),
+            Container(
+              color: Colors.white,
+              height: 400,
+              width: 400,
+              child: Scrollbar(
+                controller: _scrollController,
+                child: ListView.builder(
+                  controller: _scrollController,
+                  scrollDirection: Axis.vertical,
+                  itemCount: matches.length,
+                  itemBuilder: (context, index) {
+                    return matches[index];
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
+        const SizedBox(width: 4),
       ],
     );
 

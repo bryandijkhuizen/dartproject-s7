@@ -54,30 +54,38 @@ class MatchupCard extends StatelessWidget {
 
     checkForPlayers(tournamentStore);
     var theme = Theme.of(context);
-    return Card(
-      color: theme.colorScheme.primary,
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              children: [
-                PlayerCard(
-                  player: firstPlayer,
-                  selectPlayer: selectPlayer,
-                ),
-                PlayerCard(
-                  player: secondPlayer,
-                  selectPlayer: selectPlayer,
-                ),
-              ],
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Card(
+        color: theme.colorScheme.primary,
+        child: Row(
+          children: [
+            const SizedBox(width: 4),
+            Expanded(
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
+                  PlayerCard(
+                    player: firstPlayer,
+                    selectPlayer: selectPlayer,
+                  ),
+                  const SizedBox(height: 8),
+                  PlayerCard(
+                    player: secondPlayer,
+                    selectPlayer: selectPlayer,
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
             ),
-          ),
-          ElevatedButton(
-            child: const Text("Edit"),
-            onPressed: () => {},
-          ),
-          const SizedBox(width: 8),
-        ],
+            const SizedBox(width: 4),
+            ElevatedButton(
+              child: const Text("Edit"),
+              onPressed: () => {},
+            ),
+            const SizedBox(width: 8),
+          ],
+        ),
       ),
     );
   }
