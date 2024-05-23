@@ -6,10 +6,14 @@ import 'package:darts_application/features/statistics/controllers/statistics_dat
 import 'package:darts_application/models/match_statistics.dart';
 import 'package:darts_application/models/player_stats.dart';
 import 'package:darts_application/models/turn.dart';
+import 'package:darts_application/features/statistics/components/graphs/average_score_graph.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class MatchStatisticsWidget extends StatefulWidget {
   final int matchId;
-  const MatchStatisticsWidget({super.key, required this.matchId});
+  final bool isDesktop;
+  const MatchStatisticsWidget(
+      {super.key, required this.matchId, required this.isDesktop});
 
   @override
   State<MatchStatisticsWidget> createState() => _MatchStatisticsWidgetState();
@@ -37,6 +41,17 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
     setState(() {
       currentLeg = newValue ?? 0;
     });
+  }
+
+  List<FlSpot> _getSetAverages(
+      MatchStatisticsModel matchStatistics, String playerId) {
+    List<FlSpot> spots = [];
+    for (int i = 0; i < matchStatistics.setIds.length; i++) {
+      double average = matchStatistics.calculateSetAverage(
+          playerId, matchStatistics.setIds[i]);
+      spots.add(FlSpot(i.toDouble(), average));
+    }
+    return spots;
   }
 
   @override
@@ -102,6 +117,11 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
             .where((turn) => turn.legId == currentLegId)
             .toList();
         final turnRows = _buildTurnRows(filteredTurns, matchStatistics);
+
+        List<FlSpot> player1SetAverages =
+            _getSetAverages(matchStatistics, matchStatistics.match.player1Id);
+        List<FlSpot> player2SetAverages =
+            _getSetAverages(matchStatistics, matchStatistics.match.player2Id);
 
         return Scaffold(
           appBar: AppBar(title: const Text('Statistics')),
@@ -188,6 +208,28 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
                 const SizedBox(height: 24),
                 const Divider(),
                 Expanded(child: ListView(children: turnRows)),
+                if (widget.isDesktop) ...[
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Player Averages',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: AspectRatio(
+                      aspectRatio: 5,
+                      child: AverageScoreGraph(
+                        isShowingMainData: true,
+                        player1SetAverages: player1SetAverages,
+                        player2SetAverages: player2SetAverages,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
               ],
             ),
           ),
