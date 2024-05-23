@@ -52,6 +52,12 @@ jobs:
       SUPABASE_ANON_KEY: ${{ secrets.RELEASE_SUPABASE_ANON_KEY }}
 
     steps:
+    - name: Print supabase URL
+      run: echo ${{ secrets.RELEASE_SUPABASE_URL }}
+
+    - name: Print supabase URL
+      run: echo ${{ secrets.RELEASE_SUPABASE_ANON_KEY }}
+      
     - name: Checkout repository
       uses: actions/checkout@v2
 
