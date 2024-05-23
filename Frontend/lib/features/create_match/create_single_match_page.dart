@@ -4,8 +4,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:darts_application/components/input_fields/time_picker.dart';
 import 'package:darts_application/components/input_fields/date_picker.dart';
-import 'package:darts_application/features/create_match/single_match/player_selector.dart';
-import 'package:darts_application/features/create_match/single_match/confirmation_page.dart';
+import 'package:darts_application/features/create_match/player_selector.dart';
+import 'package:darts_application/features/create_match/confirmation_page.dart';
 import 'package:darts_application/models/match.dart';
 
 class CreateSingleMatchPage extends StatefulWidget {

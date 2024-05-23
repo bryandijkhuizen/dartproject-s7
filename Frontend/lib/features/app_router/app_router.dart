@@ -13,8 +13,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/features/setup_match/start_match.dart';
 import 'package:darts_application/features/setup_match/match_list_widget.dart';
 import 'package:darts_application/features/upcoming_matches/upcoming_matches_page.dart';
-import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
-import 'package:darts_application/features/create_match/single_match/edit_single_match_page.dart';
+import 'package:darts_application/features/create_match/create_single_match_page.dart';
+import 'package:darts_application/features/create_match/edit_single_match_page.dart';
 
 Widget getPlaceholderComponent(
     String currentRoute, List<String> routes, BuildContext context) {
