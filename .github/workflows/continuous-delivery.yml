@@ -10,7 +10,7 @@ permissions:
   contents: write  # Grant write permission to contents to push tags
 
 jobs:
-  create-tag:
+  create-release:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,18 +25,26 @@ jobs:
         echo "VERSION=$VERSION" >> $GITHUB_ENV
         echo "::set-output name=VERSION::$VERSION"
 
-    - name: Create and push tag
+    - name: Create release
       env:
-        VERSION: ${{ steps.get_version.outputs.VERSION }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VERSION: ${{ steps.get_version.outputs.VERSION }}
       run: |
-        git config --global user.name "github-actions"
-        git config --global user.email "github-actions@github.com"
-        git tag "v${VERSION}"
-        git push origin "v${VERSION}"
+        curl -X POST \
+          -H "Authorization: token $GITHUB_TOKEN" \
+          -H "Content-Type: application/json" \
+          https://api.github.com/repos/${GITHUB_REPOSITORY}/releases \
+          -d '{
+            "tag_name": "v'${VERSION}'",
+            "name": "Release v'${VERSION}'",
+            "body": "Release v'${VERSION}'",
+            "draft": false,
+            "prerelease": false
+          }'
 
-  build:
-    needs: create-tag
+
+  build_android:
+    needs: create-release
     runs-on: ubuntu-latest
 
     env:
@@ -75,7 +83,7 @@ jobs:
         path: Frontend/build/app/outputs/flutter-apk/app-release.apk
 
   build_windows:
-    needs: create-tag
+    needs: create-release
     runs-on: windows-latest
 
     env:
@@ -112,4 +120,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: windows-${{ steps.get_version.outputs.VERSION }}  # Include version in artifact name
-        path: Frontend/build/windows/runner/Release
+        path: Frontend/build/windows/x64/runner/Release
