@@ -71,7 +71,7 @@ jobs:
     - name: Upload APK
       uses: actions/upload-artifact@v2
       with:
-        name: apk
+        name: apk-${{ steps.get_version.outputs.VERSION }}  # Include version in artifact name
         path: Frontend/build/app/outputs/flutter-apk/app-release.apk
 
   build_windows:
@@ -111,5 +111,5 @@ jobs:
     - name: Upload Windows EXE
       uses: actions/upload-artifact@v2
       with:
-        name: windows
+        name: windows-${{ steps.get_version.outputs.VERSION }}  # Include version in artifact name
         path: Frontend/build/windows/runner/Release
