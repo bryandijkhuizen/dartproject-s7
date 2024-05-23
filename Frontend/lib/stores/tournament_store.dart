@@ -1,3 +1,4 @@
+import 'package:darts_application/models/match.dart';
 import 'package:darts_application/models/player.dart';
 import 'package:mobx/mobx.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -9,7 +10,9 @@ class TournamentStore = _TournamentStore with _$TournamentStore;
 abstract class _TournamentStore with Store {
   final SupabaseClient _supabase;
   @observable
-  bool initialized = false;
+  // bool initialized = false;
+  List<MatchModel> matches = [];
+  List<PlayerModel> players = [];
   @observable
   List<PlayerModel> unselectedPlayers;
   List<PlayerModel> selectedPlayers = [];
@@ -19,7 +22,14 @@ abstract class _TournamentStore with Store {
     List<PlayerModel>? unselectedPlayers,
   }) : unselectedPlayers = unselectedPlayers ?? [];
 
-  Future<List<PlayerModel>> loadPlayersByIds(List<String> playerIds) async {
+  Future<Map<String, dynamic>> getPlayerById(String id) async {
+    Map<String, dynamic> response =
+        await _supabase.from('user').select('*').eq('id', id).single();
+
+    return response;
+  }
+
+  Future<List<PlayerModel>> getPlayersByIds(List<String> playerIds) async {
     final response = await _supabase
         .rpc("get_users_by_uuids", params: {"uuid_list": playerIds});
 
@@ -34,9 +44,31 @@ abstract class _TournamentStore with Store {
       return PlayerModel.fromJson(userMap);
     }).toList();
 
-    initialized = true;
+    // initialized = true;
 
     return playerModels;
+  }
+
+  MatchModel addMatch(
+    PlayerModel firstPlayer,
+    PlayerModel secondPlayer,
+    DateTime date,
+    int setTarget,
+    int legTarget,
+  ) {
+    int matchId = matches.length + 1;
+    final MatchModel newMatch = MatchModel(
+        id: matchId.toString(),
+        player1Id: firstPlayer.id,
+        player2Id: secondPlayer.id,
+        date: date,
+        setTarget: setTarget,
+        legTarget: legTarget,
+        player1LastName: firstPlayer.lastName,
+        player2LastName: secondPlayer.lastName);
+
+    matches.add(newMatch);
+    return newMatch;
   }
 
   // @action
