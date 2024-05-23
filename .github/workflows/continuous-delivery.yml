@@ -86,13 +86,7 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-
-    - name: Load version from file
-      env:
-        VERSION: ${{ env.VERSION }}
-      run: |
-        source version.env
-
+      
     - name: Setup Java
       uses: actions/setup-java@v1
       with:
