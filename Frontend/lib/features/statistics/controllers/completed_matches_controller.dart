@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:darts_application/features/app_router/app_router.dart';
 import 'package:darts_application/features/statistics/controllers/statistics_data_controller.dart';
+import 'package:darts_application/stores/user_store.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/match.dart';
 import 'package:darts_application/models/player.dart';
@@ -10,6 +11,7 @@ class CompletedMatchesController {
   final List<PlayerModel> _players = [];
   bool _isLoading = false;
   bool _hasMore = true;
+  UserStore userStore = UserStore(Supabase.instance.client);
 
   final StreamController<List<MatchModel>> _matchesStreamController =
       StreamController.broadcast();
@@ -26,24 +28,31 @@ class CompletedMatchesController {
     _isLoading = true;
 
     if (refresh) {
-      _hasMore = true;
       _matches.clear();
+      _matchesStreamController.add([]);
+      _hasMore = true;
     }
 
     final response =
         await Supabase.instance.client.rpc('get_completed_matches');
+
+    response.removeWhere((match) =>
+        match['player_1_id'] != userStore.currentUser?.id &&
+        match['player_2_id'] != userStore.currentUser?.id);
+
     final newMatches =
         (response as List).map((json) => MatchModel.fromJson(json)).toList();
 
     if (newMatches.isNotEmpty) {
-      _matches.addAll(newMatches);
+      _matches.addAll(newMatches.where((newMatch) =>
+          !_matches.any((existingMatch) => existingMatch.id == newMatch.id)));
     } else {
       _hasMore = false;
     }
 
     _matches.sort((a, b) => b.date.compareTo(a.date));
 
-    _matchesStreamController.add(_matches);
+    _matchesStreamController.add(List<MatchModel>.from(_matches));
     _isLoading = false;
   }
 

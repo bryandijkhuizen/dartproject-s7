@@ -1,5 +1,6 @@
 import 'package:darts_application/features/statistics/components/match_card.dart';
 import 'package:darts_application/features/statistics/controllers/completed_matches_controller.dart';
+import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/features/statistics/controllers/statistics_data_controller.dart';
@@ -41,12 +42,6 @@ class _CompletedMatchesListWidgetState
       appBar: AppBar(
         title: const Text('Completed Matches',
             style: TextStyle(color: Colors.white)),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => _controller.fetchMatches(refresh: true),
-          ),
-        ],
       ),
       body: Column(
         children: [
