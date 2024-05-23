@@ -58,14 +58,16 @@ abstract class _TournamentStore with Store {
   ) {
     int matchId = matches.length + 1;
     final MatchModel newMatch = MatchModel(
-        id: matchId.toString(),
-        player1Id: firstPlayer.id,
-        player2Id: secondPlayer.id,
-        date: date,
-        setTarget: setTarget,
-        legTarget: legTarget,
-        player1LastName: firstPlayer.lastName,
-        player2LastName: secondPlayer.lastName);
+      id: matchId.toString(),
+      player1Id: firstPlayer.id,
+      player2Id: secondPlayer.id,
+      date: date,
+      setTarget: setTarget,
+      legTarget: legTarget,
+      startingScore: 0,
+      player1LastName: firstPlayer.lastName,
+      player2LastName: secondPlayer.lastName,
+    );
 
     matches.add(newMatch);
     return newMatch;
