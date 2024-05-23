@@ -48,16 +48,10 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      SUPABASE_URL: ${{ secrets.RELEASE_SUPABASE_URL }}
-      SUPABASE_ANON_KEY: ${{ secrets.RELEASE_SUPABASE_ANON_KEY }}
+      SUPABASE_URL: $RELEASE_SUPABASE_URL
+      SUPABASE_ANON_KEY: $RELEASE_SUPABASE_ANON_KEY
 
     steps:
-    - name: Print supabase URL
-      run: echo ${{ secrets.RELEASE_SUPABASE_URL }}
-
-    - name: Print supabase anon key
-      run: echo ${{ secrets.RELEASE_SUPABASE_ANON_KEY }}
-      
     - name: Checkout repository
       uses: actions/checkout@v2
 
@@ -73,10 +67,6 @@ jobs:
     
     - name: Setup Android SDK
       uses: android-actions/setup-android@v2
-      with:
-        sdk-version: '30'  # Specify the Android SDK version
-        ndk-version: '21.0.6113669'  # Specify the NDK version
-
 
     - name: Install dependencies
       working-directory: ./Frontend
@@ -97,8 +87,8 @@ jobs:
     runs-on: windows-latest
 
     env:
-      SUPABASE_URL: ${{ secrets.RELEASE_SUPABASE_URL }}
-      SUPABASE_ANON_KEY: ${{ secrets.RELEASE_SUPABASE_ANON_KEY }}
+      SUPABASE_URL: $RELEASE_SUPABASE_URL
+      SUPABASE_ANON_KEY: $RELEASE_SUPABASE_ANON_KEY
 
     steps:
     - name: Checkout repository
