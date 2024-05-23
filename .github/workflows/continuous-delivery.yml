@@ -52,6 +52,9 @@ jobs:
       SUPABASE_ANON_KEY: $RELEASE_SUPABASE_ANON_KEY
 
     steps:
+    - name: Show supabase url
+      run: echo $RELEASE_SUPABASE_URL
+    
     - name: Checkout repository
       uses: actions/checkout@v2
 
