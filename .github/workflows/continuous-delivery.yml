@@ -85,7 +85,7 @@ jobs:
       uses: thedoctor0/zip-release@0.7.5
       with:
         type: 'zip'
-        filename: 'DartinMolema-${{needs.get-release-version.outputs.version}}-android-signed-archive'
+        filename: 'DartinMolema-${{needs.get-release-version.outputs.version}}-android-signed-archive.zip'
         path: 'Frontend/build/app/outputs/apk/release/*release-signed.apk'
         
 
