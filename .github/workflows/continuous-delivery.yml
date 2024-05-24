@@ -92,14 +92,14 @@ jobs:
     
         # Copy signed APK files to the release directory
         for FILE in "${FILES[@]}"; do
-          cp "$FILE" release/
+          cp "$FILE" release
         done
     
         # Zip the files in the release directory
         zip -r signed_apks-${{needs.get-release-version.outputs.version}}.zip release
     
         # Print the list of files included in the zip
-        ls -lh signed_apks-${{needs.get-release-version.outputs.version}}.zip
+        ls -lh release
       shell: bash
 
     - name: Upload signed app files
