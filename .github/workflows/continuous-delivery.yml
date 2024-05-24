@@ -137,7 +137,7 @@ jobs:
         type: 'zip'
         filename: DartinMolema-${{ needs.create-release.outputs.version }}-windows.zip
         directory: .
-        path: Frontend/build/windows/runner/Release
+        path: Frontend/build/windows/runner/Release/*
 
     - name: Windows Release
       uses: softprops/action-gh-release@v1
