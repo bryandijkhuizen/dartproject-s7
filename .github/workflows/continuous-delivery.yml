@@ -81,21 +81,33 @@ jobs:
         BUILD_TOOLS_VERSION: ${{env.BUILD_TOOL_VERSION}} # Specify the desired version here
         
 
-    - name: Archive Release
+    - name: Gather and Zip Signed APKs
+      id: gather_and_zip_apks
       run: |
+        # Create a directory to store the signed APKs
         mkdir -p release
-        IFS=':' read -ra FILES <<< "${{ steps.sign_apks.outputs.signedReleaseFiles }}"
+    
+        # Get the list of signed APK files
+        IFS=':' read -ra FILES <<< "${{ steps.sign_app.outputs.signedReleaseFiles }}"
+    
+        # Copy signed APK files to the release directory
         for FILE in "${FILES[@]}"; do
           cp "$FILE" release/
         done
-        zip -r DartinMolema-${{ needs.get-release-version.outputs.version }}-android-signed.zip release
-      
+    
+        # Zip the files in the release directory
+        zip -r signed_apks-${{needs.get-release-version.outputs.version}}.zip release/*
+    
+        # Print the list of files included in the zip
+        ls -lh signed_apks-${{needs.get-release-version.outputs.version}}.zip
+      shell: bash
+
     - name: Upload signed app files
       uses: actions/upload-artifact@v2
       with:
         name: DartinMolema-${{needs.get-release-version.outputs.version}}-android-signed
-        path: DartinMolema-${{ needs.get-release-version.outputs.version }}-android-signed.zip
-
+        path: signed_apks-${{needs.get-release-version.outputs.version}}.zip
+  
   build_windows:
     needs: get-release-version
     runs-on: windows-latest
@@ -139,7 +151,7 @@ jobs:
     needs: [get-release-version, build_android, build_windows]
 
     steps:
-    - name: Download Android App bundle
+    - name: Download Android Signed APKs
       uses: actions/download-artifact@v4
       with:
         name: DartinMolema-${{needs.get-release-version.outputs.version}}-android-signed
