@@ -55,7 +55,8 @@ class MatchStatisticsModel {
   }
 
   double calculateAveragePerDart(String playerId) {
-    return calculateAverageScore(playerId) / 3;
+    double average = calculateAverageScore(playerId) / 3;
+    return double.parse((average).toStringAsFixed(2));
   }
 
   int calculateCheckoutPercentage(String playerId) {
