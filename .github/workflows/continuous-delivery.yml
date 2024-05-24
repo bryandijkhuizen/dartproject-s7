@@ -105,7 +105,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Echo Supabase URL
+    - name: Echo Supabase URL
       run: echo $SUPABASE_URL
 
     - name: Echo Supabase Anon Key
