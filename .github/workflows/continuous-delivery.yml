@@ -92,12 +92,13 @@ jobs:
         filename: DartinMolema-${{ needs.create-release.outputs.version }}-android.zip
         directory: Frontend/build/app/outputs/apk/release/
 
-    - name: Windows Release
-      uses: softprops/action-gh-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create Release
+      uses: ncipollo/release-action@v1.14.0
       with:
-        files: ./Frontend/build/app/outputs/apk/release/DartinMolema-${{ needs.create-release.outputs.version }}-android.zip
+        artifacts: "./Frontend/build/app/outputs/apk/release/DartinMolema-${{ needs.create-release.outputs.version }}-android.zip"
+        tag: 'v${{ needs.create-release.outputs.version }}'
+
+
       
 
   build_windows:
@@ -137,12 +138,10 @@ jobs:
         type: 'zip'
         filename: DartinMolema-${{ needs.create-release.outputs.version }}-windows.zip
         directory: .
-        path: Frontend/build/windows/runner/Release/*
+        path: Frontend/build/windows/x64/runner/Release
 
-    - name: Windows Release
-      uses: softprops/action-gh-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create Release
+      uses: ncipollo/release-action@v1.14.0
       with:
-        files: ./Frontend/build/windows/runner/Release/DartinMolema-${{ needs.create-release.outputs.version }}-windows.zip
-      
+        artifacts: "Frontend/build/windows/x64/runner/Release/DartinMolema-${{ needs.create-release.outputs.version }}-windows.zip"
+        tag: 'v${{ needs.create-release.outputs.version }}'
