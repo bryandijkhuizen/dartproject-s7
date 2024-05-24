@@ -55,7 +55,10 @@ jobs:
       run: |
         echo "Installing Android build tools"
         sdkmanager "build-tools;34.0.0"
-        echo "::add-path::/usr/local/lib/android/sdk/build-tools/34.0.0"
+    
+    - name: Add build-tools to PATH
+      run: echo "/usr/local/lib/android/sdk/build-tools/34.0.0" >> $GITHUB_PATH
+
 
     - name: Install dependencies
       working-directory: ./Frontend
