@@ -43,17 +43,6 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
     });
   }
 
-  List<FlSpot> _getSetAverages(
-      MatchStatisticsModel matchStatistics, String playerId) {
-    List<FlSpot> spots = [];
-    for (int i = 0; i < matchStatistics.setIds.length; i++) {
-      double average = matchStatistics.calculateSetAverage(
-          playerId, matchStatistics.setIds[i]);
-      spots.add(FlSpot(i.toDouble(), average));
-    }
-    return spots;
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<MatchStatisticsModel>(
@@ -119,9 +108,17 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
         final turnRows = _buildTurnRows(filteredTurns, matchStatistics);
 
         List<FlSpot> player1SetAverages =
-            _getSetAverages(matchStatistics, matchStatistics.match.player1Id);
+            getSetAverages(matchStatistics, matchStatistics.match.player1Id);
         List<FlSpot> player2SetAverages =
-            _getSetAverages(matchStatistics, matchStatistics.match.player2Id);
+            getSetAverages(matchStatistics, matchStatistics.match.player2Id);
+
+        List<FlSpot> player1LegAverages =
+            getLegAverages(matchStatistics, matchStatistics.match.player1Id);
+
+        List<FlSpot> player2LegAverages =
+            getLegAverages(matchStatistics, matchStatistics.match.player2Id);
+
+        final bool isSetDataAvailable = player1SetAverages.length > 1;
 
         return Scaffold(
           appBar: AppBar(title: const Text('Statistics')),
@@ -223,8 +220,12 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
                       aspectRatio: 5,
                       child: AverageScoreGraph(
                         isShowingMainData: true,
-                        player1SetAverages: player1SetAverages,
-                        player2SetAverages: player2SetAverages,
+                        player1AverageScores: isSetDataAvailable
+                            ? player1SetAverages
+                            : player1LegAverages,
+                        player2AverageScores: isSetDataAvailable
+                            ? player2SetAverages
+                            : player2LegAverages,
                       ),
                     ),
                   ),

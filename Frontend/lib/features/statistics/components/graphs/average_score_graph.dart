@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 
 class AverageScoreGraph extends StatelessWidget {
   final bool isShowingMainData;
-  final List<FlSpot> player1SetAverages;
-  final List<FlSpot> player2SetAverages;
+  final List<FlSpot> player1AverageScores;
+  final List<FlSpot> player2AverageScores;
 
   const AverageScoreGraph({
     super.key,
     required this.isShowingMainData,
-    required this.player1SetAverages,
-    required this.player2SetAverages,
+    required this.player1AverageScores,
+    required this.player2AverageScores,
   });
 
   @override
@@ -24,7 +24,7 @@ class AverageScoreGraph extends StatelessWidget {
 
   FlTitlesData get titlesData1 => const FlTitlesData(
         bottomTitles: AxisTitles(
-          sideTitles: SideTitles(showTitles: true, interval: 2),
+          sideTitles: SideTitles(showTitles: true, interval: 5),
         ),
         rightTitles: AxisTitles(
           sideTitles: SideTitles(showTitles: false),
@@ -54,17 +54,17 @@ class AverageScoreGraph extends StatelessWidget {
         border: Border.all(color: const Color(0xff37434d), width: 1),
       ),
       minX: 0,
-      maxX: player1SetAverages.length.toDouble() - 1.round(),
-      minY: findLowestAverage(player1SetAverages, player2SetAverages)
+      maxX: player1AverageScores.length.toDouble() - 1.round(),
+      minY: findLowestAverage(player1AverageScores, player2AverageScores)
               .reduce((a, b) => a.y < b.y ? a : b)
               .y -
           10,
-      maxY: findHighestAverage(player1SetAverages, player2SetAverages)
+      maxY: findHighestAverage(player1AverageScores, player2AverageScores)
           .reduce((a, b) => a.y > b.y ? a : b)
           .y,
       lineBarsData: [
         LineChartBarData(
-          spots: player1SetAverages,
+          spots: player1AverageScores,
           isCurved: true,
           color: Colors.blue,
           barWidth: 5,
@@ -73,7 +73,7 @@ class AverageScoreGraph extends StatelessWidget {
           belowBarData: BarAreaData(show: true),
         ),
         LineChartBarData(
-          spots: player2SetAverages,
+          spots: player2AverageScores,
           isCurved: true,
           color: Colors.red,
           barWidth: 5,

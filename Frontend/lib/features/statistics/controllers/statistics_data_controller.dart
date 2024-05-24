@@ -156,3 +156,27 @@ List<FlSpot> findHighestAverage(player1SetAverages, player2SetAverages) {
     return convertAveragesToInts(player2SetAverages);
   }
 }
+
+List<FlSpot> getSetAverages(
+    MatchStatisticsModel matchStatistics, String playerId) {
+  List<FlSpot> spots = [];
+  for (int i = 0; i < matchStatistics.setIds.length; i++) {
+    double average = matchStatistics.calculateSetAverage(
+        playerId, matchStatistics.setIds[i]);
+    spots.add(FlSpot(i.toDouble(), average));
+  }
+  return spots;
+}
+
+List<FlSpot> getLegAverages(
+    MatchStatisticsModel matchStatistics, String playerId) {
+  List<FlSpot> spots = [];
+  for (int i = 0;
+      i < matchStatistics.legDataBySet[matchStatistics.setIds[0]]!.length;
+      i++) {
+    double average = matchStatistics.calculateLegAverage(playerId,
+        matchStatistics.legDataBySet[matchStatistics.setIds[0]]![i]['id']);
+    spots.add(FlSpot(i.toDouble(), average));
+  }
+  return spots;
+}
