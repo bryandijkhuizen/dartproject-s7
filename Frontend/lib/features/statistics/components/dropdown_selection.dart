@@ -23,7 +23,10 @@ class DropdownSelection extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text('Set: '),
+        const Text(
+          'Set: ',
+          style: TextStyle(color: Colors.white),
+        ),
         DropdownButton<int>(
           value: currentSet,
           items: setIds.map((id) {
@@ -32,16 +35,16 @@ class DropdownSelection extends StatelessWidget {
               value: index,
               child: Text(
                 'Set ${index + 1}',
-                style: const TextStyle(
-                    color: Colors.black), // Ensure text is visible
               ),
             );
           }).toList(),
           onChanged: onSetChanged,
-          dropdownColor: Colors.white, // Ensure dropdown background is white
+          dropdownColor: Colors.black, // Ensure dropdown background is white
         ),
         const SizedBox(width: 16),
-        const Text('Leg: '),
+        const Text(
+          'Leg: ',
+        ),
         DropdownButton<int>(
           value: currentLeg,
           items: legDataBySet[setIds[currentSet]]!.map((leg) {
@@ -50,13 +53,11 @@ class DropdownSelection extends StatelessWidget {
               value: index,
               child: Text(
                 'Leg ${index + 1}',
-                style: const TextStyle(
-                    color: Colors.black), // Ensure text is visible
               ),
             );
           }).toList(),
           onChanged: onLegChanged,
-          dropdownColor: Colors.white, // Ensure dropdown background is white
+          dropdownColor: Colors.black, // Ensure dropdown background is white
         ),
       ],
     );
