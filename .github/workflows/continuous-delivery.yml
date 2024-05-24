@@ -90,7 +90,7 @@ jobs:
       with:
         type: 'zip'
         filename: DartinMolema-${{ needs.create-release.outputs.version }}-android.zip
-        directory: ./Frontend/build/app/outputs/apk/release/
+        directory: Frontend/build/app/outputs/apk/release/
 
     - name: Windows Release
       uses: softprops/action-gh-release@v1
@@ -136,7 +136,7 @@ jobs:
       with:
         type: 'zip'
         filename: DartinMolema-${{ needs.create-release.outputs.version }}-windows.zip
-        directory: ./Frontend/build/windows/runner/Release
+        directory: Frontend/build/windows/runner/Release
 
     - name: Windows Release
       uses: softprops/action-gh-release@v1
