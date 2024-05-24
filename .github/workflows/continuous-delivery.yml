@@ -35,12 +35,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Echo Supabase URL
-      run: echo $SUPABASE_URL
-
-    - name: Echo Supabase Anon Key
-      run: echo $SUPABASE_ANON_KEY
-      
     - name: Checkout repository
       uses: actions/checkout@v4
 
@@ -64,36 +58,39 @@ jobs:
     - name: Build APKs
       working-directory: ./Frontend
       run: |
-        echo "Building appbundle with SUPABASE_URL=$SUPABASE_URL and SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
-        flutter build appbundle --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+        echo "Building apk with SUPABASE_URL=$SUPABASE_URL and SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
+        flutter build apk --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY --split-per-abi
 
-    - name: Sign appbundle
+    - name: Sign APKs
       uses: r0adkll/sign-android-release@v1
       id: sign_app
       with:
-        releaseDirectory: ./Frontend/build/app/outputs/bundle/release
+        releaseDirectory: ./Frontend/build/app/outputs/apk/release
         signingKeyBase64: ${{ secrets.SIGNING_KEY }}
         alias: ${{ secrets.ALIAS }}
         keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
         keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+    - name: Archive Release
+      run: |
+        mkdir -p release
+        IFS=':' read -ra FILES <<< "${{ steps.sign_apks.outputs.signedReleaseFiles }}"
+        for FILE in "${FILES[@]}"; do
+          cp "$FILE" release/
+        done
+        zip -r DartinMolema-${{ needs.get-release-version.outputs.version }}-android-signed.zip release
       
-    - name: Upload signed app bundle
+    - name: Upload signed app files
       uses: actions/upload-artifact@v2
       with:
-        name: DartinMolema-${{needs.get-release-version.outputs.version}}-signed-bundle
-        path: ${{ steps.sign_app.outputs.signedReleaseFile }}
+        name: DartinMolema-${{needs.get-release-version.outputs.version}}-android-signed
+        path: DartinMolema-${{ needs.get-release-version.outputs.version }}-android-signed.zip
 
   build_windows:
     needs: get-release-version
     runs-on: windows-latest
 
     steps:
-    - name: Echo Supabase URL
-      run: echo $SUPABASE_URL
-
-    - name: Echo Supabase Anon Key
-      run: echo $SUPABASE_ANON_KEY
-      
     - name: Checkout repository
       uses: actions/checkout@v4
       
@@ -135,7 +132,7 @@ jobs:
     - name: Download Android App bundle
       uses: actions/download-artifact@v4
       with:
-        name: DartinMolema-${{needs.get-release-version.outputs.version}}-signed-bundle
+        name: DartinMolema-${{needs.get-release-version.outputs.version}}-android-signed
         path: .
 
     - name: Download Windows Artifact
