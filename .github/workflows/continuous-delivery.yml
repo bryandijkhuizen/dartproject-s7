@@ -78,18 +78,30 @@ jobs:
     - name: Install dependencies
       working-directory: ./Frontend
       run: flutter pub get
+
+    - name: Run build_runner
+      run: dart run build_runner build
     
     - name: Build APK
       working-directory: ./Frontend
       run: |
         echo "Building APK with SUPABASE_URL=$SUPABASE_URL and SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
-        flutter build apk --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+        flutter build apk --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY --split-per-abi
       
-    - name: Upload APK
-      uses: actions/upload-artifact@v2
+    - name: Archive Release
+      uses: thedoctor0/zip-release@master
       with:
-        name: android-${{ needs.create-release.outputs.version }}  # Include version in artifact name
-        path: Frontend/build/app/outputs/flutter-apk/app-release.apk
+        type: 'zip'
+        filename: DartinMolema-${{ needs.create-release.outputs.version }}-android.zip
+        directory: ./Frontend/build/app/outputs/apk/release/
+
+    - name: Windows Release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: ./Frontend/build/app/outputs/apk/release/DartinMolema-${{ needs.create-release.outputs.version }}-android.zip
+      
 
   build_windows:
     needs: create-release
@@ -99,11 +111,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    - name: Setup Java
-      uses: actions/setup-java@v1
-      with:
-        java-version: '12.x'
-
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
@@ -117,15 +124,26 @@ jobs:
       working-directory: ./Frontend
       run: flutter pub get
 
+    - name: Run build_runner
+      run: dart run build_runner build
+      
     - name: Build Windows EXE
       working-directory: ./Frontend
       run: |
         echo "Building APK with SUPABASE_URL=$SUPABASE_URL and SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
         flutter build windows --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
-      
-      
-    - name: Upload Windows EXE
-      uses: actions/upload-artifact@v2
+
+    - name: Archive Release
+      uses: thedoctor0/zip-release@master
       with:
-        name: windows-${{ needs.create-release.outputs.version }}  # Include version in artifact name
-        path: Frontend/build/windows/x64/runner/Release
+        type: 'zip'
+        filename: DartinMolema-${{ needs.create-release.outputs.version }}-windows.zip
+        directory: ./Frontend/build/windows/runner/Release
+
+    - name: Windows Release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: ./Frontend/build/windows/runner/Release/DartinMolema-${{ needs.create-release.outputs.version }}-windows.zip
+      
