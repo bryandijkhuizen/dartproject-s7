@@ -2,6 +2,7 @@ import 'package:darts_application/models/match.dart';
 import 'package:darts_application/models/match_statistics.dart';
 import 'package:darts_application/models/player.dart';
 import 'package:darts_application/models/turn.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<MatchStatisticsModel> fetchMatchStatistics(int currentMatchId) async {
@@ -111,5 +112,47 @@ Future<String> calculateFinalScore(int matchId) async {
     final player2LegsWon =
         matchStatistics.calculateLegsWon(matchStatistics.setIds[0], player2Id);
     return '$player1LegsWon-$player2LegsWon';
+  }
+}
+
+List<FlSpot> convertAveragesToInts(List<FlSpot> averages) {
+  // every valuble in the list is a FlSpot object and that contains a x and y value
+  // convert to int, round to have 0 decimal places and return a new list of FlSpot objects
+  return averages
+      .map((average) => FlSpot(average.x, average.y.roundToDouble()))
+      .toList();
+}
+
+List<FlSpot> findLowestAverage(player1SetAverages, player2SetAverages) {
+  double player1Average =
+      player1SetAverages.map((average) => average.y).reduce((a, b) => a + b) /
+          player1SetAverages.length;
+  double player2Average =
+      player2SetAverages.map((average) => average.y).reduce((a, b) => a + b) /
+          player2SetAverages.length;
+  // every valuble in the list is a FlSpot object and that contains a x and y value
+  // we want to convert the y value to an int and return a new list of FlSpot objects
+
+  if (player1Average < player2Average) {
+    return convertAveragesToInts(player1SetAverages);
+  } else {
+    return convertAveragesToInts(player2SetAverages);
+  }
+}
+
+List<FlSpot> findHighestAverage(player1SetAverages, player2SetAverages) {
+  double player1Average =
+      player1SetAverages.map((average) => average.y).reduce((a, b) => a + b) /
+          player1SetAverages.length;
+  double player2Average =
+      player2SetAverages.map((average) => average.y).reduce((a, b) => a + b) /
+          player2SetAverages.length;
+  // every valuble in the list is a FlSpot object and that contains a x and y value
+  // we want to convert the y value to an int and return a new list of FlSpot objects
+
+  if (player1Average > player2Average) {
+    return convertAveragesToInts(player1SetAverages);
+  } else {
+    return convertAveragesToInts(player2SetAverages);
   }
 }
