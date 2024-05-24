@@ -69,6 +69,11 @@ abstract class _MatchStore with Store {
   bool showPlayer1Suggestion = false;
   @observable
   bool showPlayer2Suggestion = false;
+  @observable
+  bool extraThrowAfterUndo = false;
+
+  @observable
+  bool doubleAttemptsNeeded = false;
 
   final FinishCalculator _finishCalculator = FinishCalculator();
 
@@ -185,8 +190,10 @@ abstract class _MatchStore with Store {
       if (!isFirstLeg) {
         _switchStartingPlayer();
       }
-      isFirstLeg = false; // Update this to indicate that the first leg has been played
-      currentPlayerId = matchModel.startingPlayerId; // Ensure this is set correctly
+      isFirstLeg =
+          false; // Update this to indicate that the first leg has been played
+      currentPlayerId =
+          matchModel.startingPlayerId; // Ensure this is set correctly
       await _startNewLeg();
     } catch (error) {
       errorMessage = 'Failed to start a new set: $error';
@@ -197,6 +204,7 @@ abstract class _MatchStore with Store {
     }
   }
 
+  @action
   Future<void> _startNewLeg() async {
     if (isCreatingLeg) return;
     isCreatingLeg = true;
@@ -215,6 +223,8 @@ abstract class _MatchStore with Store {
 
       lastFiveScoresPlayer1.clear();
       lastFiveScoresPlayer2.clear();
+
+      doubleAttemptsNeeded = true; // Set flag to show popup
 
       _updateThrowSuggestions();
     } catch (error) {
@@ -272,9 +282,11 @@ abstract class _MatchStore with Store {
             'isDeadThrow': turn['score'] == 0,
           };
           if (turn['player_id'] == matchModel.player1Id) {
-            lastFiveScoresPlayer1.insert(0, scoreEntry);
+            lastFiveScoresPlayer1
+                .add(scoreEntry); // Use add() instead of insert(0, ...)
           } else {
-            lastFiveScoresPlayer2.insert(0, scoreEntry);
+            lastFiveScoresPlayer2
+                .add(scoreEntry); // Use add() instead of insert(0, ...)
           }
         }
 
@@ -289,6 +301,11 @@ abstract class _MatchStore with Store {
                 : matchModel.player1Id;
 
         _updateThrowSuggestions();
+
+        // Check if double attempts are needed
+        if (turnResponse.first['double_attempts'] == null) {
+          doubleAttemptsNeeded = true;
+        }
       }
     } catch (error) {
       errorMessage = 'Failed to restore scores: $error';
@@ -315,15 +332,22 @@ abstract class _MatchStore with Store {
       final newScore2 = response[0]['new_score2'];
       final isDeadThrow = response[0]['is_dead_throw'] as bool;
 
-      _updateScores(newScore, newScore2, score, isDeadThrow);
+      // If it's a dead throw, set the score to 0
+      final displayScore = isDeadThrow ? 0 : score;
+
+      _updateScores(newScore, newScore2, displayScore, isDeadThrow);
 
       if (legWinnerId != null) {
         await _updateLegWinner(legWinnerId.toString());
         await _endCurrentLeg(legWinnerId.toString());
       } else {
-        currentPlayerId = currentPlayerId == matchModel.player1Id
-            ? matchModel.player2Id
-            : matchModel.player1Id;
+        if (extraThrowAfterUndo) {
+          extraThrowAfterUndo = false;
+        } else {
+          currentPlayerId = currentPlayerId == matchModel.player1Id
+              ? matchModel.player2Id
+              : matchModel.player1Id;
+        }
         _updateThrowSuggestions();
       }
 
@@ -363,15 +387,17 @@ abstract class _MatchStore with Store {
     final scoreEntry = {'score': score, 'isDeadThrow': isDeadThrow};
     if (currentPlayerId == matchModel.player1Id) {
       currentScorePlayer1 = newScore is int ? newScore : int.parse(newScore);
-      lastFiveScoresPlayer1.insert(0, scoreEntry);
+      lastFiveScoresPlayer1
+          .add(scoreEntry); // Use add() instead of insert(0, ...)
       if (lastFiveScoresPlayer1.length > 5) {
-        lastFiveScoresPlayer1.removeLast();
+        lastFiveScoresPlayer1.removeAt(0);
       }
     } else {
       currentScorePlayer2 = newScore2 is int ? newScore2 : int.parse(newScore2);
-      lastFiveScoresPlayer2.insert(0, scoreEntry);
+      lastFiveScoresPlayer2
+          .add(scoreEntry); // Use add() instead of insert(0, ...)
       if (lastFiveScoresPlayer2.length > 5) {
-        lastFiveScoresPlayer2.removeLast();
+        lastFiveScoresPlayer2.removeAt(0);
       }
     }
   }
@@ -390,20 +416,26 @@ abstract class _MatchStore with Store {
   @action
   Future<void> undoLastScore() async {
     try {
-      final lastScoreEntry = currentPlayerId == matchModel.player1Id
-          ? (lastFiveScoresPlayer1.isNotEmpty
-              ? lastFiveScoresPlayer1.last
-              : {'score': 0})
-          : (lastFiveScoresPlayer2.isNotEmpty
-              ? lastFiveScoresPlayer2.last
-              : {'score': 0});
-
-      final lastScore = lastScoreEntry['score'] as int;
-
       final response = await _supabaseClient
           .rpc('undo_last_score', params: {'p_leg_id': currentLegId});
-      if (response != null) {
-        _undoScore(lastScore);
+
+      if (response != null && response.isNotEmpty) {
+        final updatedCurrentScore = response[0]['updated_current_score'] as int;
+        final updatedCurrentScore2 =
+            response[0]['updated_current_score2'] as int;
+
+        if (currentPlayerId == matchModel.player1Id) {
+          currentScorePlayer1 = updatedCurrentScore;
+          lastFiveScoresPlayer1.removeLast();
+        } else {
+          currentScorePlayer2 = updatedCurrentScore2;
+          lastFiveScoresPlayer2.removeLast();
+        }
+
+        // Ensure the turn order is preserved
+        extraThrowAfterUndo = true;
+
+        _updateThrowSuggestions();
       }
     } catch (error) {
       errorMessage = 'Failed to undo last score: $error';
