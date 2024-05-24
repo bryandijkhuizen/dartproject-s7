@@ -51,6 +51,13 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v2
 
+    - name: Setup build tool version variable
+      shell: bash
+      run: |
+        BUILD_TOOL_VERSION=$(ls /usr/local/lib/android/sdk/build-tools/ | tail -n 1)
+        echo "BUILD_TOOL_VERSION=$BUILD_TOOL_VERSION" >> $GITHUB_ENV
+        echo Last build tool version is: $BUILD_TOOL_VERSION
+
     - name: Install dependencies
       working-directory: ./Frontend
       run: flutter pub get
@@ -71,7 +78,7 @@ jobs:
         keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
         keyPassword: ${{ secrets.KEY_PASSWORD }}
       env:
-        BUILD_TOOLS_VERSION: "29.0.3" # Specify the desired version here
+        BUILD_TOOLS_VERSION: ${{env.BUILD_TOOL_VERSION}} # Specify the desired version here
         
 
     - name: Archive Release
