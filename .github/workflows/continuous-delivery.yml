@@ -105,6 +105,12 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - name: Echo Supabase URL
+      run: echo $SUPABASE_URL
+
+    - name: Echo Supabase Anon Key
+      run: echo $SUPABASE_ANON_KEY
+      
     - name: Checkout repository
       uses: actions/checkout@v4
       
