@@ -61,10 +61,10 @@ jobs:
       working-directory: ./Frontend
       run: flutter pub get
     
-    - name: Build APK
+    - name: Build APKs
       working-directory: ./Frontend
       run: |
-        echo "Building APK with SUPABASE_URL=$SUPABASE_URL and SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
+        echo "Building APKs with SUPABASE_URL=$SUPABASE_URL and SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
         flutter build apk --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY --split-per-abi
       
     - name: Archive Release
@@ -72,14 +72,13 @@ jobs:
       with:
         type: 'zip'
         filename: DartinMolema-${{ needs.get-release-version.outputs.version }}-android.zip
-        directory: .
-        path: ./Frontend/build/app/outputs/apk/release/
+        directory: ./Frontend/build/app/outputs/apk/release/
 
     - name: Upload Android Artifact
       uses: actions/upload-artifact@v4
       with:
         name: DartinMolema-${{ needs.get-release-version.outputs.version }}-android
-        path: DartinMolema-${{ needs.get-release-version.outputs.version }}-android.zip
+        path: ./Frontend/build/app/outputs/apk/release/DartinMolema-${{ needs.get-release-version.outputs.version }}-android.zip
 
   build_windows:
     needs: get-release-version
@@ -117,14 +116,13 @@ jobs:
       with:
         type: 'zip'
         filename: DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip
-        directory: .
-        path: ./Frontend/build/windows/x64/runner/Release
+        directory: ./Frontend/build/windows/x64/runner/Release
 
     - name: Upload Windows Artifact
       uses: actions/upload-artifact@v4
       with:
         name: DartinMolema-${{ needs.get-release-version.outputs.version }}-windows
-        path: DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip
+        path: ./Frontend/build/windows/x64/runner/Release/DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip
 
   create_release:
     runs-on: ubuntu-latest
