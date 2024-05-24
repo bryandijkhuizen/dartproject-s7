@@ -15,6 +15,7 @@ import 'package:darts_application/features/setup_match/match_list_widget.dart';
 import 'package:darts_application/features/upcoming_matches/upcoming_matches_page.dart';
 import 'package:darts_application/features/create_match/create_single_match_page.dart';
 import 'package:darts_application/features/create_match/edit_single_match_page.dart';
+import 'package:darts_application/features/create_tournament/create_tournament_page.dart';
 
 Widget getPlaceholderComponent(
     String currentRoute, List<String> routes, BuildContext context) {
@@ -219,12 +220,12 @@ final router = GoRouter(
                           return const CreateSingleMatchPage();
                         },
                       ),
-                      // GoRoute(
-                      //   path: 'create/tournament',
-                      //   builder: (context, state) {
-                      //     return const CreateTournamentPage();
-                      //   },
-                      // ),
+                      GoRoute(
+                        path: 'create/tournament',
+                        builder: (context, state) {
+                          return const CreateTournamentPage();
+                        },
+                      ),
                     ],
                   ),
                 ],
