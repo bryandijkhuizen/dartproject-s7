@@ -51,15 +51,6 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v2
 
-    - name: Install required Android build tools
-      run: |
-        echo "Installing Android build tools"
-        sdkmanager "build-tools;34.0.0"
-    
-    - name: Add build-tools to PATH
-      run: echo "/usr/local/lib/android/sdk/build-tools/34.0.0" >> $GITHUB_PATH
-
-
     - name: Install dependencies
       working-directory: ./Frontend
       run: flutter pub get
@@ -79,6 +70,9 @@ jobs:
         alias: ${{ secrets.ALIAS }}
         keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
         keyPassword: ${{ secrets.KEY_PASSWORD }}
+      env:
+        BUILD_TOOLS_VERSION: "29.0.3" # Specify the desired version here
+        
 
     - name: Archive Release
       run: |
