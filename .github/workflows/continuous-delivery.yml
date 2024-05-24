@@ -96,7 +96,7 @@ jobs:
         done
     
         # Zip the files in the release directory
-        zip -r signed_apks-${{needs.get-release-version.outputs.version}}.zip release/*
+        zip -r signed_apks-${{needs.get-release-version.outputs.version}}.zip release
     
         # Print the list of files included in the zip
         ls -lh signed_apks-${{needs.get-release-version.outputs.version}}.zip
