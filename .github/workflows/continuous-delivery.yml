@@ -52,7 +52,10 @@ jobs:
       uses: android-actions/setup-android@v2
 
     - name: Install required Android build tools
-      run: sdkmanager "build-tools;34.0.0"
+      run: |
+        echo "Installing Android build tools"
+        sdkmanager "build-tools;34.0.0"
+        echo "::add-path::/usr/local/lib/android/sdk/build-tools/34.0.0"
 
     - name: Install dependencies
       working-directory: ./Frontend
