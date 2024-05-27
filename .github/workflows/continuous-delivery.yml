@@ -50,9 +50,10 @@ jobs:
         java-version: '12.x'
         
     - name: Setup Flutter
-      uses: subosito/flutter-action@v2
+      uses: flutter-actions/setup-flutter@v3.6
       with:
-        flutter-version: ${{ env.FLUTTER_VERSION }}
+        channel: stable 
+        version: ${{ env.FLUTTER_VERSION }}
         cache-sdk: true
         cache-key: ${{runner.os}}-flutter-sdk
     
@@ -106,9 +107,10 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Setup Flutter
-      uses: subosito/flutter-action@v2
+      uses: flutter-actions/setup-flutter@v3.6
       with:
-        flutter-version: ${{ env.FLUTTER_VERSION }}
+        channel: stable 
+        version: ${{ env.FLUTTER_VERSION }}
         cache-sdk: true
         cache-key: ${{runner.os}}-flutter-sdk
 
@@ -145,10 +147,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+      - name: Setup Flutter
+        uses: flutter-actions/setup-flutter@v3.6
         with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable 
+          version: ${{ env.FLUTTER_VERSION }}
           cache-sdk: true
           cache-key: ${{runner.os}}-flutter-sdk
 
