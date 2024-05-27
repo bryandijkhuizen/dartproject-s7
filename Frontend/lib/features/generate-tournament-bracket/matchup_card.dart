@@ -23,6 +23,7 @@ class MatchupCard extends StatelessWidget {
     String firstPlayerName = "",
     String secondPlayerName = "",
   }) async {
+    // Get first player
     if (match.player1Id.isNotEmpty && selectPlayer) {
       try {
         Map<String, dynamic> firstPlayerResponse =
@@ -35,6 +36,7 @@ class MatchupCard extends StatelessWidget {
       firstPlayer = PlayerModel.placeholderPlayer(lastName: firstPlayerName);
     }
 
+    // Get second player
     if (match.player2Id.isNotEmpty && selectPlayer) {
       try {
         Map<String, dynamic> secondPlayerResponse =
