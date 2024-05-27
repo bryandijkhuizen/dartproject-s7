@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/player.dart';
 import 'package:darts_application/models/club.dart';
 import 'package:darts_application/models/club_member.dart';
+import 'package:darts_application/components/search_input.dart';
 
 class PlayerSelector extends StatefulWidget {
   final Function(List<PlayerModel>) onSelectionChanged;
@@ -16,9 +17,12 @@ class PlayerSelector extends StatefulWidget {
 class _PlayerSelectorState extends State<PlayerSelector> {
   List<PlayerModel> selectedPlayers = [];
   List<PlayerModel> players = [];
+  List<PlayerModel> filteredPlayers = [];
   List<Club> clubs = [];
   List<ClubMember> clubMembers = [];
   Map<String, List<Club>> playerClubsMap = {};
+
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -30,12 +34,6 @@ class _PlayerSelectorState extends State<PlayerSelector> {
     try {
       // Fetch players
       final playerResponse = await Supabase.instance.client.from('user').select();
-      print("-----------playerResponse-----------");
-      print(playerResponse);
-      // if (playerResponse.error != null) {
-      //   print('Error fetching players: ${playerResponse.error!.message}');
-      //   return;
-      // }
       final List<dynamic> playerData = playerResponse as List<dynamic>;
       List<PlayerModel> fetchedPlayers = playerData.map((row) {
         return PlayerModel.fromJson(row);
@@ -43,12 +41,6 @@ class _PlayerSelectorState extends State<PlayerSelector> {
 
       // Fetch clubs
       final clubResponse = await Supabase.instance.client.from('club').select();
-      print("-----------clubResponse-----------");
-      print(clubResponse);
-      // if (clubResponse.error != null) {
-      //   print('Error fetching clubs: ${clubResponse.error!.message}');
-      //   return;
-      // }
       final List<dynamic> clubData = clubResponse as List<dynamic>;
       List<Club> fetchedClubs = clubData.map((row) {
         return Club.fromJson(row);
@@ -56,12 +48,6 @@ class _PlayerSelectorState extends State<PlayerSelector> {
 
       // Fetch club members
       final clubMemberResponse = await Supabase.instance.client.from('user_club').select();
-      print("-----------clubMemberResponse-----------");
-      print(clubMemberResponse);
-      // if (clubMemberResponse.error != null) {
-      //   print('Error fetching club members: ${clubMemberResponse.error!.message}');
-      //   return;
-      // }
       final List<dynamic> clubMemberData = clubMemberResponse as List<dynamic>;
       List<ClubMember> fetchedClubMembers = clubMemberData.map((row) {
         return ClubMember.fromJson(row);
@@ -79,6 +65,7 @@ class _PlayerSelectorState extends State<PlayerSelector> {
 
       setState(() {
         players = fetchedPlayers;
+        filteredPlayers = fetchedPlayers;
         clubs = fetchedClubs;
         clubMembers = fetchedClubMembers;
         playerClubsMap = tempPlayerClubsMap;
@@ -86,6 +73,25 @@ class _PlayerSelectorState extends State<PlayerSelector> {
     } catch (e) {
       print('Error fetching data: $e');
     }
+  }
+
+  void searchClubs() {
+    String query = searchController.text.toLowerCase();
+    if (query.isEmpty) {
+      setState(() {
+        filteredPlayers = players;
+      });
+      return;
+    }
+
+    List<PlayerModel> tempFilteredPlayers = players.where((player) {
+      List<Club> playerClubs = playerClubsMap[player.id] ?? [];
+      return playerClubs.any((club) => club.name.toLowerCase().contains(query));
+    }).toList();
+
+    setState(() {
+      filteredPlayers = tempFilteredPlayers;
+    });
   }
 
   void togglePlayerSelection(PlayerModel player) {
@@ -101,33 +107,45 @@ class _PlayerSelectorState extends State<PlayerSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 200,
-      child: Column(
-        children: [
-          Expanded(
-            child: players.isEmpty
-                ? const Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    itemCount: players.length,
-                    itemBuilder: (context, index) {
-                      PlayerModel player = players[index];
-                      bool isSelected = selectedPlayers.contains(player);
-                      List<Club> playerClubs = playerClubsMap[player.id] ?? [];
-                      String clubs = playerClubs.map((club) => club.name).join(', ');
-                      return ListTile(
-                        title: Text("${player.firstName} ${player.lastName}"),
-                        subtitle: Text(clubs.isEmpty ? 'No clubs' : clubs),
-                        trailing: isSelected
-                            ? const Icon(Icons.check_box, color: Colors.green)
-                            : const Icon(Icons.check_box_outline_blank),
-                        onTap: () => togglePlayerSelection(player),
-                      );
-                    },
-                  ),
+    return Column(
+      children: [
+        Container(
+          width: 300,
+          height: 50,
+          child: SearchInput(
+            controller: searchController,
+            onSearch: searchClubs,
           ),
-        ],
-      ),
+        ),
+        SizedBox(
+          height: 200,
+          child: Column(
+            children: [
+              Expanded(
+                child: filteredPlayers.isEmpty
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        itemCount: filteredPlayers.length,
+                        itemBuilder: (context, index) {
+                          PlayerModel player = filteredPlayers[index];
+                          bool isSelected = selectedPlayers.contains(player);
+                          List<Club> playerClubs = playerClubsMap[player.id] ?? [];
+                          String clubs = playerClubs.map((club) => club.name).join(', ');
+                          return ListTile(
+                            title: Text("${player.firstName} ${player.lastName}"),
+                            subtitle: Text(clubs.isEmpty ? 'No clubs' : clubs),
+                            trailing: isSelected
+                                ? const Icon(Icons.check_box, color: Colors.green)
+                                : const Icon(Icons.check_box_outline_blank),
+                            onTap: () => togglePlayerSelection(player),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
