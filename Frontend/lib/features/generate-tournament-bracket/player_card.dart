@@ -12,6 +12,7 @@ class PlayerCard extends StatelessWidget {
 
   final PlayerModel? player;
   final bool selectPlayer;
+  final String avatarUrl = "assets/images/avatar_placeholder.png";
   final List<String> tournamentPlayers = [
     "Michael van Gerwen",
     "Peter Wright",
@@ -35,7 +36,7 @@ class PlayerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     TournamentStore tournamentStore = context.read<TournamentStore>();
     String playerId;
-    Widget NameOfPlayer;
+    Widget nameOfPlayer;
 
     List<DropdownMenuEntry<dynamic>> dropdownMenuEntries =
         tournamentPlayers.map((tournamentPlayer) {
@@ -46,7 +47,7 @@ class PlayerCard extends StatelessWidget {
     }).toList();
 
     if (selectPlayer) {
-      NameOfPlayer = DropdownMenu(
+      nameOfPlayer = DropdownMenu(
         width: 230,
         // label: const Text('Name'),
         onSelected: (value) {
@@ -55,8 +56,8 @@ class PlayerCard extends StatelessWidget {
         dropdownMenuEntries: dropdownMenuEntries,
       );
     } else {
-      NameOfPlayer = Text(
-        player!.firstName,
+      nameOfPlayer = Text(
+        player!.lastName,
       );
     }
 
@@ -68,10 +69,14 @@ class PlayerCard extends StatelessWidget {
             height: 60,
           ),
           CircleAvatar(
-              radius: 20, backgroundImage: AssetImage(player!.avatarId)),
+            radius: 20,
+            backgroundImage: AssetImage(
+              player!.avatarId != "1" ? player!.avatarId : avatarUrl,
+            ),
+          ),
           SizedBox(width: 8),
           Expanded(
-            child: NameOfPlayer,
+            child: nameOfPlayer,
           ),
           SizedBox(width: 4),
         ],

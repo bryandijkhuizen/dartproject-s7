@@ -13,7 +13,6 @@ class TournamentBrackets extends StatelessWidget {
     required this.context,
   });
 
-  // final String avatarUrl = "assets/images/avatar_placeholder.png";
   final BuildContext context;
 
   List<Widget> createRounds(
@@ -69,7 +68,7 @@ class TournamentBrackets extends StatelessWidget {
       List<PlayerModel> nextRoundPlayers = [];
       for (var i = 1; i <= matches.length; i++) {
         nextRoundPlayers
-            .add(PlayerModel.placeholderPlayer(firstName: "Winner match $i"));
+            .add(PlayerModel.placeholderPlayer(lastName: "Winner match $i"));
       }
 
       List<Widget> nextRoundBracket = createRounds(
