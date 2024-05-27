@@ -141,15 +141,13 @@ jobs:
     needs: [get-release-version, build_android, build_windows]
 
     steps:
-    - name: Download Android Signed APKs
+    - name: Download artifacts
       uses: actions/download-artifact@v4
-      with:
-        path: .
 
     - name: Create Release
       uses: ncipollo/release-action@v1.14.0
       if: ${{ success() }}
       with:
-        artifacts: "./DartinMolema-${{ needs.get-release-version.outputs.version }}-android.zip, ./DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip"
+        artifacts: "./DartinMolema-${{ needs.get-release-version.outputs.version }}-android-signed-archive.zip, ./DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip"
         tag: 'v${{ needs.get-release-version.outputs.version }}'
         
