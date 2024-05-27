@@ -80,7 +80,10 @@ jobs:
       env:
         BUILD_TOOLS_VERSION: ${{env.BUILD_TOOL_VERSION}} # Specify the desired version here
         
+    - name: Show content of ./Frontend/build/app/outputs/apk/release
+      run: ls -lah ./Frontend/build/app/outputs/apk/release
 
+    
     - name: Archive Signed APKs
       uses: thedoctor0/zip-release@0.7.5
       with:
