@@ -11,6 +11,8 @@ class PlayerModel {
     required this.avatarId,
   });
 
+  String get fullName => "$firstName $lastName";
+
   factory PlayerModel.fromJson(Map<String, dynamic> json) {
     return PlayerModel(
       id: json['id'].toString(),
