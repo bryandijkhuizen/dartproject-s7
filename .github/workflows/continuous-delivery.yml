@@ -85,12 +85,12 @@ jobs:
 
     
     - name: Archive Signed APKs
-      uses: thedoctor0/zip-release@0.7.5
-      with:
-        type: 'zip'
-        filename: 'DartinMolema-${{needs.get-release-version.outputs.version}}-android-signed-archive.zip'
-        path: './Frontend/build/app/outputs/apk/release/*-release-signed.apk'
-        
+      # uses: thedoctor0/zip-release@0.7.5
+      # with:
+        # type: 'zip'
+        # filename: 'DartinMolema-${{needs.get-release-version.outputs.version}}-android-signed-archive.zip'
+        # path: './Frontend/build/app/outputs/apk/release/*-release-signed.apk'
+      run: zip -r DartinMolema-${{needs.get-release-version.outputs.version}}-android-signed-archive.zip ./Frontend/build/app/outputs/apk/release/*-release-signed.apk
 
     - name: Upload signed app files
       uses: actions/upload-artifact@v2
