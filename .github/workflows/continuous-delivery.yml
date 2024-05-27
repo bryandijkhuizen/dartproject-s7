@@ -135,6 +135,9 @@ jobs:
     - name: Download artifacts
       uses: actions/download-artifact@v4
 
+    - name: Show folder content
+      run: ls -lah 
+
     - name: Create Release
       uses: ncipollo/release-action@v1.14.0
       if: ${{ success() }}
