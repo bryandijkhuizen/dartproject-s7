@@ -178,7 +178,7 @@ jobs:
         run: flutter build ios --no-codesign --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
         
       - name: Archive IPA
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: darts_application-${{ needs.get-release-version.outputs.version }}-ios.app
           path: ./Frontend/build/ios/iphoneos/Runner.app
