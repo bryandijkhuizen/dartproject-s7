@@ -134,6 +134,8 @@ jobs:
     steps:
     - name: Download artifacts
       uses: actions/download-artifact@v4
+      with:
+        path: .
 
     - name: Show folder content
       run: ls -lah 
