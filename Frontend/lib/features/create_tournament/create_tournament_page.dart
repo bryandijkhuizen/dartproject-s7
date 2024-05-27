@@ -4,6 +4,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:darts_application/components/input_fields/time_picker.dart';
 import 'package:darts_application/components/input_fields/date_picker.dart';
+import 'package:darts_application/features/create_tournament/player_selector.dart';
+import 'package:darts_application/models/player.dart';
 
 class CreateTournamentPage extends StatefulWidget {
   const CreateTournamentPage({super.key});
@@ -20,6 +22,8 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
 
   late DateTime selectedDate = DateTime.now();
   late TimeOfDay selectedTime = TimeOfDay.now();
+
+  List<PlayerModel> selectedPlayers = [];
 
   @override
   void dispose() {
@@ -40,44 +44,32 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
     });
   }
 
+  void updateSelectedPlayers(List<PlayerModel> players) {
+    setState(() {
+      selectedPlayers = players;
+    });
+    print(selectedPlayers);
+  }
+
   Future<void> submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
       String location = _locationController.text;
-      DateTime matchDateTime = DateTime(selectedDate.year, selectedDate.month,
-          selectedDate.day, selectedTime.hour, selectedTime.minute);
+      DateTime matchDateTime = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+        selectedTime.hour,
+        selectedTime.minute,
+      );
 
-      // final match = MatchModel(
-      //   id: UniqueKey().toString(),
-      //   player1Id: playerOne,
-      //   player2Id: playerTwo,
-      //   date: matchDateTime,
-      //   location: location,
-      //   setTarget: setAmount,
-      //   legTarget: legAmount,
-      //   startingScore: is301Match ? 301 : 501,
-      //   player1LastName: playerOneName,
-      //   player2LastName: playerTwoName,
-      // );
+      // Handle selected players here
+      // Example: selectedPlayers
 
-      // try {
-      //   await Supabase.instance.client.from('match').upsert(match.toJson());
-      //   Navigator.of(context).push(
-      //     MaterialPageRoute(
-      //       builder: (context) => ConfirmationPage(match: match),
-      //     ),
-      //   );
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     const SnackBar(content: Text('Match created!')),
-      //   );
-      // } catch (e) {
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     SnackBar(content: Text('Something went wrong: $e')),
-      //   );
-      // }
+      // Implement the logic to create a tournament with the selected players and other details
+
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('You did not fill in all the required fields!')),
+        const SnackBar(content: Text('You did not fill in all the required fields!')),
       );
     }
   }
@@ -94,7 +86,6 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 if (constraints.maxWidth > 600) {
-                  // For larger screens, display two columns side by side
                   return Column(
                     children: [
                       Row(
@@ -110,7 +101,6 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                     ],
                   );
                 } else {
-                  // For smaller screens, display columns vertically
                   return Column(
                     children: [
                       buildLeftColumn(),
@@ -218,8 +208,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
-        Text("Player selector"),
-        // PlayerSelector(onSelectionChanged: updateSelectedPlayer),
+        PlayerSelector(onSelectionChanged: updateSelectedPlayers),
         const SizedBox(height: 20),
         Center(
           child: ElevatedButton(
@@ -242,5 +231,4 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
       ],
     );
   }
-
 }
