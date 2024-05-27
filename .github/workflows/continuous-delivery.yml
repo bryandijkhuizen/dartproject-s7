@@ -176,12 +176,16 @@ jobs:
       - name: Build IPA (iOS) File
         working-directory: ./Frontend
         run: flutter build ios --no-codesign --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+
+      - name: Rename Runner.app to DartinMolema
+        run: |
+          mv ./Frontend/build/ios/iphoneos/Runner.app DartinMolema-${{ needs.get-release-version.outputs.version }}-ios.app
         
       - name: Archive IPA
         uses: actions/upload-artifact@v4
         with:
-          name: darts_application-${{ needs.get-release-version.outputs.version }}-ios.app
-          path: ./Frontend/build/ios/iphoneos/Runner.app
+          name: DartinMolema-${{ needs.get-release-version.outputs.version }}-ios.app
+          path: DartinMolema-${{ needs.get-release-version.outputs.version }}-ios.app
     
   create_release:
     runs-on: ubuntu-latest
@@ -198,6 +202,6 @@ jobs:
       uses: ncipollo/release-action@v1.14.0
       if: ${{ success() }}
       with:
-        artifacts: "./DartinMolema-${{ needs.get-release-version.outputs.version }}-android-signed-archive.zip, ./DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip, DartinMolema-${{needs.get-release-version.outputs.version}}.dmg, darts_application-${{ needs.get-release-version.outputs.version }}-ios.app"
+        artifacts: "./DartinMolema-${{ needs.get-release-version.outputs.version }}-android-signed-archive.zip, ./DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip, DartinMolema-${{needs.get-release-version.outputs.version}}.dmg, DartinMolema-${{ needs.get-release-version.outputs.version }}-ios.app"
         tag: 'v${{ needs.get-release-version.outputs.version }}'
         
