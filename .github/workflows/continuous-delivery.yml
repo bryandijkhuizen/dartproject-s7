@@ -128,7 +128,7 @@ jobs:
         name: DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip
         path: ./Frontend/build/windows/x64/runner/Release/DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip
 
-  build:
+  build_macos:
     needs: get-release-version
     runs-on: macos-latest
 
