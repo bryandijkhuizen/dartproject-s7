@@ -4,7 +4,8 @@ class TurnModel {
   final int legId;
   final int score;
   final int? doubleAttempts;
-  final int? doubleHits;
+  final bool? doubleHit;
+  final int? dartsForCheckout;
   final bool isDeadThrow;
 
   TurnModel({
@@ -13,7 +14,8 @@ class TurnModel {
     required this.legId,
     required int score,
     this.doubleAttempts,
-    this.doubleHits,
+    this.doubleHit,
+    this.dartsForCheckout,
     required this.isDeadThrow,
   }) : score = isDeadThrow
             ? 0
@@ -26,8 +28,9 @@ class TurnModel {
       legId: json['legId'],
       score: json['score'],
       doubleAttempts: json['doubleAttempts'] ?? 0,
-      doubleHits: json['doubleHits'] ?? 0,
+      doubleHit: json['doubleHits'] ?? 0,
       isDeadThrow: json['isDeadThrow'],
+      dartsForCheckout: json['dartsForCheckout'] ?? 0,
     );
   }
 }

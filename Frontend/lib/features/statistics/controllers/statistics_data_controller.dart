@@ -46,8 +46,9 @@ Future<MatchStatisticsModel> fetchMatchStatistics(int currentMatchId) async {
         final legId = turn['leg_id'];
         final score = turn['score'];
         final doubleAttempts = turn['double_attempts'];
-        final doubleHits = turn['double_hits'];
+        final doubleHit = turn['double_hit'];
         final isDeadThrow = turn['is_dead_throw'];
+        final dartsForCheckout = turn['darts_for_checkout'];
 
         if (id == null ||
             playerId == null ||
@@ -63,7 +64,8 @@ Future<MatchStatisticsModel> fetchMatchStatistics(int currentMatchId) async {
           legId: legId as int,
           score: score as int,
           doubleAttempts: doubleAttempts as int? ?? 0,
-          doubleHits: doubleHits as int? ?? 0,
+          doubleHit: doubleHit as bool? ?? false,
+          dartsForCheckout: dartsForCheckout as int? ?? 0,
           isDeadThrow: isDeadThrow as bool,
         );
       }).toList();
