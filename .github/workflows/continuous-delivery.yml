@@ -142,15 +142,17 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
       - name: Install dependencies
+        working-directory: ./Frontend
         run: flutter pub get
 
       - name: Build macOS application
+        working-directory: ./Frontend
         run: flutter build macos
 
       - name: Create DMG
         run: |
           mkdir -p $PWD/dmg
-          app_path="$PWD/build/macos/Build/Products/Release/darts_application.app"
+          app_path="$PWD/Frontend/build/macos/Build/Products/Release/darts_application.app"
           dmg_path="$PWD/dmg/dartin_molema.dmg"
           hdiutil create "$dmg_path" -volname "DartinMolema-${{needs.get-release-version.outputs.version}}" -srcfolder "$app_path" -ov -format UDZO
 
