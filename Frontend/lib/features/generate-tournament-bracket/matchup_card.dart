@@ -32,7 +32,7 @@ class MatchupCard extends StatelessWidget {
         throw Exception("The player with id ${match.player1Id} was not found");
       }
     } else {
-      firstPlayer = PlayerModel.placeholderPlayer(firstName: firstPlayerName);
+      firstPlayer = PlayerModel.placeholderPlayer(lastName: firstPlayerName);
     }
 
     if (match.player2Id.isNotEmpty && selectPlayer) {
@@ -44,7 +44,7 @@ class MatchupCard extends StatelessWidget {
         throw Exception("The player with id ${match.player2Id} was not found");
       }
     } else {
-      secondPlayer = PlayerModel.placeholderPlayer(firstName: secondPlayerName);
+      secondPlayer = PlayerModel.placeholderPlayer(lastName: secondPlayerName);
     }
   }
 
@@ -52,7 +52,19 @@ class MatchupCard extends StatelessWidget {
   Widget build(BuildContext context) {
     TournamentStore tournamentStore = context.read<TournamentStore>();
 
-    checkForPlayers(tournamentStore);
+    if (match.player1LastName.isNotEmpty) {
+      print("First player is:  ${match.player1LastName}");
+    } else {
+      print("No first player");
+    }
+    checkForPlayers(
+      tournamentStore,
+      firstPlayerName:
+          (match.player1LastName.isNotEmpty ? match.player1LastName : ""),
+      secondPlayerName:
+          (match.player2LastName.isNotEmpty ? match.player2LastName : ""),
+    ); // Add that if this.player1LastName is set, it should be added.
+
     var theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.all(4.0),
