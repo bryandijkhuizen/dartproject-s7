@@ -14,9 +14,9 @@ class PlayerModel {
   factory PlayerModel.fromJson(Map<String, dynamic> json) {
     return PlayerModel(
       id: json['id'].toString(),
-      firstName: json['first_name'].toString(),
-      lastName: json['last_name'].toString(),
-      avatarId: json['avatar_id'].toString(),
+      firstName: json['first_name']?.toString() ?? '',
+      lastName: json['last_name']?.toString() ?? '',
+      avatarId: json['avatar_id']?.toString() ?? '',
     );
   }
 }
