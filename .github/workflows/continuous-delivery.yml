@@ -73,7 +73,7 @@ jobs:
       run: |
         mkdir -p AppDir/usr/bin
         cp -r Frontend/build/linux/x64/release/bundle/* AppDir/usr/bin/
-        ./linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage
+        ./linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir AppDir --output appimage
       env:
         ARCH: x86_64
 
