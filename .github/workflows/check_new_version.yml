@@ -1,0 +1,45 @@
+name: Check if version is new in pubspec.yaml
+
+on:
+  pull_request:
+    branches:
+      - test_2
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+
+      - name: Checkout pull request branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          path: pr
+
+      - name: Install yq (yaml processor)
+        run: sudo apt-get install -y yq
+
+      - name: Get version from main branch
+        id: main_version
+        run: |
+          main_version=$(yq e '.version' main/pubspec.yaml)
+          echo "MAIN_VERSION=${main_version}" >> $GITHUB_ENV
+      - name: Get version from pull request branch
+        id: pr_version
+        run: |
+          pr_version=$(yq e '.version' pr/pubspec.yaml)
+          echo "PR_VERSION=${pr_version}" >> $GITHUB_ENV
+      - name: Compare versions
+        run: |
+          if [ "${MAIN_VERSION}" == "${PR_VERSION}" ]; then
+            echo "Version in pubspec.yaml has not changed. Please update the version."
+            exit 1
+          else
+            echo "Version has changed."
+          fi
