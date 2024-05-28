@@ -72,7 +72,11 @@ jobs:
     - name: Build AppImage
       run: |
         mkdir -p AppDir/usr/bin
+        echo "Contents of build folder:"
+        find Frontend/build/linux/x64/release/bundle/
         cp -r Frontend/build/linux/x64/release/bundle/* AppDir/usr/bin/
+        echo "Contents of AppDir:"
+        find AppDir/
         ./linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir AppDir --output appimage
       env:
         ARCH: x86_64
