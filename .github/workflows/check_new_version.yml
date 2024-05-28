@@ -36,6 +36,9 @@ jobs:
         run: |
           PR_VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | tr -d '[:space:]')
           echo "PR_VERSION=$PR_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Find pubspec.yaml
+        run: find pubspec.yaml
       
       - name: Compare versions
         run: |
