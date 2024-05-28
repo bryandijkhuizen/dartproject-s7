@@ -13,4 +13,10 @@ class Permissions {
   int getClubIdByPermission(PermissionList permission){
     return clubPermissions.keys.firstWhere((key) => clubPermissions[key]?.contains(permission.permissionName) ?? false, orElse: () => -1,);
   }
+
+  bool chechClubManagmentRole(){
+    var perm = clubPermissions;
+    var perm2 = systemPermissions;
+    return perm.entries.where((club) => club.value.contains(PermissionList.manageClubMembers.permissionName)).isNotEmpty;
+  }
 }

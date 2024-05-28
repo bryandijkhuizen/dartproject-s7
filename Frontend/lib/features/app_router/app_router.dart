@@ -5,6 +5,7 @@ import 'package:darts_application/features/auth/auth_view.dart';
 import 'package:darts_application/features/clubs/views/club_overview.dart';
 import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
 import 'package:darts_application/features/create_match/single_match/edit_single_match_page.dart';
+import 'package:darts_application/features/club_management/views/club_management.dart';
 import 'package:darts_application/features/settings/views/settings_email_view.dart';
 import 'package:darts_application/features/settings/views/settings_name_view.dart';
 import 'package:darts_application/features/settings/views/settings_password_view.dart';
@@ -341,14 +342,7 @@ final router = GoRouter(
                     path: '/club-management',
                     builder: (context, state) {
                       // Ignore this for now
-                      return getPlaceholderComponent(
-                          '/club-management',
-                          [
-                            '/',
-                            '/statistics',
-                            '/matches',
-                          ],
-                          context);
+                      return ClubManagement();
                     },
                   ),
                 ],
