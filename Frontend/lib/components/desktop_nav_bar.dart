@@ -1,11 +1,11 @@
 import 'package:darts_application/components/navigation_divider.dart';
 import 'package:darts_application/components/navigation_item.dart';
-import 'package:darts_application/models/permission.dart';
+import 'package:darts_application/models/permission_list.dart';
+import 'package:darts_application/models/permissions.dart';
 import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
-import 'package:gotrue/src/types/session.dart';
 import 'package:provider/provider.dart';
 
 class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
@@ -31,7 +31,7 @@ class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  List<NavigationItem> getNavigationItems(List<String> systemPermissions) {
+  List<NavigationItem> getNavigationItems(Permissions permissions) {
     var navigationItems = [
       NavigationItem(
         label: 'Home',
@@ -58,8 +58,8 @@ class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
         },
       ),
       NavigationItem(
-        enabled: systemPermissions
-            .contains(SystemPermission.assignRole.permissionName),
+        enabled: (permissions.systemPermissions
+            .contains(PermissionList.assignRole.permissionName) || permissions.checkClubPermission(PermissionList.assignClubRole)),
         label: 'User management',
         location: '/user-management',
         active: currentShell.currentIndex == 3,
@@ -84,9 +84,6 @@ class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
         },
       ),
     ];
-
-    print("pp time");
-    print(systemPermissions);
     return navigationItems;
   }
 
@@ -110,7 +107,7 @@ class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
               builder: (context) {
                 UserStore userStore = context.read();
                 List<NavigationItem> navigationItems =
-                    getNavigationItems(userStore.systemPermissions);
+                    getNavigationItems(userStore.permissions);
                 return ListView.separated(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   scrollDirection: Axis.horizontal,

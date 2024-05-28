@@ -11,6 +11,6 @@ class RoleAssignmentModel {
       : id = dataMap['id'],
         avatarUrl = dataMap['avatar_url'],
         fullName = dataMap['full_name'],
-        myRoles = Set<String>.from(dataMap['my_roles']),
+        myRoles = Set<String>.from(dataMap['my_roles'] ?? {}),
         allRoles = Set<String>.from(dataMap['all_roles']);
 }

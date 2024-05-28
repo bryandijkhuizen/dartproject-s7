@@ -1,4 +1,4 @@
-enum SystemPermission {
+enum PermissionList {
   createUser(permissionName: 'create_user'),
   updateUser(permissionName: 'update_user'),
   deleteUser(permissionName: 'delete_user'),
@@ -32,7 +32,7 @@ enum SystemPermission {
   assignRole(permissionName: 'assign_role'),
   assignClubRole(permissionName: 'assign_clubrole');
 
-  const SystemPermission({required this.permissionName});
+  const PermissionList({required this.permissionName});
 
   final String permissionName;
 }

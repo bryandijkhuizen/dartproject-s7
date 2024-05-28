@@ -1,11 +1,12 @@
-import 'package:flutter/cupertino.dart';
+import 'package:darts_application/models/permission_list.dart';
+import 'package:darts_application/models/permissions.dart';
+import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserManagementHeader extends StatelessWidget {
-  UserManagementHeader(this.supabaseClient, {Key? key, required this.onSearch})
-      : super(key: key) {
+  UserManagementHeader(this.supabaseClient, {super.key, required this.onSearch}) {
     _searchController = TextEditingController();
   }
   final void Function(String? searchedName,String? searchedRole ) onSearch;
@@ -14,13 +15,22 @@ class UserManagementHeader extends StatelessWidget {
   final SupabaseClient supabaseClient;
   String? selectedRole;
   late TextEditingController _searchController;
-  Future loadRoles() {
-    return Supabase.instance.client.rpc("get_role_names");
+
+  Future loadRoles(Permissions permission) {
+    if(permission.systemPermissions.contains(PermissionList.assignRole.permissionName)){
+      return Supabase.instance.client.rpc("get_role_names");
+    }
+    if(permission.checkClubPermission(PermissionList.assignClubRole)){
+      return Supabase.instance.client.rpc("get_club_role_names");
+    }
+    return Future(() => null);
+    
   }
 
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
+    UserStore userStore = context.read();
     return Padding(
       padding: const EdgeInsets.only(top: 20.0),
       child: Column(
@@ -39,10 +49,10 @@ class UserManagementHeader extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Name"),
+                      const Text("Name"),
                       TextField(
                         controller: _searchController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           hintText: 'Enter a search term',
                         ),
@@ -52,7 +62,7 @@ class UserManagementHeader extends StatelessWidget {
                 ),
               ),
               FutureBuilder(
-                  future: loadRoles(),
+                  future: loadRoles(userStore.permissions),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasError) {
@@ -67,7 +77,7 @@ class UserManagementHeader extends StatelessWidget {
                             roles.map((role) {
                           return DropdownMenuEntry<dynamic>(
                             value:
-                                role["role_name"].toString(), // Assuming roles are strings
+                                role["role_name"].toString(),
                             label: role["role_name"].toString(),
                           );
                         }).toList();
@@ -76,7 +86,7 @@ class UserManagementHeader extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Role"),
+                              const Text("Role"),
                               DropdownMenu(
                                 onSelected: (value) {
                                   selectedRole = value;
@@ -88,7 +98,7 @@ class UserManagementHeader extends StatelessWidget {
                         );
                       }
                     }
-                    return CircularProgressIndicator();
+                    return const CircularProgressIndicator();
                   }),
               Padding(
                 padding: const EdgeInsets.all(8.0),
