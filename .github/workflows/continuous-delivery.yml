@@ -66,18 +66,23 @@ jobs:
       run: |
         wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
         chmod +x linuxdeploy-x86_64.AppImage
+        ./linuxdeploy-x86_64.AppImage --appimage-extract
+        mv squashfs-root linuxdeploy
+
         wget https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage
         chmod +x linuxdeploy-plugin-appimage-x86_64.AppImage
+        ./linuxdeploy-plugin-appimage-x86_64.AppImage --appimage-extract
+        mv squashfs-root appimage-plugin
 
     - name: Build AppImage
       run: |
         mkdir -p AppDir/usr/bin
-        echo "Contents of build folder:"
-        find Frontend/build/linux/x64/release/bundle/
-        cp -r Frontend/build/linux/x64/release/bundle/* AppDir/usr/bin/
+        cp -r build/linux/x64/release/bundle/* AppDir/usr/bin/
+        # Log the contents of AppDir
         echo "Contents of AppDir:"
         find AppDir/
-        ./linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir AppDir --output appimage
+        # Run linuxdeploy and plugin
+        ./linuxdeploy/AppRun --appdir AppDir --output appimage --plugin appimage --plugin AppDir/appimage-plugin/usr/bin/linuxdeploy-plugin-appimage
       env:
         ARCH: x86_64
 
