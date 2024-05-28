@@ -78,7 +78,7 @@ jobs:
     - name: Save build Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: AppImage
+        name: DartinMolema-${{needs.get-release-version.outputs.version}}-x64.AppImage
         path: 'DartinMolema-${{needs.get-release-version.outputs.version}}-x64.AppImage'
 
   build_android:
