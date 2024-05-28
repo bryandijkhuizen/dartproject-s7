@@ -13,8 +13,9 @@ void main() {
         playerId: '1',
         legId: 1,
         score: 100,
-        doubleAttempts: 1,
-        doubleHits: 1,
+        doubleAttempts: 0,
+        doubleHit: false,
+        dartsForCheckout: 0,
         isDeadThrow: false,
       ),
       TurnModel(
@@ -22,8 +23,9 @@ void main() {
         playerId: '1',
         legId: 1,
         score: 140,
-        doubleAttempts: 1,
-        doubleHits: 0,
+        doubleAttempts: 0,
+        dartsForCheckout: 0,
+        doubleHit: false,
         isDeadThrow: false,
       ),
       TurnModel(
@@ -31,8 +33,19 @@ void main() {
         playerId: '1',
         legId: 1,
         score: 180,
+        doubleAttempts: 0,
+        dartsForCheckout: 0,
+        doubleHit: false,
+        isDeadThrow: false,
+      ),
+      TurnModel(
+        id: 4,
+        playerId: '1',
+        legId: 1,
+        score: 81,
         doubleAttempts: 1,
-        doubleHits: 1,
+        dartsForCheckout: 2,
+        doubleHit: true,
         isDeadThrow: false,
       ),
     ];
@@ -60,7 +73,7 @@ void main() {
     );
 
     test('Calculate average score', () {
-      expect(matchStatistics.calculateAverageScore('1'), 140.0);
+      expect(matchStatistics.calculateAverageScore('1'), 136.64);
     });
 
     test('Calculate first nine average', () {
@@ -68,7 +81,7 @@ void main() {
     });
 
     test('Calculate average per dart', () {
-      expect(matchStatistics.calculateAveragePerDart('1'), 46.67);
+      expect(matchStatistics.calculateAveragePerDart('1'), 45.55);
     });
   });
 }
