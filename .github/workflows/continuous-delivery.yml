@@ -1,48 +1,92 @@
 name: Build and Tag Release
 
+env:
+  SUPABASE_URL: 'https://wofmpmokrotlntuqjptl.supabase.co'
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvZm1wbW9rcm90bG50dXFqcHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTI5MTUwMjcsImV4cCI6MjAyODQ5MTAyN30.7hTbaWkxDQ-lKctP6wICrQiuPA1AwJrEFgYdVztkSdE'
+  FLUTTER_VERSION: '3.19.6'
+  
 on:
   push:
     branches:
       - main
-      - test
+
+permissions:
+  contents: write  # Grant write permission to contents to push tags
 
 jobs:
-  create-tag:
+  get-release-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.VERSION }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+         # Only get pubspec.yaml
+         sparse-checkout: |
+          /Frontend/pubspec.yaml
+         sparse-checkout-cone-mode: false
+        
+      - name: Get the version from pubspec.yaml
+        id: get_version
+        working-directory: ./Frontend
+        run: |
+          VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | tr -d '[:space:]')
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+          
+  build_linux:
+    runs-on: Ubuntu-20.04
+    needs: get-release-version
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Flutter
+      uses: flutter-actions/setup-flutter@v3.6
+      with:
+        channel: stable 
+        version: ${{ env.FLUTTER_VERSION }}
+        cache-sdk: true
+        
+    - name: Enable linux support for Flutter 
+      run: flutter config --enable-linux-desktop
+    
+    - name: "Install dependencies"
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake ninja-build build-essential pkg-config curl file git unzip xz-utils zip libgtk-3-dev
+    
+    - name: Install pub dependencies
+      working-directory: Frontend
+      run: flutter pub get
+    
+    - name: Build flutter app
+      working-directory: Frontend/
+      run: flutter build linux --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+      
+    - name: Build AppImage unsing appimage-builder
+      uses: docker://appimagecrafters/appimage-builder:0.8.5
+      with:
+        entrypoint: appimage-builder
+        args: --recipe ./AppImageBuilder.yml --skip-test
+
+    - name: Rename AppImage
+      run: mv ./*.AppImage DartinMolema-${{needs.get-release-version.outputs.version}}-x64.AppImage
+        
+    - name: Save build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: DartinMolema-${{needs.get-release-version.outputs.version}}-x64.AppImage
+        path: 'DartinMolema-${{needs.get-release-version.outputs.version}}-x64.AppImage'
+
+  build_android:
+    needs: get-release-version
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Get the version from pubspec.yaml
-      id: get_version
-      working-directory: ./Frontend
-      run: |
-        VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //')
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-        echo "::set-output name=VERSION::$VERSION"
-
-    - name: Create and push tag
-      env:
-        VERSION: ${{ steps.get_version.outputs.VERSION }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        git config --global user.name "github-actions"
-        git config --global user.email "github-actions@github.com"
-        git tag "v${VERSION}"
-        git push origin "v${VERSION}"
-
-  build:
-    needs: create-tag
-    runs-on: ubuntu-latest
-
-    env:
-      SUPABASE_URL: ${{ secrets.RELEASE_SUPABASE_URL }}
-      SUPABASE_ANON_KEY: ${{ secrets.RELEASE_SUPABASE_ANON_KEY }}
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Setup Java
       uses: actions/setup-java@v1
@@ -50,48 +94,67 @@ jobs:
         java-version: '12.x'
         
     - name: Setup Flutter
-      uses: subosito/flutter-action@v2
+      uses: flutter-actions/setup-flutter@v3.6
       with:
-        flutter-version: '3.19.6'
+        channel: stable 
+        version: ${{ env.FLUTTER_VERSION }}
+        cache-sdk: true
+    
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
 
-    - name: Install NDK (if required)
-      run: sudo /usr/local/lib/android/sdk/tools/bin/sdkmanager --install "ndk;21.0.6113669" --sdk_root=${ANDROID_SDK_ROOT} <<< y
+    - name: Setup build tool version variable
+      shell: bash
+      run: |
+        BUILD_TOOL_VERSION=$(ls /usr/local/lib/android/sdk/build-tools/ | tail -n 1)
+        echo "BUILD_TOOL_VERSION=$BUILD_TOOL_VERSION" >> $GITHUB_ENV
+        echo Last build tool version is: $BUILD_TOOL_VERSION
 
     - name: Install dependencies
       working-directory: ./Frontend
       run: flutter pub get
-
-    - name: Build APK
+    
+    - name: Build APKs
       working-directory: ./Frontend
-      run: flutter build apk --dart-define=SUPABASE_URL=${SUPABASE_URL} --dart-define=SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      run: |
+        echo "Building apk with SUPABASE_URL=$SUPABASE_URL and SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
+        flutter build apk --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY --split-per-abi
 
-    - name: Upload APK
-      uses: actions/upload-artifact@v2
+    - name: Sign APKs
+      uses: r0adkll/sign-android-release@v1
+      id: sign_app
       with:
-        name: apk
-        path: Frontend/build/app/outputs/flutter-apk/app-release.apk
+        releaseDirectory: ./Frontend/build/app/outputs/apk/release
+        signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+        alias: ${{ secrets.ALIAS }}
+        keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+        keyPassword: ${{ secrets.KEY_PASSWORD }}
+      env:
+        BUILD_TOOLS_VERSION: ${{env.BUILD_TOOL_VERSION}} # Specify the desired version here
+    
+    - name: Archive Signed APKs
+      run: zip -j DartinMolema-${{needs.get-release-version.outputs.version}}-android-signed-archive.zip ./Frontend/build/app/outputs/apk/release/*-release-signed.apk
 
+    - name: Upload signed app files
+      uses: actions/upload-artifact@v4
+      with:
+        name: DartinMolema-${{needs.get-release-version.outputs.version}}-android-signed-archive.zip
+        path: DartinMolema-${{needs.get-release-version.outputs.version}}-android-signed-archive.zip
+  
   build_windows:
-    needs: create-tag
+    needs: get-release-version
     runs-on: windows-latest
-
-    env:
-      SUPABASE_URL: ${{ secrets.RELEASE_SUPABASE_URL }}
-      SUPABASE_ANON_KEY: ${{ secrets.RELEASE_SUPABASE_ANON_KEY }}
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Setup Java
-      uses: actions/setup-java@v1
-      with:
-        java-version: '12.x'
-
+      uses: actions/checkout@v4
+      
     - name: Setup Flutter
-      uses: subosito/flutter-action@v2
+      uses: flutter-actions/setup-flutter@v3.6
       with:
-        flutter-version: '3.19.6'
+        channel: stable 
+        version: ${{ env.FLUTTER_VERSION }}
+        cache-sdk: true
 
     - name: Enable Windows desktop
       working-directory: ./Frontend
@@ -100,13 +163,89 @@ jobs:
     - name: Install dependencies
       working-directory: ./Frontend
       run: flutter pub get
-
+      
     - name: Build Windows EXE
       working-directory: ./Frontend
-      run: flutter build windows --dart-define=SUPABASE_URL=${SUPABASE_URL} --dart-define=SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
-
-    - name: Upload Windows EXE
-      uses: actions/upload-artifact@v2
+      run: echo "Building EXE with SUPABASE_URL=${{ env.SUPABASE_URL }} and SUPABASE_ANON_KEY=${{ env.SUPABASE_ANON_KEY }}" && flutter build windows --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+      
+    - name: Archive Release
+      uses: thedoctor0/zip-release@master
       with:
-        name: windows
-        path: Frontend/build/windows/runner/Release
+        type: 'zip'
+        filename: DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip
+        directory: ./Frontend/build/windows/x64/runner/Release
+
+    - name: Upload Windows Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip
+        path: ./Frontend/build/windows/x64/runner/Release/DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip
+
+  build_apple:
+    needs: get-release-version
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: flutter-actions/setup-flutter@v3.6
+        with:
+          channel: stable 
+          version: ${{ env.FLUTTER_VERSION }}
+          cache-sdk: true
+
+      - name: Install dependencies
+        working-directory: ./Frontend
+        run: flutter pub get
+
+      - name: Build macOS application
+        working-directory: ./Frontend
+        run: flutter build macos --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+
+      - name: Create DMG
+        run: |
+          mkdir -p $PWD/dmg
+          app_path="$PWD/Frontend/build/macos/Build/Products/Release/darts_application.app"
+          dmg_path="$PWD/dmg/DartinMolema-${{needs.get-release-version.outputs.version}}.dmg"
+          hdiutil create "$dmg_path" -volname "DartinMolema-${{needs.get-release-version.outputs.version}}" -srcfolder "$app_path" -ov -format UDZO
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DartinMolema-${{needs.get-release-version.outputs.version}}.dmg
+          path: dmg/DartinMolema-${{needs.get-release-version.outputs.version}}.dmg
+
+      - name: Build IPA (iOS) File
+        working-directory: ./Frontend
+        run: flutter build ios --no-codesign --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+
+      - name: Rename Runner.app to DartinMolema
+        run: |
+          mv ./Frontend/build/ios/iphoneos/Runner.app DartinMolema-${{ needs.get-release-version.outputs.version }}-ios.app
+        
+      - name: Archive IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: DartinMolema-${{ needs.get-release-version.outputs.version }}-ios.app
+          path: DartinMolema-${{ needs.get-release-version.outputs.version }}-ios.app
+    
+  create_release:
+    runs-on: ubuntu-latest
+    needs: [get-release-version, build_linux, build_android, build_windows, build_apple]
+
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: .
+        merge-multiple: true
+
+    - name: Create Release
+      uses: ncipollo/release-action@v1.14.0
+      if: ${{ success() }}
+      with:
+        artifacts: "*-android-signed-archive.zip, *-windows.zip, *.dmg, *-ios.app, *-x64.AppImage"
+        tag: 'v${{ needs.get-release-version.outputs.version }}'
+        
