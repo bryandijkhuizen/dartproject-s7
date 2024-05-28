@@ -73,7 +73,7 @@ jobs:
         args: --recipe ./AppImageBuilder.yml --skip-test
 
     - name: Rename AppImage
-      run: mv ./*.AppImage* DartinMolema-${{needs.get-release-version.outputs.version}}-x64.AppImage
+      run: mv ./*.AppImage DartinMolema-${{needs.get-release-version.outputs.version}}-x64.AppImage
         
     - name: Save build Artifact
       uses: actions/upload-artifact@v4
@@ -84,7 +84,6 @@ jobs:
   build_android:
     needs: get-release-version
     runs-on: ubuntu-latest
-    if: false
 
     steps:
     - name: Checkout repository
@@ -146,7 +145,6 @@ jobs:
   build_windows:
     needs: get-release-version
     runs-on: windows-latest
-    if: false
 
     steps:
     - name: Checkout repository
@@ -187,7 +185,6 @@ jobs:
   build_apple:
     needs: get-release-version
     runs-on: macos-latest
-    if: false
 
     steps:
       - name: Checkout code
@@ -237,7 +234,7 @@ jobs:
     
   create_release:
     runs-on: ubuntu-latest
-    needs: [get-release-version, build_linux] #, build_android, build_windows, build_apple
+    needs: [get-release-version, build_linux, build_android, build_windows, build_apple]
 
     steps:
     - name: Download artifacts
