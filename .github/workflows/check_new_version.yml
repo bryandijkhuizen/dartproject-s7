@@ -29,7 +29,6 @@ jobs:
           MAIN_VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | tr -d '[:space:]')
           echo "MAIN_VERSION=$MAIN_VERSION" >> "$GITHUB_OUTPUT"
           
-          
       - name: Get version from Main
         id: get_pr_version
         working-directory: pr
@@ -38,7 +37,7 @@ jobs:
           echo "PR_VERSION=$PR_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Find pubspec.yaml
-        run: find pubspec.yaml
+        run: find */pubspec.yaml
       
       - name: Compare versions
         run: |
