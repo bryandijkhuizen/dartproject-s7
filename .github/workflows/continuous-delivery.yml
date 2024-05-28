@@ -247,6 +247,6 @@ jobs:
       uses: ncipollo/release-action@v1.14.0
       if: ${{ success() }}
       with:
-        artifacts: "DartinMolema-${{ needs.get-release-version.outputs.version }}-android-signed-archive.zip, DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip, DartinMolema-${{needs.get-release-version.outputs.version}}.dmg, DartinMolema-${{ needs.get-release-version.outputs.version }}-ios.app, DartinMolema-${{ needs.get-release-version.outputs.version }}-x86_64.AppImage"
+        artifacts: "*-android-signed-archive.zip, *-windows.zip, *.dmg, *-ios.app, *-x64.AppImage"
         tag: 'v${{ needs.get-release-version.outputs.version }}'
         
