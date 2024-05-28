@@ -15,12 +15,18 @@ jobs:
         with:
           ref: main
           path: main
+          sparse-checkout: |
+            Frontend/pubspec.yaml
+          sparse-checkout-cone-mode: false
 
       - name: Checkout pull request branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           path: pr
+          sparse-checkout: |
+            Frontend/pubspec.yaml
+          sparse-checkout-cone-mode: false
 
       - name: Print Main folder
         run: |
@@ -35,14 +41,14 @@ jobs:
 
       - name: Get version from Main
         id: get_main_version
-        working-directory: main
+        working-directory: main/Frontend
         run: |
           MAIN_VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | tr -d '[:space:]')
           echo "MAIN_VERSION=$MAIN_VERSION" >> "$GITHUB_OUTPUT"
           
       - name: Get version from Main
         id: get_pr_version
-        working-directory: pr
+        working-directory: pr/Frontend
         run: |
           PR_VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | tr -d '[:space:]')
           echo "PR_VERSION=$PR_VERSION" >> "$GITHUB_OUTPUT"
