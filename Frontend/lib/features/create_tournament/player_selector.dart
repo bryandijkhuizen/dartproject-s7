@@ -33,8 +33,7 @@ class _PlayerSelectorState extends State<PlayerSelector> {
   Future<void> fetchMembersAndClubs() async {
     try {
       // Fetch players
-      final playerResponse =
-          await Supabase.instance.client.from('user').select();
+      final playerResponse = await Supabase.instance.client.from('user').select();
       final List<dynamic> playerData = playerResponse as List<dynamic>;
       List<PlayerModel> fetchedPlayers = playerData.map((row) {
         return PlayerModel.fromJson(row);
@@ -48,8 +47,7 @@ class _PlayerSelectorState extends State<PlayerSelector> {
       }).toList();
 
       // Fetch club members
-      final clubMemberResponse =
-          await Supabase.instance.client.from('user_club').select();
+      final clubMemberResponse = await Supabase.instance.client.from('user_club').select();
       final List<dynamic> clubMemberData = clubMemberResponse as List<dynamic>;
       List<ClubMember> fetchedClubMembers = clubMemberData.map((row) {
         return ClubMember.fromJson(row);
@@ -111,16 +109,24 @@ class _PlayerSelectorState extends State<PlayerSelector> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(
-          width: 300,
-          height: 50,
-          child: SearchInput(
-            controller: searchController,
-            onSearch: searchClubs,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Select players',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            Container(
+              width: 300, // Adjust the width as needed
+              child: SearchInput(
+                controller: searchController,
+                onSearch: searchClubs,
+              ),
+            ),
+          ],
         ),
         SizedBox(
-          height: 200,
+          height: 300,
           child: Column(
             children: [
               Expanded(
@@ -131,17 +137,13 @@ class _PlayerSelectorState extends State<PlayerSelector> {
                         itemBuilder: (context, index) {
                           PlayerModel player = filteredPlayers[index];
                           bool isSelected = selectedPlayers.contains(player);
-                          List<Club> playerClubs =
-                              playerClubsMap[player.id] ?? [];
-                          String clubs =
-                              playerClubs.map((club) => club.name).join(', ');
+                          List<Club> playerClubs = playerClubsMap[player.id] ?? [];
+                          String clubs = playerClubs.map((club) => club.name).join(', ');
                           return ListTile(
-                            title:
-                                Text("${player.firstName} ${player.lastName}"),
+                            title: Text("${player.firstName} ${player.lastName}"),
                             subtitle: Text(clubs.isEmpty ? 'No clubs' : clubs),
                             trailing: isSelected
-                                ? const Icon(Icons.check_box,
-                                    color: Colors.green)
+                                ? const Icon(Icons.check_box, color: Colors.green)
                                 : const Icon(Icons.check_box_outline_blank),
                             onTap: () => togglePlayerSelection(player),
                           );

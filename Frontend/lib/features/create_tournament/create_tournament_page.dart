@@ -201,14 +201,15 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text(
-            'Select players',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: PlayerSelector(onSelectionChanged: updateSelectedPlayers)
+          // child: Text(
+          //   'Select players',
+          //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          // ),
         ),
-        PlayerSelector(onSelectionChanged: updateSelectedPlayers),
+        // PlayerSelector(onSelectionChanged: updateSelectedPlayers),
         const SizedBox(height: 20),
         Center(
           child: ElevatedButton(
