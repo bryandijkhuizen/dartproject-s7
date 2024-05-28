@@ -55,8 +55,8 @@ jobs:
       working-directory: ./Frontend
       run: flutter pub get
 
-    - name: Install build tools
-      run: sudo apt-get install -y cmake ninja-build clang
+    - name: Install build tools and GTK dependencies
+      run: sudo apt-get install -y cmake ninja-build clang libgtk-3-dev
 
     - name: Build Linux release
       working-directory: ./Frontend
