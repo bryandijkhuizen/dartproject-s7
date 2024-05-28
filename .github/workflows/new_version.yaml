@@ -1,4 +1,4 @@
-name: Check if version is new in pubspec.yaml
+name: Check if version is updated in pubspec.yaml
 
 on:
   pull_request:
@@ -15,31 +15,36 @@ jobs:
         with:
           ref: main
           path: main
+          sparse-checkout: |
+            Frontend/pubspec.yaml
+          sparse-checkout-cone-mode: false
 
       - name: Checkout pull request branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           path: pr
+          sparse-checkout: |
+            Frontend/pubspec.yaml
+          sparse-checkout-cone-mode: false
 
-      - name: Install yq (yaml processor)
-        run: sudo apt-get install -y yq
-
-      - name: Get version from main branch
-        id: main_version
+      - name: Get version from Main
+        id: get_main_version
+        working-directory: main/Frontend
         run: |
-          main_version=$(yq e '.version' main/pubspec.yaml)
-          echo "MAIN_VERSION=${main_version}" >> $GITHUB_ENV
-
-      - name: Get version from pull request branch
-        id: pr_version
+          MAIN_VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | tr -d '[:space:]')
+          echo "MAIN_VERSION=$MAIN_VERSION" >> "$GITHUB_OUTPUT"
+          
+      - name: Get version from Main
+        id: get_pr_version
+        working-directory: pr/Frontend
         run: |
-          pr_version=$(yq e '.version' pr/pubspec.yaml)
-          echo "PR_VERSION=${pr_version}" >> $GITHUB_ENV
-
+          PR_VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | tr -d '[:space:]')
+          echo "PR_VERSION=$PR_VERSION" >> "$GITHUB_OUTPUT"
+      
       - name: Compare versions
         run: |
-          if [ "${MAIN_VERSION}" == "${PR_VERSION}" ]; then
+          if [ "${{steps.get_main_version.outputs.MAIN_VERSION}}" == "${{steps.get_pr_version.outputs.PR_VERSION}}" ]; then
             echo "Version in pubspec.yaml has not changed. Please update the version."
             exit 1
           else
