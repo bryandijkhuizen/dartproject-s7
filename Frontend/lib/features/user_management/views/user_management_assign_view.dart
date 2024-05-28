@@ -108,8 +108,8 @@ class _UserManagementAssignViewState extends State<UserManagementAssignView> {
                                   cells: [
                                     DataCell(
                                       Text(role.toString(),
-                                          style:
-                                              const TextStyle(color: Colors.black)),
+                                          style: const TextStyle(
+                                              color: Colors.black)),
                                     ),
                                   ],
                                 ),
@@ -127,9 +127,12 @@ class _UserManagementAssignViewState extends State<UserManagementAssignView> {
                                     if (snapshot.hasData) {
                                       ClubAmdminAssingModel clubAdminModel =
                                           snapshot.data!;
-                                      controller.setAdminClubId(clubAdminModel.clubIdUserIsAdmin ?? 0);
+                                      controller.setAdminClubId(
+                                          clubAdminModel.clubIdUserIsAdmin ??
+                                              0);
                                       return Container(
-                                        constraints: const BoxConstraints(minWidth: 600),
+                                        constraints:
+                                            const BoxConstraints(minWidth: 600),
                                         child: DataTable(
                                           headingRowColor:
                                               MaterialStatePropertyAll(
@@ -156,10 +159,13 @@ class _UserManagementAssignViewState extends State<UserManagementAssignView> {
                                                           color: Colors.black)),
                                                 ),
                                                 DataCell(DropdownMenu(
-                                                      dropdownMenuEntries:
-                                                      controller.getClubsDropdown(
-                                                          clubAdminModel),
-                                                  initialSelection: clubAdminModel.clubIdUserIsAdmin,
+                                                  dropdownMenuEntries:
+                                                      controller
+                                                          .getClubsDropdown(
+                                                              clubAdminModel),
+                                                  initialSelection:
+                                                      clubAdminModel
+                                                          .clubIdUserIsAdmin,
                                                   textStyle: const TextStyle(
                                                       color: Colors.black),
                                                   onSelected: (value) =>
@@ -174,7 +180,9 @@ class _UserManagementAssignViewState extends State<UserManagementAssignView> {
                                       );
                                     }
                                     return const CircularProgressIndicator();
-                                  }else{return Container();}
+                                  } else {
+                                    return Container();
+                                  }
                                 }),
                           ),
                           Row(
