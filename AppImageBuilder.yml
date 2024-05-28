@@ -5,6 +5,10 @@ script:
  - cp -r ./Frontend/build/linux/x64/release/bundle AppDir
  - mkdir -p AppDir/usr/share/icons/hicolor/64x64/apps/
  - cp flutter-mark-square-64.png AppDir/usr/share/icons/hicolor/64x64/apps/
+ - mkdir -p AppDir/usr/share/glib-2.0/schemas  # Create directory for schemas
+ - cp /usr/share/glib-2.0/schemas/org.gnome.settings-daemon.plugins.xsettings.gschema.xml AppDir/usr/share/glib-2.0/schemas/  # Copy the required schema
+ - glib-compile-schemas AppDir/usr/share/glib-2.0/schemas  # Compile schemas
+
 AppDir:
   path: ./AppDir
   app_info:
@@ -30,6 +34,9 @@ AppDir:
     - sourceline: deb http://security.ubuntu.com/ubuntu bionic-security multiverse
     include:
     - libgtk-3-0
+    - gnome-settings-daemon
+    - dconf-gsettings-backend
+    - gnome-settings-daemon-schemas  # Ensure schemas are included
     exclude:
     - humanity-icon-theme
     - hicolor-icon-theme
