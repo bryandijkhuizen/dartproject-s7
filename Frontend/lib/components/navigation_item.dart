@@ -6,7 +6,8 @@ class NavigationItem extends StatelessWidget {
       required this.label,
       required this.location,
       this.active = false,
-      this.enabled = true, this.callback = null});
+      this.enabled = true,
+      this.callback = null});
 
   final String label;
   final String location;
@@ -18,7 +19,9 @@ class NavigationItem extends StatelessWidget {
   Widget build(BuildContext context) {
     if (enabled) {
       return InkWell(
-        onTap: (){callback?.call();},
+        onTap: () {
+          callback?.call();
+        },
         child: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -37,7 +40,7 @@ class NavigationItem extends StatelessWidget {
           ),
         ),
       );
-    } return Container();
+    }
+    return Container();
   }
-  
 }
