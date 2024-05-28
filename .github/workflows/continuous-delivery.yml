@@ -173,7 +173,7 @@ jobs:
     - name: Upload Windows Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip
+        name: DartinMolema-${{ needs.get-release-version.outputs.version }}-windows
         path: ./Frontend/build/windows/x64/runner/Release/
 
   build_apple:
