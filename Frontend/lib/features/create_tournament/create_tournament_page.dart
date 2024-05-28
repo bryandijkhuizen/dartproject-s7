@@ -1,3 +1,4 @@
+import 'package:darts_application/models/tournament.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,6 +23,9 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
 
   late DateTime selectedDate = DateTime.now();
   late TimeOfDay selectedTime = TimeOfDay.now();
+
+  bool isBulloffTournament = true;
+  bool isRandomTournament = false;
 
   List<PlayerModel> selectedPlayers = [];
 
@@ -53,19 +57,29 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
 
   Future<void> submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
+      String name = _nameController.text;
       String location = _locationController.text;
-      DateTime matchDateTime = DateTime(
-        selectedDate.year,
-        selectedDate.month,
-        selectedDate.day,
-        selectedTime.hour,
-        selectedTime.minute,
+      DateTime tournamentDateTime = DateTime(selectedDate.year, selectedDate.month,
+          selectedDate.day, selectedTime.hour, selectedTime.minute);
+
+      final tournament = TournamentModel(
+        id: UniqueKey().toString(),
+        name: name,
+        location: location,
+        startTime: tournamentDateTime,
+        startingMethod: isBulloffTournament ? StartingMethod.bulloff : StartingMethod.random,
       );
 
-      // Handle selected players here
-      // Example: selectedPlayers
-
-      // Implement the logic to create a tournament with the selected players and other details
+      try {
+        await Supabase.instance.client.from('tournament').upsert(tournament.toJson());
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Tournament ${tournament.location} created!')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Something went wrong: $e')),
+        );
+      }
 
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -193,6 +207,51 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
           ),
         ),
         TimePicker(onTimeSelected: updateSelectedTime),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            'Starting method',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Checkbox(
+                value: isBulloffTournament,
+                onChanged: (value) {
+                  setState(() {
+                    isBulloffTournament = value!;
+                    if (isBulloffTournament) {
+                      isRandomTournament = false;
+                    }
+                  });
+                },
+              ),
+              const Text(
+                'Bull-off',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(width: 20),
+              Checkbox(
+                value: isRandomTournament,
+                onChanged: (value) {
+                  setState(() {
+                    isRandomTournament = value!;
+                    if (isRandomTournament) {
+                      isBulloffTournament = false;
+                    }
+                  });
+                },
+              ),
+              const Text(
+                'Random',
+                style: TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -204,12 +263,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: PlayerSelector(onSelectionChanged: updateSelectedPlayers)
-          // child: Text(
-          //   'Select players',
-          //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          // ),
         ),
-        // PlayerSelector(onSelectionChanged: updateSelectedPlayers),
         const SizedBox(height: 20),
         Center(
           child: ElevatedButton(
