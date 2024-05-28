@@ -6,10 +6,15 @@ import 'package:darts_application/features/settings/views/settings_email_view.da
 import 'package:darts_application/features/settings/views/settings_name_view.dart';
 import 'package:darts_application/features/settings/views/settings_password_view.dart';
 import 'package:darts_application/features/settings/views/settings_view.dart';
+import 'package:darts_application/features/user_management/views/user_management_assign_view.dart';
+import 'package:darts_application/features/user_management/views/user_management_view.dart';
 import 'package:darts_application/features/generate-tournament-bracket/tournament_bracket_screen.dart';
 import 'package:darts_application/helpers.dart';
+import 'package:darts_application/models/permission_list.dart';
+import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/features/setup_match/start_match.dart';
 import 'package:darts_application/features/setup_match/match_list_widget.dart';
@@ -30,6 +35,8 @@ Widget getPlaceholderComponent(
             },
             child: Text('Go to $route'),
           ),
+        //Text(Supabase.instance.client.auth.currentSession?.toJson().toString() ?? 'no claim'),
+
         TextButton(
             onPressed: () {
               Supabase.instance.client.auth.signOut();
@@ -248,18 +255,30 @@ final router = GoRouter(
               StatefulShellBranch(
                 routes: <RouteBase>[
                   GoRoute(
+                    redirect: (context, state) {
+                      UserStore userStore = context.read<UserStore>();
+                      if ((!userStore.permissions.systemPermissions.contains(
+                              PermissionList.assignRole.permissionName)) &&
+                          (!userStore.permissions.checkClubPermission(
+                              PermissionList.assignClubRole))) {
+                        return '/';
+                      }
+                      return null;
+                    },
                     path: '/user-management',
                     builder: (context, state) {
                       // Ignore this for now
-                      return getPlaceholderComponent(
-                          '/user-management',
-                          [
-                            '/',
-                            '/statistics',
-                            '/matches',
-                          ],
-                          context);
+                      return UserManagementView();
                     },
+                    routes: [
+                      GoRoute(
+                        path: 'edit/:uuid',
+                        builder: (context, state) {
+                          return UserManagementAssignView(
+                              uuid: state.pathParameters['uuid']!);
+                        },
+                      )
+                    ],
                   ),
                 ],
               ),
