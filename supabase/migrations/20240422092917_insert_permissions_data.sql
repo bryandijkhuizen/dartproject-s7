@@ -147,17 +147,17 @@ values
     'global'
   ),
   (
-    'create_rol',
+    'create_role',
     'Permission to create a role',
     'global'
   ),
   (
-    'assign_rol',
+    'assign_role',
     'Permission to assign a role',
     'global'
   ),
   (
-    'assign_clubrol',
+    'assign_clubrole',
     'Permission to assign a club role',
     'club'
   );
