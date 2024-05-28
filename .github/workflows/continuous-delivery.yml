@@ -63,6 +63,7 @@ jobs:
       run: flutter pub get
     
     - name: Build flutter app
+      working-directory: Frontend/
       run: flutter build linux --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
       
     - name: Build AppImage unsing appimage-builder
