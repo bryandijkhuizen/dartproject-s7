@@ -170,18 +170,11 @@ jobs:
       working-directory: ./Frontend
       run: echo "Building EXE with SUPABASE_URL=${{ env.SUPABASE_URL }} and SUPABASE_ANON_KEY=${{ env.SUPABASE_ANON_KEY }}" && flutter build windows --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
       
-    - name: Archive Release
-      uses: thedoctor0/zip-release@master
-      with:
-        type: 'zip'
-        filename: DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip
-        directory: ./Frontend/build/windows/x64/runner/Release
-
     - name: Upload Windows Artifact
       uses: actions/upload-artifact@v4
       with:
         name: DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip
-        path: ./Frontend/build/windows/x64/runner/Release/DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip
+        path: ./Frontend/build/windows/x64/runner/Release/
 
   build_apple:
     if: false
