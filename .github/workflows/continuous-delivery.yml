@@ -3,7 +3,7 @@ name: Build and Tag Release
 env:
   SUPABASE_URL: 'https://wofmpmokrotlntuqjptl.supabase.co'
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvZm1wbW9rcm90bG50dXFqcHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTI5MTUwMjcsImV4cCI6MjAyODQ5MTAyN30.7hTbaWkxDQ-lKctP6wICrQiuPA1AwJrEFgYdVztkSdE'
-  FLUTTER_VERSION: '3.19.6'
+  FLUTTER_VERSION: '3.22.0'
   
 on:
   push:
