@@ -77,7 +77,7 @@ jobs:
     - name: Build AppImage
       run: |
         mkdir -p AppDir/usr/bin
-        cp -r build/linux/x64/release/bundle/* AppDir/usr/bin/
+        cp -r Frontend/build/linux/x64/release/bundle/* AppDir/usr/bin/
         # Log the contents of AppDir
         echo "Contents of AppDir:"
         find AppDir/
