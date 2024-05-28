@@ -16,13 +16,13 @@ mixin _$UserStore on _UserStore, Store {
       (_$currentUserComputed ??= Computed<User?>(() => super.currentUser,
               name: '_UserStore.currentUser'))
           .value;
-  Computed<List<String>>? _$systemPermissionsComputed;
+  Computed<Permissions>? _$permissionsComputed;
 
   @override
-  List<String> get systemPermissions => (_$systemPermissionsComputed ??=
-          Computed<List<String>>(() => super.systemPermissions,
-              name: '_UserStore.systemPermissions'))
-      .value;
+  Permissions get permissions =>
+      (_$permissionsComputed ??= Computed<Permissions>(() => super.permissions,
+              name: '_UserStore.permissions'))
+          .value;
 
   late final _$currentSessionAtom =
       Atom(name: '_UserStore.currentSession', context: context);
@@ -45,7 +45,7 @@ mixin _$UserStore on _UserStore, Store {
     return '''
 currentSession: ${currentSession},
 currentUser: ${currentUser},
-systemPermissions: ${systemPermissions}
+permissions: ${permissions}
     ''';
   }
 }

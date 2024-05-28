@@ -9,7 +9,7 @@ import 'package:darts_application/features/settings/views/settings_view.dart';
 import 'package:darts_application/features/user_management/views/user_management_assign_view.dart';
 import 'package:darts_application/features/user_management/views/user_management_view.dart';
 import 'package:darts_application/helpers.dart';
-import 'package:darts_application/models/permission.dart';
+import 'package:darts_application/models/permission_list.dart';
 import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -229,7 +229,7 @@ final router = GoRouter(
                   GoRoute(
                     redirect: (context, state) {
                         UserStore userStore = context.read<UserStore>();
-                        if(!userStore.systemPermissions.contains(SystemPermission.assignRole.permissionName)){
+                        if( (!userStore.permissions.systemPermissions.contains(PermissionList.assignRole.permissionName)) && (!userStore.permissions.checkClubPermission(PermissionList.assignClubRole)) ){
                             return '/';
                         }
                         return null;
