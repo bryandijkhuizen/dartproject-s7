@@ -1,0 +1,52 @@
+name: Check if version is updated in pubspec.yaml
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          sparse-checkout: |
+            Frontend/pubspec.yaml
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout pull request branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          path: pr
+          sparse-checkout: |
+            Frontend/pubspec.yaml
+          sparse-checkout-cone-mode: false
+
+      - name: Get version from Main
+        id: get_main_version
+        working-directory: main/Frontend
+        run: |
+          MAIN_VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | tr -d '[:space:]')
+          echo "MAIN_VERSION=$MAIN_VERSION" >> "$GITHUB_OUTPUT"
+          
+      - name: Get version from Main
+        id: get_pr_version
+        working-directory: pr/Frontend
+        run: |
+          PR_VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | tr -d '[:space:]')
+          echo "PR_VERSION=$PR_VERSION" >> "$GITHUB_OUTPUT"
+      
+      - name: Compare versions
+        run: |
+          if [ "${{steps.get_main_version.outputs.MAIN_VERSION}}" == "${{steps.get_pr_version.outputs.PR_VERSION}}" ]; then
+            echo "Version in pubspec.yaml has not changed. Please update the version."
+            exit 1
+          else
+            echo "Version has changed."
+          fi
