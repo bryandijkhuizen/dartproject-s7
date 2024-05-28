@@ -168,7 +168,7 @@ jobs:
       
     - name: Build Windows EXE
       working-directory: ./Frontend
-      run: echo "Building EXE with SUPABASE_URL=${{ env.SUPABASE_URL }} and SUPABASE_ANON_KEY=${{ env.SUPABASE_ANON_KEY }}" && flutter build windows --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+      run: echo "Building EXE with SUPABASE_URL=${{ env.SUPABASE_URL }} and SUPABASE_ANON_KEY=${{ env.SUPABASE_ANON_KEY }}" && flutter build windows --dart-define=SUPABASE_URL=${{env.SUPABASE_URL}} --dart-define=SUPABASE_ANON_KEY=${{env.SUPABASE_ANON_KEY}}
       
     - name: Upload Windows Artifact
       uses: actions/upload-artifact@v4
