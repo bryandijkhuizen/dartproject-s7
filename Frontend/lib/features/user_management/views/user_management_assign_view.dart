@@ -34,9 +34,6 @@ class _UserManagementAssignViewState extends State<UserManagementAssignView> {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-    UserStore userStore = context.read();
-    bool isNotClubAdmin = !userStore.permissions
-        .checkClubPermission(PermissionList.assignClubRole);
     return SingleChildScrollView(
       child: Center(
         child: Container(
@@ -120,7 +117,7 @@ class _UserManagementAssignViewState extends State<UserManagementAssignView> {
                             child: FutureBuilder(
                                 future: controller.clubAdminAssignModel,
                                 builder: (context, snapshot) {
-                                  if (isNotClubAdmin) {
+                                  if (!controller.isClubAdministrator) {
                                     if (snapshot.hasError) {
                                       return const Text('something went wrong');
                                     }
@@ -196,7 +193,7 @@ class _UserManagementAssignViewState extends State<UserManagementAssignView> {
                                   onPressed: () {
                                     controller.saveRoles(
                                         userData.myRoles, userData.id);
-                                    if (isNotClubAdmin) {
+                                    if (!controller.isClubAdministrator) {
                                       controller.saveClubAdminRole(userData.id);
                                     }
                                     Future.delayed(
