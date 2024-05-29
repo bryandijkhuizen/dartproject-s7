@@ -9,7 +9,7 @@ ColorScheme darkColorScheme = ColorScheme.fromSeed(
   primary: const Color(0xFFCD0612),
   brightness: Brightness.dark,
   secondary: const Color(0xFF2C4789),
-  surface: const Color(0xFF404040),
+  surface: const Color(0xFF101010),
   onSurface: Colors.white,
 );
 
