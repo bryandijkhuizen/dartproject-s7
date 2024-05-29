@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:darts_application/models/match_statistics.dart';
 
 void main() {
-  group('Average Score Calculation tests', () {
+  group('Statistics calculation test', () {
     List<TurnModel> turns = [
       TurnModel(
         id: 1,
@@ -61,13 +61,34 @@ void main() {
       player2LastName: 'Smith',
     );
 
-    Map<int, List<Map<String, dynamic>>> legDataBySet = {};
+    Map<int, List<Map<String, dynamic>>> legDataBySet = {
+      1: [
+        {
+          'setId': 1,
+          'winner_id': '1',
+        },
+        {
+          'setId': 1,
+          'winner_id': '1',
+        }
+      ],
+      2: [
+        {
+          'setId': 2,
+          'winner_id': '1',
+        },
+        {
+          'setId': 2,
+          'winner_id': '1',
+        }
+      ],
+    };
 
     MatchStatisticsModel matchStatistics = MatchStatisticsModel(
       turns: turns,
       match: match,
       legDataBySet: legDataBySet,
-      setIds: [],
+      setIds: [1, 2],
     );
 
     test('Calculate average score', () {
@@ -80,6 +101,18 @@ void main() {
 
     test('Calculate average per dart', () {
       expect(matchStatistics.calculateAveragePerDart('1'), 45.55);
+    });
+
+    test('Calculate checkout percentage', () {
+      expect(matchStatistics.calculateCheckoutPercentage('1'), 100.0);
+    });
+
+    test('Calculate legs won', () {
+      expect(matchStatistics.calculateLegsWon(1, '1'), 2);
+    });
+
+    test('Calculate sets won', () {
+      expect(matchStatistics.calculateSetsWon('1'), 2);
     });
   });
 }

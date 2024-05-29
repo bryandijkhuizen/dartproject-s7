@@ -70,27 +70,34 @@ class MatchStatisticsModel {
     return double.parse((average).toStringAsFixed(2));
   }
 
-  int calculateCheckoutPercentage(String playerId) {
+  double calculateCheckoutPercentage(String playerId) {
     List<TurnModel> playerTurns =
         turns.where((turn) => turn.playerId == playerId).toList();
 
-    int checkoutAttempts = 0;
-    int checkoutHits = 0;
+    int doubleAttempts = 0;
+    int doubleHits = 0;
+    int dartsForCheckout = 0;
 
+    // doubleHit is a bool that is true if the player hit a double so summing this will give the amount of doubles hit
     for (final turn in playerTurns) {
-      if (turn.doubleAttempts != null) {
-        checkoutAttempts += turn.doubleAttempts!;
-      }
       if (turn.doubleHit != null && turn.doubleHit!) {
-        checkoutHits += 1;
+        doubleHits++;
+      }
+      if (turn.doubleAttempts != null) {
+        doubleAttempts += turn.doubleAttempts!;
+      }
+      if (turn.dartsForCheckout != null) {
+        dartsForCheckout += turn.dartsForCheckout!;
       }
     }
 
-    if (checkoutAttempts == 0) {
+    if (doubleAttempts == 0) {
       return 0;
     }
 
-    return ((checkoutHits / checkoutAttempts) * 100).round();
+    double checkoutPercentage = (doubleHits / doubleAttempts) * 100;
+
+    return double.parse(checkoutPercentage.toStringAsFixed(2));
   }
 
   String checkoutOutsVsAttempts(String playerId) {
