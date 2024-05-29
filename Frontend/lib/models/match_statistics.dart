@@ -1,6 +1,4 @@
-import 'package:darts_application/models/leg.dart';
 import 'package:darts_application/models/match.dart';
-import 'package:darts_application/models/set.dart';
 import 'package:darts_application/models/turn.dart';
 
 class MatchStatisticsModel {
