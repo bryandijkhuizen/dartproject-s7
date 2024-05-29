@@ -42,7 +42,7 @@ void main() {
         legId: 1,
         score: 81,
         doubleAttempts: 1,
-        dartsForCheckout: 2,
+        dartsForCheckout: 3,
         doubleHit: true,
         isDeadThrow: false,
       ),
@@ -96,7 +96,7 @@ void main() {
     );
 
     test('Calculate average score', () {
-      expect(matchStatistics.calculateAverageScore('1'), 136.64);
+      expect(matchStatistics.calculateAverageScore('1'), 125.25);
     });
 
     test('Calculate first nine average', () {
@@ -104,7 +104,7 @@ void main() {
     });
 
     test('Calculate average per dart', () {
-      expect(matchStatistics.calculateAveragePerDart('1'), 45.55);
+      expect(matchStatistics.calculateAveragePerDart('1'), 41.75);
     });
 
     test('Calculate checkout percentage', () {
@@ -112,11 +112,11 @@ void main() {
     });
 
     test('Calculate leg average', () {
-      expect(matchStatistics.calculateLegAverage('1', 1), 136.64);
+      expect(matchStatistics.calculateLegAverage('1', 1), 125.25);
     });
 
     test('Calculate set average', () {
-      expect(matchStatistics.calculateSetAverage('1', 1), 136.64);
+      expect(matchStatistics.calculateSetAverage('1', 1), 125.25);
     });
 
     test('Calculate legs won', () {
