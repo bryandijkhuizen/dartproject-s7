@@ -1,7 +1,5 @@
-import 'package:darts_application/models/leg.dart';
 import 'package:darts_application/models/match.dart';
 import 'package:darts_application/models/turn.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:darts_application/models/match_statistics.dart';
 
