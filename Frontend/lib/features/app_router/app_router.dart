@@ -89,7 +89,7 @@ final clubsBranch = StatefulShellBranch(
         GoRoute(
           path: ':id',
           builder: (context, state) {
-            return Placeholder();
+            return const Placeholder();
           },
         ),
       ],
@@ -225,26 +225,6 @@ final router = GoRouter(
                 ],
               ),
 
-              StatefulShellBranch(
-                routes: <RouteBase>[
-                  GoRoute(
-                    path: '/gameplay',
-                    routes: <RouteBase>[
-                      GoRoute(
-                        path: ':matchId',
-                        builder: (context, state) {
-                          final matchId = state.pathParameters['matchId']!;
-                          return DesktopMatchView(matchId: matchId);
-                        },
-                      ),
-                    ],
-                    // ignore: prefer_const_constructors
-                    builder: (context, state) => DesktopMatchView(
-                      matchId: '1',
-                    ),
-                  ),
-                ],
-              ),
               // Desktop statistics
               StatefulShellBranch(
                 routes: <RouteBase>[
@@ -319,7 +299,7 @@ final router = GoRouter(
                     path: '/user-management',
                     builder: (context, state) {
                       // Ignore this for now
-                      return UserManagementView();
+                      return const UserManagementView();
                     },
                     routes: [
                       GoRoute(
@@ -356,6 +336,26 @@ final router = GoRouter(
 
               settingsBranch,
               clubsBranch,
+              StatefulShellBranch(
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: '/gameplay',
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: ':matchId',
+                        builder: (context, state) {
+                          final matchId = state.pathParameters['matchId']!;
+                          return DesktopMatchView(matchId: matchId);
+                        },
+                      ),
+                    ],
+                    // ignore: prefer_const_constructors
+                    builder: (context, state) => DesktopMatchView(
+                      matchId: '1',
+                    ),
+                  ),
+                ],
+              ),
             ],
     ),
   ],

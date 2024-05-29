@@ -91,8 +91,8 @@ class SettingsViewState extends State<SettingsView> {
                         context.push('/clubs');
                       },
                       style: ButtonStyle(
-                        elevation: const MaterialStatePropertyAll(0),
-                        backgroundColor: MaterialStatePropertyAll(
+                        elevation: const WidgetStatePropertyAll(0),
+                        backgroundColor: WidgetStatePropertyAll(
                           theme.colorScheme.surface,
                         ),
                       ),

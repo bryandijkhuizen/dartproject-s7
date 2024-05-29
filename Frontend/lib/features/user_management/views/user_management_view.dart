@@ -3,13 +3,12 @@ import 'package:darts_application/models/permission_list.dart';
 import 'package:darts_application/models/permissions.dart';
 import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserManagementView extends StatefulWidget {
-  const UserManagementView({Key? key}) : super(key: key);
+  const UserManagementView({super.key});
 
   @override
   _UserManagementViewState createState() => _UserManagementViewState();
@@ -37,7 +36,7 @@ class _UserManagementViewState extends State<UserManagementView> {
     UserStore userStore = context.read();
     return Center(
       child: Container(
-        constraints: BoxConstraints(maxWidth: 800),
+        constraints: const BoxConstraints(maxWidth: 800),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -61,7 +60,7 @@ class _UserManagementViewState extends State<UserManagementView> {
                   if (snapshot.hasData) {
                     return DataTable(
                       headingRowColor:
-                          MaterialStatePropertyAll(theme.colorScheme.primary),
+                          WidgetStatePropertyAll(theme.colorScheme.primary),
                       headingTextStyle: const TextStyle(color: Colors.white),
                       columnSpacing: 100,
                       columns: const [
@@ -80,15 +79,15 @@ class _UserManagementViewState extends State<UserManagementView> {
                         for (var userObj in snapshot.data)
                           DataRow(
                             color:
-                                MaterialStatePropertyAll(Colors.grey.shade300),
+                                WidgetStatePropertyAll(Colors.grey.shade300),
                             cells: [
                               DataCell(
                                 Text(userObj["full_name"],
-                                    style: TextStyle(color: Colors.black)),
+                                    style: const TextStyle(color: Colors.black)),
                               ),
                               DataCell(
                                 Text(userObj["roles"].toString(),
-                                    style: TextStyle(color: Colors.black)),
+                                    style: const TextStyle(color: Colors.black)),
                               ),
                               DataCell(
                                 FilledButton(
@@ -105,7 +104,7 @@ class _UserManagementViewState extends State<UserManagementView> {
                     );
                   }
                 }
-                return CircularProgressIndicator();
+                return const CircularProgressIndicator();
               },
             ),
           ],
