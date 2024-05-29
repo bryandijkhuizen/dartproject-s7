@@ -1,5 +1,7 @@
 version: 1
 script:
+  - |
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
   - rm -rf AppDir || true
   - cp -r ./Frontend/build/linux/x64/release/bundle AppDir
   - mkdir -p AppDir/usr/share/icons/hicolor/64x64/apps/
@@ -8,6 +10,7 @@ script:
   - if [ -f /usr/share/glib-2.0/schemas/org.gnome.settings-daemon.plugins.xsettings.gschema.xml ]; then cp /usr/share/glib-2.0/schemas/org.gnome.settings-daemon.plugins.xsettings.gschema.xml AppDir/usr/share/glib-2.0/schemas/; fi
   - mkdir -p AppDir/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders/
   - gdk-pixbuf-query-loaders > AppDir/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders.cache
+
 AppDir:
   path: ./AppDir
   app_info:
@@ -36,7 +39,7 @@ AppDir:
       - dconf-gsettings-backend
       - glib-2.0
       - libcanberra-gtk-module
-      - gdk-pixbuf
+      - gdk-pixbuf2.0-0
       - hicolor-icon-theme
     exclude:
       - humanity-icon-theme
