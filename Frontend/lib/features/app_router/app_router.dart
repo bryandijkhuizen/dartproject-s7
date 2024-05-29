@@ -89,7 +89,7 @@ final clubsBranch = StatefulShellBranch(
         GoRoute(
           path: ':id',
           builder: (context, state) {
-            return Placeholder();
+            return const Placeholder();
           },
         ),
       ],
@@ -299,7 +299,7 @@ final router = GoRouter(
                     path: '/user-management',
                     builder: (context, state) {
                       // Ignore this for now
-                      return UserManagementView();
+                      return const UserManagementView();
                     },
                     routes: [
                       GoRoute(

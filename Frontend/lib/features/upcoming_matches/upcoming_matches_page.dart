@@ -58,7 +58,7 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
         title: const Text('Upcoming Events'),
         actions: <Widget>[
           TextButton(
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CreateSingleMatchPage())),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateSingleMatchPage())),
             child: const Text('Create Match', style: TextStyle(color: Colors.white)),
           ),
           // TextButton(

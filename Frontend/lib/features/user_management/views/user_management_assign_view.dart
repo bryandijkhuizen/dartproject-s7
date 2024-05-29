@@ -62,7 +62,7 @@ class _UserManagementAssignViewState extends State<UserManagementAssignView> {
                                   child: CircleAvatar(
                                     radius: 50,
                                     backgroundImage:
-                                        NetworkImage(userData!.avatarUrl),
+                                        NetworkImage(userData.avatarUrl),
                                   ),
                                 ),
                                 Text(
@@ -74,7 +74,7 @@ class _UserManagementAssignViewState extends State<UserManagementAssignView> {
                           ),
                           DataTable(
                             showCheckboxColumn: true,
-                            headingRowColor: MaterialStatePropertyAll(
+                            headingRowColor: WidgetStatePropertyAll(
                                 theme.colorScheme.primary),
                             headingTextStyle:
                                 const TextStyle(color: Colors.white),
@@ -87,7 +87,7 @@ class _UserManagementAssignViewState extends State<UserManagementAssignView> {
                             rows: [
                               for (var role in userData.allRoles)
                                 DataRow(
-                                  color: MaterialStatePropertyAll(
+                                  color: WidgetStatePropertyAll(
                                       Colors.grey.shade300),
                                   onSelectChanged: (value) {
                                     if (value == true) {
@@ -132,7 +132,7 @@ class _UserManagementAssignViewState extends State<UserManagementAssignView> {
                                             const BoxConstraints(minWidth: 600),
                                         child: DataTable(
                                           headingRowColor:
-                                              MaterialStatePropertyAll(
+                                              WidgetStatePropertyAll(
                                                   theme.colorScheme.primary),
                                           headingTextStyle: const TextStyle(
                                               color: Colors.white),
@@ -147,7 +147,7 @@ class _UserManagementAssignViewState extends State<UserManagementAssignView> {
                                           ],
                                           rows: [
                                             DataRow(
-                                              color: MaterialStatePropertyAll(
+                                              color: WidgetStatePropertyAll(
                                                   Colors.grey.shade300),
                                               cells: [
                                                 const DataCell(
