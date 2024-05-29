@@ -64,20 +64,24 @@ void main() {
     Map<int, List<Map<String, dynamic>>> legDataBySet = {
       1: [
         {
+          'id': 1,
           'setId': 1,
           'winner_id': '1',
         },
         {
+          'id': 2,
           'setId': 1,
           'winner_id': '1',
         }
       ],
       2: [
         {
+          'id': 1,
           'setId': 2,
           'winner_id': '1',
         },
         {
+          'id': 2,
           'setId': 2,
           'winner_id': '1',
         }
@@ -107,12 +111,24 @@ void main() {
       expect(matchStatistics.calculateCheckoutPercentage('1'), 100.0);
     });
 
+    test('Calculate leg average', () {
+      expect(matchStatistics.calculateLegAverage('1', 1), 136.64);
+    });
+
+    test('Calculate set average', () {
+      expect(matchStatistics.calculateSetAverage('1', 1), 136.64);
+    });
+
     test('Calculate legs won', () {
       expect(matchStatistics.calculateLegsWon(1, '1'), 2);
     });
 
     test('Calculate sets won', () {
       expect(matchStatistics.calculateSetsWon('1'), 2);
+    });
+
+    test('Calculate checkouts vs attempts', () {
+      expect(matchStatistics.checkoutOutsVsAttempts('1'), '1/1');
     });
   });
 }
