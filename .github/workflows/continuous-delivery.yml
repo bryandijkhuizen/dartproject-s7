@@ -218,22 +218,18 @@ jobs:
         run: flutter pub get
         
       - name: Install macos pods
-        if: ${{ contains(env.ENABLED_PLATFORMS, 'macos') }}
         working-directory: Frontend/macos
         run: pod install --repo-update
 
       - name: Install ios pods
-        if: ${{ contains(env.ENABLED_PLATFORMS, 'ios') }}
         working-directory: Frontend/ios
         run: pod install --repo-update
               
       - name: Build macOS application
-        if: ${{ contains(env.ENABLED_PLATFORMS, 'macos') }}
         working-directory: ./Frontend
         run: flutter build macos --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
 
       - name: Create DMG
-        if: ${{ contains(env.ENABLED_PLATFORMS, 'macos') }}
         run: |
           mkdir -p $PWD/dmg
           app_path="$PWD/Frontend/build/macos/Build/Products/Release/darts_application.app"
@@ -241,24 +237,20 @@ jobs:
           hdiutil create "$dmg_path" -volname "DartinMolema-${{needs.get-release-version.outputs.version}}" -srcfolder "$app_path" -ov -format UDZO
 
       - name: Upload DMG artifact
-        if: ${{ contains(env.ENABLED_PLATFORMS, 'macos') }}
         uses: actions/upload-artifact@v4
         with:
           name: DartinMolema-${{needs.get-release-version.outputs.version}}.dmg
           path: dmg/DartinMolema-${{needs.get-release-version.outputs.version}}.dmg
 
       - name: Build IPA (iOS) File
-        if: ${{ contains(env.ENABLED_PLATFORMS, 'ios') }}
         working-directory: ./Frontend
         run: flutter build ios --no-codesign --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
 
       - name: Rename Runner.app to DartinMolema
-        if: ${{ contains(env.ENABLED_PLATFORMS, 'ios') }}
         run: |
           mv ./Frontend/build/ios/iphoneos/Runner.app DartinMolema-${{ needs.get-release-version.outputs.version }}-ios.app
         
       - name: Archive IPA
-        if: ${{ contains(env.ENABLED_PLATFORMS, 'ios') }}
         uses: actions/upload-artifact@v4
         with:
           name: DartinMolema-${{ needs.get-release-version.outputs.version }}-ios.app
@@ -275,6 +267,9 @@ jobs:
       with:
         path: .
         merge-multiple: true
+
+    - name: Print files
+      run: ls -lah
 
     - name: Create Release
       uses: ncipollo/release-action@v1.14.0
