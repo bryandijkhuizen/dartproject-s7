@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - main
+      - fix/continuous-delivery
 
 permissions:
   contents: write  # Grant write permission to contents to push tags
