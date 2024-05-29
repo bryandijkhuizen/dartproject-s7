@@ -75,7 +75,7 @@ abstract class _TournamentStore with Store {
   }
 
   PlayerModel getPlayerFromPlayers(String playerId) {
-    if (playerId == "") throw Exception("Unselected player has no ID");
+    if (playerId == "") throw Exception("No playerId is given.");
     if (players.isEmpty) throw Exception("There are no players in Tournament");
 
     // Get current player
@@ -92,15 +92,7 @@ abstract class _TournamentStore with Store {
     String matchId,
     bool isFirstPlayer,
   ) {
-    PlayerModel player = getPlayerFromPlayers(playerId);
-
-    // Add player to unselectedPlayers
-    unselectedPlayers.add(player);
-
-    // Remove from selectedPlayers
-    selectedPlayers.removeWhere(
-      (selectedPlayer) => selectedPlayer.id == player.id,
-    );
+    if (matchId == "") return;
 
     // Remove from corresponding match in tournament store
     final matchIndex = matches.indexWhere((match) => match.id == matchId);
@@ -120,6 +112,18 @@ abstract class _TournamentStore with Store {
     } else {
       print("Match with ID $matchId not found.");
     }
+
+    if (playerId == "") return;
+
+    PlayerModel player = getPlayerFromPlayers(playerId);
+
+    // Add player to unselectedPlayers
+    unselectedPlayers.add(player);
+
+    // Remove from selectedPlayers
+    selectedPlayers.removeWhere(
+      (selectedPlayer) => selectedPlayer.id == player.id,
+    );
   }
 
   void selectPlayer(
@@ -127,14 +131,9 @@ abstract class _TournamentStore with Store {
     String matchId,
     bool isFirstPlayer,
   ) {
-    PlayerModel player = getPlayerFromPlayers(playerId);
-    // Remove player from unselectedPlayers
-    unselectedPlayers.removeWhere(
-      (unselectedPlayer) => unselectedPlayer.id == player.id,
-    );
+    if (playerId == "" || matchId == "") return;
 
-    // Add player to selectedPlayers
-    selectedPlayers.add(player);
+    PlayerModel player = getPlayerFromPlayers(playerId);
 
     // Add player to corresponding match in tournament store
     final matchIndex = matches.indexWhere((match) => match.id == matchId);
@@ -154,6 +153,14 @@ abstract class _TournamentStore with Store {
     } else {
       print("Match with ID $matchId not found.");
     }
+
+    // Remove player from unselectedPlayers
+    unselectedPlayers.removeWhere(
+      (unselectedPlayer) => unselectedPlayer.id == player.id,
+    );
+
+    // Add player to selectedPlayers
+    selectedPlayers.add(player);
   }
 
   // @action
