@@ -143,7 +143,7 @@ class _PlayerSelectorState extends State<PlayerSelector> {
                             title: Text("${player.firstName} ${player.lastName}"),
                             subtitle: Text(clubs.isEmpty ? 'No clubs' : clubs),
                             trailing: isSelected
-                                ? const Icon(Icons.check_box, color: Colors.green)
+                                ? const Icon(Icons.check_box, color: Colors.red)
                                 : const Icon(Icons.check_box_outline_blank),
                             onTap: () => togglePlayerSelection(player),
                           );
