@@ -223,6 +223,7 @@ final router = GoRouter(
                             '/statistics',
                             '/matches',
                             '/settings',
+                            '/tournament_bracket',
                           ],
                           context);
                     },
@@ -283,6 +284,18 @@ final router = GoRouter(
                       //   },
                       // ),
                     ],
+                  ),
+                ],
+              ),
+
+              // Desktop tournament bracket
+              StatefulShellBranch(
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: '/tournament_bracket',
+                    builder: (context, state) {
+                      return TournamentBracketScreen();
+                    },
                   ),
                 ],
               ),
