@@ -207,12 +207,18 @@ jobs:
         working-directory: Frontend
         run: flutter pub get
 
-      - name: Install pods
+      - name: Update CocoaPods repo
         working-directory: Frontend
-        run: |
-              cd ios && pod install
-              cd ../macos && pod install
+        run: pod repo update
+      
+      - name: Install macos pods
+        working-directory: Frontend/macos
+        run: pod install --repo-update
 
+      - name: Install ios pods
+        working-directory: Frontend/ios
+        run: pod install --repo-update
+              
       - name: Build macOS application
         working-directory: ./Frontend
         run: flutter build macos --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
