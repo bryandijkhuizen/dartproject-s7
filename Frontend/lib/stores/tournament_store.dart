@@ -2,6 +2,7 @@ import 'package:darts_application/models/match.dart';
 import 'package:darts_application/models/player.dart';
 import 'package:mobx/mobx.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:collection/collection.dart';
 
 part 'tournament_store.g.dart';
 
@@ -71,6 +72,88 @@ abstract class _TournamentStore with Store {
 
     matches.add(newMatch);
     return newMatch;
+  }
+
+  PlayerModel getPlayerFromPlayers(String playerId) {
+    if (playerId == "") throw Exception("Unselected player has no ID");
+    if (players.isEmpty) throw Exception("There are no players in Tournament");
+
+    // Get current player
+    PlayerModel? player =
+        players.firstWhereOrNull((player) => player.id == playerId);
+
+    if (player == null) throw Exception("Player with id: $playerId Not found.");
+
+    return player;
+  }
+
+  void unselectPlayer(
+    String playerId,
+    String matchId,
+    bool isFirstPlayer,
+  ) {
+    PlayerModel player = getPlayerFromPlayers(playerId);
+
+    // Add player to unselectedPlayers
+    unselectedPlayers.add(player);
+
+    // Remove from selectedPlayers
+    selectedPlayers.removeWhere(
+      (selectedPlayer) => selectedPlayer.id == player.id,
+    );
+
+    // Remove from corresponding match in tournament store
+    final matchIndex = matches.indexWhere((match) => match.id == matchId);
+
+    if (matchIndex != -1) {
+      final updatedMatch = matches[matchIndex];
+
+      if (isFirstPlayer) {
+        updatedMatch.player1Id = "";
+        updatedMatch.player1LastName = "";
+      } else {
+        updatedMatch.player2Id = "";
+        updatedMatch.player2LastName = "";
+      }
+
+      print('Match with ID $matchId updated successfully.');
+    } else {
+      print("Match with ID $matchId not found.");
+    }
+  }
+
+  void selectPlayer(
+    String playerId,
+    String matchId,
+    bool isFirstPlayer,
+  ) {
+    PlayerModel player = getPlayerFromPlayers(playerId);
+    // Remove player from unselectedPlayers
+    unselectedPlayers.removeWhere(
+      (unselectedPlayer) => unselectedPlayer.id == player.id,
+    );
+
+    // Add player to selectedPlayers
+    selectedPlayers.add(player);
+
+    // Add player to corresponding match in tournament store
+    final matchIndex = matches.indexWhere((match) => match.id == matchId);
+
+    if (matchIndex != -1) {
+      final updatedMatch = matches[matchIndex];
+
+      if (isFirstPlayer) {
+        updatedMatch.player1Id = player.id;
+        updatedMatch.player1LastName = player.lastName;
+      } else {
+        updatedMatch.player2Id = player.id;
+        updatedMatch.player2LastName = player.lastName;
+      }
+
+      print('Match with ID $matchId updated successfully.');
+    } else {
+      print("Match with ID $matchId not found.");
+    }
   }
 
   // @action

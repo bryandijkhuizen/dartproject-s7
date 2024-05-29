@@ -6,17 +6,23 @@ import 'package:provider/provider.dart';
 
 import 'player_card.dart';
 
-class MatchupCard extends StatelessWidget {
+class MatchupCard extends StatefulWidget {
   final MatchModel match;
-  final bool selectPlayer;
-  PlayerModel? firstPlayer;
-  PlayerModel? secondPlayer;
+  final bool canSelectPlayer;
 
-  MatchupCard({
+  const MatchupCard({
     super.key,
     required this.match,
-    required this.selectPlayer,
+    required this.canSelectPlayer,
   });
+
+  @override
+  State<MatchupCard> createState() => _MatchupCardState();
+}
+
+class _MatchupCardState extends State<MatchupCard> {
+  PlayerModel? firstPlayer;
+  PlayerModel? secondPlayer;
 
   void checkForPlayers(
     TournamentStore tournamentStore, {
@@ -24,29 +30,83 @@ class MatchupCard extends StatelessWidget {
     String secondPlayerName = "",
   }) async {
     // Get first player
-    if (match.player1Id.isNotEmpty && selectPlayer) {
+    if (widget.match.player1Id.isNotEmpty && widget.canSelectPlayer) {
       try {
         Map<String, dynamic> firstPlayerResponse =
-            await tournamentStore.getPlayerById(match.player1Id);
+            await tournamentStore.getPlayerById(widget.match.player1Id);
         firstPlayer = PlayerModel.fromJson(firstPlayerResponse);
       } catch (e) {
-        throw Exception("The player with id ${match.player1Id} was not found");
+        throw Exception(
+            "The player with id ${widget.match.player1Id} was not found");
       }
     } else {
       firstPlayer = PlayerModel.placeholderPlayer(lastName: firstPlayerName);
     }
 
     // Get second player
-    if (match.player2Id.isNotEmpty && selectPlayer) {
+    if (widget.match.player2Id.isNotEmpty && widget.canSelectPlayer) {
       try {
         Map<String, dynamic> secondPlayerResponse =
-            await tournamentStore.getPlayerById(match.player2Id);
+            await tournamentStore.getPlayerById(widget.match.player2Id);
         secondPlayer = PlayerModel.fromJson(secondPlayerResponse);
       } catch (e) {
-        throw Exception("The player with id ${match.player2Id} was not found");
+        throw Exception(
+            "The player with id ${widget.match.player2Id} was not found");
       }
     } else {
       secondPlayer = PlayerModel.placeholderPlayer(lastName: secondPlayerName);
+    }
+  }
+
+  void unselectPlayer(
+    TournamentStore tournamentStore,
+    bool isFirstPlayer,
+    PlayerModel player,
+  ) {
+    if (isFirstPlayer) {
+      setState(() {
+        firstPlayer = null;
+      });
+
+      // Remove player from match
+      widget.match.player1Id = "";
+      widget.match.player1LastName = "";
+
+      tournamentStore.unselectPlayer(player.id, widget.match.id, isFirstPlayer);
+    } else {
+      setState(() {
+        secondPlayer = null;
+      });
+
+      // Remove player from match
+      widget.match.player2Id = "";
+      widget.match.player2LastName = "";
+
+      tournamentStore.unselectPlayer(player.id, widget.match.id, isFirstPlayer);
+    }
+  }
+
+  void selectPlayer(
+    TournamentStore tournamentStore,
+    bool isFirstPlayer,
+    PlayerModel player,
+  ) {
+    if (isFirstPlayer) {
+      setState(() {
+        firstPlayer = player;
+      });
+      widget.match.player1Id = player.id;
+      widget.match.player1LastName = player.lastName;
+
+      tournamentStore.selectPlayer(player.id, widget.match.id, isFirstPlayer);
+    } else {
+      setState(() {
+        secondPlayer = player;
+      });
+      widget.match.player2Id = player.id;
+      widget.match.player2LastName = player.lastName;
+
+      tournamentStore.selectPlayer(player.id, widget.match.id, isFirstPlayer);
     }
   }
 
@@ -54,17 +114,19 @@ class MatchupCard extends StatelessWidget {
   Widget build(BuildContext context) {
     TournamentStore tournamentStore = context.read<TournamentStore>();
 
-    if (match.player1LastName.isNotEmpty) {
-      print("First player is:  ${match.player1LastName}");
+    if (widget.match.player1LastName.isNotEmpty) {
+      print("First player is:  ${widget.match.player1LastName}");
     } else {
       print("No first player");
     }
     checkForPlayers(
       tournamentStore,
-      firstPlayerName:
-          (match.player1LastName.isNotEmpty ? match.player1LastName : ""),
-      secondPlayerName:
-          (match.player2LastName.isNotEmpty ? match.player2LastName : ""),
+      firstPlayerName: (widget.match.player1LastName.isNotEmpty
+          ? widget.match.player1LastName
+          : ""),
+      secondPlayerName: (widget.match.player2LastName.isNotEmpty
+          ? widget.match.player2LastName
+          : ""),
     ); // Add that if this.player1LastName is set, it should be added.
 
     var theme = Theme.of(context);
@@ -80,13 +142,19 @@ class MatchupCard extends StatelessWidget {
                 children: [
                   const SizedBox(height: 8),
                   PlayerCard(
+                    canSelectPlayer: widget.canSelectPlayer,
+                    selectPlayerFunction: selectPlayer,
+                    unselectPlayerFunction: unselectPlayer,
                     player: firstPlayer,
-                    selectPlayer: selectPlayer,
+                    isFirstPlayer: true,
                   ),
                   const SizedBox(height: 8),
                   PlayerCard(
+                    canSelectPlayer: widget.canSelectPlayer,
+                    selectPlayerFunction: selectPlayer,
+                    unselectPlayerFunction: unselectPlayer,
                     player: secondPlayer,
-                    selectPlayer: selectPlayer,
+                    isFirstPlayer: false,
                   ),
                   const SizedBox(height: 8),
                 ],
