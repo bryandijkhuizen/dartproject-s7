@@ -34,12 +34,13 @@ void main() {
       DateTime endTime = DateTime.now();
       Duration elapsed = endTime.difference(startTime);
       bool result = false;
-      print('suggestion calculation took:${elapsed.inMilliseconds} miliseconds');
+      print(
+          'suggestion calculation took:${elapsed.inMilliseconds} miliseconds');
       if (elapsed.inMilliseconds > 500) {
         result = false;
-    } else {
-      result = true;
-    }
+      } else {
+        result = true;
+      }
       expect(result, true);
     });
   });

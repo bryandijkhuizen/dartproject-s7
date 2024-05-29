@@ -9,19 +9,51 @@ part of 'clubs_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$ClubsStore on _ClubsStore, Store {
-  late final _$loadingAtom =
-      Atom(name: '_ClubsStore.loading', context: context);
+  late final _$clubsAtom = Atom(name: '_ClubsStore.clubs', context: context);
 
   @override
-  bool get loading {
-    _$loadingAtom.reportRead();
-    return super.loading;
+  List<Club> get clubs {
+    _$clubsAtom.reportRead();
+    return super.clubs;
   }
 
   @override
-  set loading(bool value) {
-    _$loadingAtom.reportWrite(value, super.loading, () {
-      super.loading = value;
+  set clubs(List<Club> value) {
+    _$clubsAtom.reportWrite(value, super.clubs, () {
+      super.clubs = value;
+    });
+  }
+
+  late final _$queryResultsAtom =
+      Atom(name: '_ClubsStore.queryResults', context: context);
+
+  @override
+  int get queryResults {
+    _$queryResultsAtom.reportRead();
+    return super.queryResults;
+  }
+
+  @override
+  set queryResults(int value) {
+    _$queryResultsAtom.reportWrite(value, super.queryResults, () {
+      super.queryResults = value;
+    });
+  }
+
+  late final _$loadingAssignedClubsAtom =
+      Atom(name: '_ClubsStore.loadingAssignedClubs', context: context);
+
+  @override
+  bool get loadingAssignedClubs {
+    _$loadingAssignedClubsAtom.reportRead();
+    return super.loadingAssignedClubs;
+  }
+
+  @override
+  set loadingAssignedClubs(bool value) {
+    _$loadingAssignedClubsAtom.reportWrite(value, super.loadingAssignedClubs,
+        () {
+      super.loadingAssignedClubs = value;
     });
   }
 
@@ -41,6 +73,23 @@ mixin _$ClubsStore on _ClubsStore, Store {
     });
   }
 
+  late final _$_fetchClubsPageAsyncAction =
+      AsyncAction('_ClubsStore._fetchClubsPage', context: context);
+
+  @override
+  Future<void> _fetchClubsPage(int page, [String searchPrompt = '']) {
+    return _$_fetchClubsPageAsyncAction
+        .run(() => super._fetchClubsPage(page, searchPrompt));
+  }
+
+  late final _$fetchAsyncAction =
+      AsyncAction('_ClubsStore.fetch', context: context);
+
+  @override
+  Future<void> fetch(int page, [String searchPrompt = '']) {
+    return _$fetchAsyncAction.run(() => super.fetch(page, searchPrompt));
+  }
+
   late final _$fetchUserClubsAsyncAction =
       AsyncAction('_ClubsStore.fetchUserClubs', context: context);
 
@@ -52,7 +101,9 @@ mixin _$ClubsStore on _ClubsStore, Store {
   @override
   String toString() {
     return '''
-loading: ${loading},
+clubs: ${clubs},
+queryResults: ${queryResults},
+loadingAssignedClubs: ${loadingAssignedClubs},
 assignedClubs: ${assignedClubs}
     ''';
   }
