@@ -1,7 +1,5 @@
 class MatchModel {
   final String id;
-  final String player1Id;
-  final String player2Id;
   final DateTime date;
   final String? location;
   final int setTarget;
@@ -9,6 +7,8 @@ class MatchModel {
   final int startingScore;
   final String? winnerId;
   late String? startingPlayerId;
+  late String player1Id;
+  late String player2Id;
   late String player1LastName;
   late String player2LastName;
 

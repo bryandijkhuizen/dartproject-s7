@@ -19,14 +19,14 @@ class TournamentBrackets extends StatelessWidget {
     TournamentStore tournamentStore,
     List<PlayerModel> players,
     int round, {
-    bool selectPlayer = false,
+    bool canSelectPlayer = false,
     bool fillInPlayers = false,
   }) {
     List<Widget> tournamentBracket = [];
     List<MatchupCard> matches = createMatches(
       tournamentStore,
       players,
-      selectPlayer: selectPlayer,
+      canSelectPlayer: canSelectPlayer,
       fillInPlayers: fillInPlayers,
     );
 
@@ -75,7 +75,7 @@ class TournamentBrackets extends StatelessWidget {
         tournamentStore,
         nextRoundPlayers,
         ++round,
-        selectPlayer: false,
+        canSelectPlayer: false,
         fillInPlayers: true,
       );
       tournamentBracket.addAll(nextRoundBracket);
@@ -87,7 +87,7 @@ class TournamentBrackets extends StatelessWidget {
   List<MatchupCard> createMatches(
     TournamentStore tournamentStore,
     List<PlayerModel> players, {
-    bool selectPlayer = false,
+    bool canSelectPlayer = false,
     bool fillInPlayers = false,
   }) {
     PlayerModel placeholderPlayer = PlayerModel.placeholderPlayer();
@@ -124,7 +124,7 @@ class TournamentBrackets extends StatelessWidget {
       matches.add(
         MatchupCard(
           match: newMatch,
-          selectPlayer: selectPlayer,
+          canSelectPlayer: canSelectPlayer,
         ),
       );
 
@@ -142,7 +142,7 @@ class TournamentBrackets extends StatelessWidget {
       tournamentStore,
       tournamentStore.players,
       1,
-      selectPlayer: true,
+      canSelectPlayer: true,
       fillInPlayers: false,
     );
 

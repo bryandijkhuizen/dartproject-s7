@@ -3,35 +3,64 @@ import 'package:darts_application/stores/tournament_store.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class PlayerCard extends StatelessWidget {
-  PlayerCard({
+class PlayerCard extends StatefulWidget {
+  const PlayerCard({
     super.key,
-    required this.player,
-    required this.selectPlayer,
-  });
+    required this.canSelectPlayer,
+    required this.selectPlayerFunction,
+    required this.unselectPlayerFunction,
+    PlayerModel? player,
+    required this.isFirstPlayer,
+  }) : _player = player;
 
+  final bool canSelectPlayer;
+  final Function selectPlayerFunction;
+  final Function unselectPlayerFunction;
+  final PlayerModel? _player;
+  final bool isFirstPlayer;
+
+  @override
+  State<PlayerCard> createState() => _PlayerCardState();
+}
+
+class _PlayerCardState extends State<PlayerCard> {
   String? playerId;
-  final PlayerModel? player;
-  final bool selectPlayer;
+  PlayerModel? player;
+
   final String avatarUrl = "assets/images/avatar_placeholder.png";
-  // final List<String> tournamentPlayers = [
-  //   "Michael van Gerwen",
-  //   "Peter Wright",
-  //   "Gerwyn Price",
-  //   "Rob Cross",
-  //   "Gary Anderson",
-  //   "Nathan Aspinall",
-  //   "Dimitri Van den Bergh",
-  //   "James Wade",
-  //   "Dave Chisnall",
-  //   "Michael Smith",
-  //   "José de Sousa",
-  //   "Jonny Clayton",
-  //   "Daryl Gurney",
-  //   "Mensur Suljovic",
-  //   "Devon Petersen",
-  //   "Danny Noppert",
-  // ];
+
+  @override
+  void initState() {
+    super.initState();
+    player = widget._player; // Assign the value to player
+  }
+
+  void unselectPlayer(TournamentStore tournamentStore) {
+    if (this.player == null) return;
+
+    PlayerModel player = this.player!;
+
+    // Remove from player_card
+    setState(() {
+      this.player = null;
+    });
+
+    // Remove player from matchup_card and tournament store
+    widget.unselectPlayerFunction(
+        tournamentStore, widget.isFirstPlayer, player);
+  }
+
+  void selectPlayer(TournamentStore tournamentStore, String playerId) {
+    PlayerModel player = tournamentStore.getPlayerFromPlayers(playerId);
+
+    // Add player to player_card
+    setState(() {
+      this.player = player;
+    });
+
+    // Add player to matchup_card and tournament store
+    widget.selectPlayerFunction(tournamentStore, widget.isFirstPlayer, player);
+  }
 
   DropdownMenu<dynamic> makeDropdown(TournamentStore tournamentStore) {
     if (tournamentStore.unselectedPlayers.isEmpty) {
@@ -55,6 +84,10 @@ class PlayerCard extends StatelessWidget {
       // label: const Text('Name'),
       onSelected: (value) {
         playerId = value;
+        if (player != null) {
+          unselectPlayer(tournamentStore);
+        }
+        selectPlayer(tournamentStore, value);
       },
       dropdownMenuEntries: dropdownMenuEntries,
     );
@@ -67,13 +100,7 @@ class PlayerCard extends StatelessWidget {
     TournamentStore tournamentStore = context.read<TournamentStore>();
     Widget nameOfPlayer;
 
-    if (tournamentStore.unselectedPlayers.isNotEmpty) {
-      print("Je moeder");
-    } else {
-      print("niet zo je moder!");
-    }
-
-    if (selectPlayer) {
+    if (widget.canSelectPlayer) {
       nameOfPlayer = makeDropdown(tournamentStore);
     } else {
       nameOfPlayer = Text(
