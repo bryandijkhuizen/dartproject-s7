@@ -6,10 +6,10 @@ ColorScheme darkColorScheme = ColorScheme.fromSeed(
 )
     // Overwrite the seeded colors with copyWith
     .copyWith(
-  primary: const Color(0xFFCD0612),
   brightness: Brightness.dark,
+  primary: const Color(0xFFCD0612),
   secondary: const Color(0xFF2C4789),
-  surface: const Color(0xFF404040),
+  surface: const Color(0xFF101010),
   onSurface: Colors.white,
 );
 
@@ -27,16 +27,16 @@ ThemeData darkTheme = ThemeData(
   colorScheme: darkColorScheme,
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: WidgetStateProperty.all<Color>(
+      backgroundColor: MaterialStateProperty.all<Color>(
         darkColorScheme.primary,
       ),
-      foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-      shape: WidgetStateProperty.all<OutlinedBorder>(
+      foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+      shape: MaterialStateProperty.all<OutlinedBorder>(
         RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      padding: const WidgetStatePropertyAll(
+      padding: const MaterialStatePropertyAll(
         EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       ),
     ),
@@ -59,9 +59,9 @@ ThemeData darkTheme = ThemeData(
     backgroundColor: darkColorScheme.primary,
     height: 56,
     labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-    indicatorColor: darkColorScheme.surface,
+    indicatorColor: darkColorScheme.background,
     iconTheme:
-        WidgetStateProperty.resolveWith(getNavigationIconThemeMaterialState),
+        MaterialStateProperty.resolveWith(getNavigationIconThemeMaterialState),
   ),
   scaffoldBackgroundColor: darkColorScheme.surface,
   textTheme: TextTheme(
@@ -131,8 +131,8 @@ ThemeData darkTheme = ThemeData(
   ),
   textButtonTheme: TextButtonThemeData(
     style: ButtonStyle(
-      foregroundColor: WidgetStatePropertyAll(darkColorScheme.onPrimary),
-      padding: const WidgetStatePropertyAll(
+      foregroundColor: MaterialStatePropertyAll(darkColorScheme.onPrimary),
+      padding: const MaterialStatePropertyAll(
         EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       ),
     ),
@@ -142,7 +142,7 @@ ThemeData darkTheme = ThemeData(
 
 ThemeData lightTheme = ThemeData();
 
-IconThemeData? getNavigationIconThemeMaterialState(Set<WidgetState> states) {
+IconThemeData? getNavigationIconThemeMaterialState(Set<MaterialState> states) {
   // Return fallback with custom color no matter what states are active for now
   return const IconThemeData.fallback()
       .copyWith(color: darkColorScheme.onPrimary);
