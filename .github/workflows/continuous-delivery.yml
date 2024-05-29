@@ -190,9 +190,27 @@ jobs:
           version: ${{ env.FLUTTER_VERSION }}
           cache-sdk: true
 
-      - name: Install dependencies
-        working-directory: ./Frontend
+      - name: Clean flutter
+        working-directory: Frontend
+        run: flutter clean 
+
+      - name: Remove pod files
+        working-directory: Frontend
+        run: |
+              rm -rf /ios/Pods
+              rm -rf /ios/podfile.lock
+              rm -rf /macos/Pods
+              rm -rf /macos/podfile.lock
+
+      - name: Install pub dependencies
+        working-directory: Frontend
         run: flutter pub get
+
+      - name: Install pods
+        working-directory: Frontend
+        run: |
+              cd ios && pod install
+              cd ../macos && pod install
 
       - name: Build macOS application
         working-directory: ./Frontend
