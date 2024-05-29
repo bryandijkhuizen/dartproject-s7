@@ -4,7 +4,7 @@ env:
   SUPABASE_URL: 'https://wofmpmokrotlntuqjptl.supabase.co'
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvZm1wbW9rcm90bG50dXFqcHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTI5MTUwMjcsImV4cCI6MjAyODQ5MTAyN30.7hTbaWkxDQ-lKctP6wICrQiuPA1AwJrEFgYdVztkSdE'
   FLUTTER_VERSION: '3.22.0'
-  ENABLED_PLATFFORMS: ("windows") # Possible values: "android" "ios" "linux" "macos" "windows"  
+  ENABLED_PLATFORMS: ("windows") # Possible values: "android" "ios" "linux" "macos" "windows"  
   
 on:
   push:
@@ -38,7 +38,7 @@ jobs:
           echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
           
   build_linux:
-    if: ${{contains(env.ENABLED_PLATFORMS, 'linux')}}
+    if: ${{ contains(env.ENABLED_PLATFORMS, 'linux') }}
     runs-on: Ubuntu-20.04
     needs: get-release-version
     
@@ -84,7 +84,7 @@ jobs:
         path: 'DartinMolema-${{needs.get-release-version.outputs.version}}-x64.AppImage'
 
   build_android:
-    if: ${{contains(env.ENABLED_PLATFORMS, 'android')}}
+    if: ${{ contains(env.ENABLED_PLATFORMS, 'android' )}}
     needs: get-release-version
     runs-on: ubuntu-latest
 
@@ -146,7 +146,7 @@ jobs:
         path: DartinMolema-${{needs.get-release-version.outputs.version}}-android-signed-archive.zip
   
   build_windows:
-    if: ${{contains(env.ENABLED_PLATFORMS, 'windows')}}
+    if: ${{ contains(env.ENABLED_PLATFORMS, 'windows') }}
     needs: get-release-version
     runs-on: windows-latest
 
@@ -187,7 +187,7 @@ jobs:
         path: ./Frontend/build/windows/x64/runner/Release/DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip
 
   build_apple:
-    if: ${{contains(env.ENABLED_PLATFORMS, 'macos') || contains(env.ENABLED_PLATFORMS, 'ios')}}
+    if: ${{ contains(env.ENABLED_PLATFORMS, 'macos') || contains(env.ENABLED_PLATFORMS, 'ios') }}
     needs: get-release-version
     runs-on: macos-latest
     
@@ -219,22 +219,22 @@ jobs:
         run: flutter pub get
         
       - name: Install macos pods
-        if: ${{contains(env.ENABLED_PLATFORMS, 'macos')}}
+        if: ${{ contains(env.ENABLED_PLATFORMS, 'macos') }}
         working-directory: Frontend/macos
         run: pod install --repo-update
 
       - name: Install ios pods
-        if: ${{contains(env.ENABLED_PLATFORMS, 'ios')}}
+        if: ${{ contains(env.ENABLED_PLATFORMS, 'ios') }}
         working-directory: Frontend/ios
         run: pod install --repo-update
               
       - name: Build macOS application
-        if: ${{contains(env.ENABLED_PLATFORMS, 'macos')}}
+        if: ${{ contains(env.ENABLED_PLATFORMS, 'macos') }}
         working-directory: ./Frontend
         run: flutter build macos --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
 
       - name: Create DMG
-        if: ${{contains(env.ENABLED_PLATFORMS, 'macos')}}
+        if: ${{ contains(env.ENABLED_PLATFORMS, 'macos') }}
         run: |
           mkdir -p $PWD/dmg
           app_path="$PWD/Frontend/build/macos/Build/Products/Release/darts_application.app"
@@ -242,30 +242,31 @@ jobs:
           hdiutil create "$dmg_path" -volname "DartinMolema-${{needs.get-release-version.outputs.version}}" -srcfolder "$app_path" -ov -format UDZO
 
       - name: Upload DMG artifact
-        if: ${{contains(env.ENABLED_PLATFORMS, 'macos')}}
+        if: ${{ contains(env.ENABLED_PLATFORMS, 'macos') }}
         uses: actions/upload-artifact@v4
         with:
           name: DartinMolema-${{needs.get-release-version.outputs.version}}.dmg
           path: dmg/DartinMolema-${{needs.get-release-version.outputs.version}}.dmg
 
       - name: Build IPA (iOS) File
-        if: ${{contains(env.ENABLED_PLATFORMS, 'ios')}}
+        if: ${{ contains(env.ENABLED_PLATFORMS, 'ios') }}
         working-directory: ./Frontend
         run: flutter build ios --no-codesign --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
 
       - name: Rename Runner.app to DartinMolema
-        if: ${{contains(env.ENABLED_PLATFORMS, 'ios')}}
+        if: ${{ contains(env.ENABLED_PLATFORMS, 'ios') }}
         run: |
           mv ./Frontend/build/ios/iphoneos/Runner.app DartinMolema-${{ needs.get-release-version.outputs.version }}-ios.app
         
       - name: Archive IPA
-        if: ${{contains(env.ENABLED_PLATFORMS, 'ios')}}
+        if: ${{ contains(env.ENABLED_PLATFORMS, 'ios') }}
         uses: actions/upload-artifact@v4
         with:
           name: DartinMolema-${{ needs.get-release-version.outputs.version }}-ios.app
           path: DartinMolema-${{ needs.get-release-version.outputs.version }}-ios.app
     
   create_release:
+    if: ${{ success() }}
     runs-on: ubuntu-latest
     needs: [get-release-version, build_android, build_windows, build_apple] # build_linux
 
@@ -278,7 +279,6 @@ jobs:
 
     - name: Create Release
       uses: ncipollo/release-action@v1.14.0
-      if: ${{ success() }}
       with:
         artifacts: "*-android-signed-archive.zip, *-windows.zip, *.dmg, *-ios.app, *-x64.AppImage"
         tag: 'v${{ needs.get-release-version.outputs.version }}'
