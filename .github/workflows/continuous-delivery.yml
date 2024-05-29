@@ -9,7 +9,6 @@ on:
   push:
     branches:
       - main
-      - fix/continuous-delivery
 
 permissions:
   contents: write  # Grant write permission to contents to push tags
@@ -83,7 +82,7 @@ jobs:
         path: 'DartinMolema-${{needs.get-release-version.outputs.version}}-x64.AppImage'
 
   build_android:
-    if: false # True = enabled | False = disabled
+    if: true # True = enabled | False = disabled
     needs: get-release-version
     runs-on: ubuntu-latest
 
@@ -186,7 +185,7 @@ jobs:
         path: ./Frontend/build/windows/x64/runner/Release/DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip
 
   build_apple:
-    if: false # True = enabled | False = disabled
+    if: true # True = enabled | False = disabled
     needs: get-release-version
     runs-on: macos-latest
     
