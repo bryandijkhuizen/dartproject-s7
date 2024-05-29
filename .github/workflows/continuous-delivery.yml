@@ -198,19 +198,15 @@ jobs:
       - name: Remove pod files
         working-directory: Frontend
         run: |
-              rm -rf /ios/Pods
-              rm -rf /ios/podfile.lock
-              rm -rf /macos/Pods
-              rm -rf /macos/podfile.lock
+              rm -rf ./ios/Pods
+              rm -rf ./ios/Podfile.lock
+              rm -rf ./macos/Pods
+              rm -rf ./macos/Podfile.lock
 
       - name: Install pub dependencies
         working-directory: Frontend
         run: flutter pub get
-
-      - name: Update CocoaPods repo
-        working-directory: Frontend
-        run: pod repo update
-      
+        
       - name: Install macos pods
         working-directory: Frontend/macos
         run: pod install --repo-update
