@@ -23,33 +23,11 @@ import 'package:darts_application/features/gameplay/views/desktop_match_view.dar
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/features/setup_match/start_match.dart';
 
-Widget getPlaceholderComponent(
-    String currentRoute, List<String> routes, BuildContext context) {
-  return Center(
-    child: Column(
-      children: [
-        Text('Current route: $currentRoute'),
-        for (String route in routes)
-          TextButton(
-            onPressed: () {
-              context.go(route);
-            },
-            child: Text('Go to $route'),
-          ),
-        //Text(Supabase.instance.client.auth.currentSession?.toJson().toString() ?? 'no claim'),
-
-        TextButton(
-            onPressed: () {
-              Supabase.instance.client.auth.signOut();
-            },
-            child: const Text('Sign out')),
-      ],
-    ),
-  );
-}
+Widget helloComponent = const Center(
+  child: Text('Hello!'),
+);
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -126,11 +104,7 @@ final router = GoRouter(
                   GoRoute(
                     path: '/',
                     builder: (context, state) {
-                      // Ignore this for now
-                      return getPlaceholderComponent(
-                          '/',
-                          ['/statistics', '/matches', '/settings', '/gameplay'],
-                          context);
+                      return helloComponent;
                     },
                   ),
                 ],
@@ -170,6 +144,15 @@ final router = GoRouter(
                     routes: <RouteBase>[
                       GoRoute(
                         path: ':matchId',
+                        routes: [
+                          GoRoute(
+                            path: 'gameplay',
+                            builder: (context, state) {
+                              final matchId = state.pathParameters['matchId']!;
+                              return MatchView(matchId: matchId);
+                            },
+                          ),
+                        ],
                         builder: (context, state) {
                           final matchId = state.pathParameters['matchId']!;
                           return StartMatch(matchId: matchId);
@@ -186,26 +169,6 @@ final router = GoRouter(
               // Mobile user settings
               settingsBranch,
               clubsBranch,
-              StatefulShellBranch(
-                routes: <RouteBase>[
-                  GoRoute(
-                    path: '/gameplay',
-                    routes: <RouteBase>[
-                      GoRoute(
-                        path: ':matchId',
-                        builder: (context, state) {
-                          final matchId = state.pathParameters['matchId']!;
-                          return MatchView(matchId: matchId);
-                        },
-                      ),
-                    ],
-                    // ignore: prefer_const_constructors
-                    builder: (context, state) => MatchView(
-                      matchId: '0',
-                    ),
-                  ),
-                ],
-              ),
             ]
           // Desktop branches
           : [
@@ -216,10 +179,7 @@ final router = GoRouter(
                     path: '/',
                     builder: (context, state) {
                       // Ignore this for now
-                      return getPlaceholderComponent(
-                          '/',
-                          ['/statistics', '/matches', '/settings', '/gameplay'],
-                          context);
+                      return helloComponent;
                     },
                   ),
                 ],
@@ -259,6 +219,13 @@ final router = GoRouter(
                     },
                     routes: <RouteBase>[
                       GoRoute(
+                        path: ':matchId/gameplay',
+                        builder: (context, state) {
+                          final matchId = state.pathParameters['matchId']!;
+                          return DesktopMatchView(matchId: matchId);
+                        },
+                      ),
+                      GoRoute(
                         path: 'edit',
                         builder: (context, state) {
                           final match = state.extra as Map<String, dynamic>;
@@ -271,12 +238,6 @@ final router = GoRouter(
                           return const CreateSingleMatchPage();
                         },
                       ),
-                      // GoRoute(
-                      //   path: 'create/tournament',
-                      //   builder: (context, state) {
-                      //     return const CreateTournamentPage();
-                      //   },
-                      // ),
                     ],
                   ),
                 ],
@@ -320,15 +281,7 @@ final router = GoRouter(
                   GoRoute(
                     path: '/club-management',
                     builder: (context, state) {
-                      // Ignore this for now
-                      return getPlaceholderComponent(
-                          '/club-management',
-                          [
-                            '/',
-                            '/statistics',
-                            '/matches',
-                          ],
-                          context);
+                      return helloComponent;
                     },
                   ),
                 ],
@@ -336,26 +289,6 @@ final router = GoRouter(
 
               settingsBranch,
               clubsBranch,
-              StatefulShellBranch(
-                routes: <RouteBase>[
-                  GoRoute(
-                    path: '/gameplay',
-                    routes: <RouteBase>[
-                      GoRoute(
-                        path: ':matchId',
-                        builder: (context, state) {
-                          final matchId = state.pathParameters['matchId']!;
-                          return DesktopMatchView(matchId: matchId);
-                        },
-                      ),
-                    ],
-                    // ignore: prefer_const_constructors
-                    builder: (context, state) => DesktopMatchView(
-                      matchId: '1',
-                    ),
-                  ),
-                ],
-              ),
             ],
     ),
   ],
