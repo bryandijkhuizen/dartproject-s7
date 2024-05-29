@@ -75,7 +75,7 @@ class MatchView extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () => router.push('/gameplay/$matchId'),
+            onPressed: () => router.push('/matches/$matchId/gameplay'),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFCD0612),
             ),
@@ -156,6 +156,4 @@ class MatchView extends StatelessWidget {
       ],
     );
   }
-
-  
 }

@@ -25,6 +25,11 @@ ThemeData darkTheme = ThemeData(
     margin: const EdgeInsets.all(0.0),
   ),
   colorScheme: darkColorScheme,
+  dropdownMenuTheme: DropdownMenuThemeData(
+    menuStyle: MenuStyle(
+      backgroundColor: WidgetStatePropertyAll(darkColorScheme.surface),
+    ),
+  ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
       backgroundColor: WidgetStateProperty.all<Color>(
