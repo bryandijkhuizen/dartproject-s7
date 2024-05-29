@@ -52,12 +52,12 @@ jobs:
         
     - name: Enable linux support for Flutter 
       run: flutter config --enable-linux-desktop
-    
+   
     - name: "Install dependencies"
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake ninja-build build-essential pkg-config curl file git unzip xz-utils zip libgtk-3-dev gnome-settings-daemon dconf-gsettings-backend gnome-settings-daemon-schemas
-    
+        sudo apt-get install -y cmake ninja-build build-essential pkg-config curl file git unzip xz-utils zip libgtk-3-dev 
+   
     - name: Install pub dependencies
       working-directory: Frontend
       run: flutter pub get
