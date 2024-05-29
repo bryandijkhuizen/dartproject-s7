@@ -20,7 +20,7 @@ class _SearchInputState extends State<SearchInput> {
         Icons.search,
       ),
       style: const ButtonStyle(
-        shape: MaterialStatePropertyAll(
+        shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
         ),

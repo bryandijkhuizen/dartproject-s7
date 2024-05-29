@@ -7,7 +7,7 @@ class NavigationItem extends StatelessWidget {
       required this.location,
       this.active = false,
       this.enabled = true,
-      this.callback = null});
+      this.callback});
 
   final String label;
   final String location;
