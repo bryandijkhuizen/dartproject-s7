@@ -20,9 +20,9 @@ ThemeData darkTheme = ThemeData(
     foregroundColor: Colors.white, // Ensures text and icons are white
   ),
   brightness: Brightness.dark,
-  cardTheme: CardTheme(
-    color: darkColorScheme.surface,
-    margin: const EdgeInsets.all(0.0),
+  cardTheme: const CardTheme(
+    color: Color(0xFF444444),
+    margin: EdgeInsets.all(0.0),
   ),
   colorScheme: darkColorScheme,
   dropdownMenuTheme: DropdownMenuThemeData(
