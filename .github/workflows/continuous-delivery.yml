@@ -144,6 +144,7 @@ jobs:
         path: DartinMolema-${{needs.get-release-version.outputs.version}}-android-signed-archive.zip
   
   build_windows:
+    if: false
     needs: get-release-version
     runs-on: windows-latest
 
@@ -229,7 +230,7 @@ jobs:
     
   create_release:
     runs-on: ubuntu-latest
-    needs: [get-release-version, build_linux, build_windows ] #build_android, build_windows, build_apple
+    needs: [get-release-version, build_linux] #build_android, build_windows, build_apple
 
     steps:
     - name: Download artifacts
