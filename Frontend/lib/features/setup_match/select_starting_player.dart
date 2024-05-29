@@ -33,7 +33,7 @@ class _SelectStartingPlayerPageWidgetState
   Random random = Random();
 
   void redirectToGameplay(matchId) {
-    router.push('/gameplay/$matchId');
+    router.push('/matches/$matchId/gameplay');
   }
 
   Future<void> updateStartingPlayer(playerId, matchId) async {
