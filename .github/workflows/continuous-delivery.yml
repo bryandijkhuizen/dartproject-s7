@@ -265,7 +265,7 @@ jobs:
           path: DartinMolema-${{ needs.get-release-version.outputs.version }}-ios.app
     
   create_release:
-    if: ${{ success() }}
+    if: ${{ !failure() }}
     runs-on: ubuntu-latest
     needs: [get-release-version, build_android, build_windows, build_apple] # build_linux
 
