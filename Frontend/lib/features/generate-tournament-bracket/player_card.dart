@@ -118,7 +118,7 @@ class _PlayerCardState extends State<PlayerCard> {
           CircleAvatar(
             radius: 20,
             backgroundImage: AssetImage(
-              player!.avatarId != "1" ? player!.avatarId : avatarUrl,
+              player!.avatarId != "" ? player!.avatarId : avatarUrl,
             ),
           ),
           const SizedBox(width: 8),

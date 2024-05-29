@@ -26,7 +26,7 @@ class PlayerModel {
     String id = "",
     String firstName = "",
     String lastName = "",
-    String avatarId = "1",
+    String avatarId = "",
   }) {
     return PlayerModel(
         id: id, firstName: firstName, lastName: lastName, avatarId: avatarId);
