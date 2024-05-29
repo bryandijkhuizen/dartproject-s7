@@ -257,6 +257,9 @@ jobs:
         path: .
         merge-multiple: true
 
+    - name: Print files
+      run: ls -lah
+
     - name: Create Release
       uses: ncipollo/release-action@v1.14.0
       if: ${{ success() }}
