@@ -4,7 +4,6 @@ env:
   SUPABASE_URL: 'https://wofmpmokrotlntuqjptl.supabase.co'
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvZm1wbW9rcm90bG50dXFqcHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTI5MTUwMjcsImV4cCI6MjAyODQ5MTAyN30.7hTbaWkxDQ-lKctP6wICrQiuPA1AwJrEFgYdVztkSdE'
   FLUTTER_VERSION: '3.22.0'
-  ENABLED_PLATFORMS: ("windows") # Possible values: "android" "ios" "linux" "macos" "windows"  
   
 on:
   push:
@@ -38,7 +37,7 @@ jobs:
           echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
           
   build_linux:
-    if: ${{ contains(env.ENABLED_PLATFORMS, 'linux') }}
+    if: false # True = enabled | False = disabled
     runs-on: Ubuntu-20.04
     needs: get-release-version
     
@@ -84,7 +83,7 @@ jobs:
         path: 'DartinMolema-${{needs.get-release-version.outputs.version}}-x64.AppImage'
 
   build_android:
-    if: ${{ contains(env.ENABLED_PLATFORMS, 'android' )}}
+    if: false # True = enabled | False = disabled
     needs: get-release-version
     runs-on: ubuntu-latest
 
@@ -146,7 +145,7 @@ jobs:
         path: DartinMolema-${{needs.get-release-version.outputs.version}}-android-signed-archive.zip
   
   build_windows:
-    if: ${{ contains(env.ENABLED_PLATFORMS, 'windows') }}
+    if: true # True = enabled | False = disabled
     needs: get-release-version
     runs-on: windows-latest
 
@@ -187,7 +186,7 @@ jobs:
         path: ./Frontend/build/windows/x64/runner/Release/DartinMolema-${{ needs.get-release-version.outputs.version }}-windows.zip
 
   build_apple:
-    if: ${{ contains(env.ENABLED_PLATFORMS, 'macos') || contains(env.ENABLED_PLATFORMS, 'ios') }}
+    if: false # True = enabled | False = disabled
     needs: get-release-version
     runs-on: macos-latest
     
