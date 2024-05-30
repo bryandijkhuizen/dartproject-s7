@@ -182,38 +182,33 @@ class _ClubRegistrationViewState extends State<ClubRegistrationView> {
                     const SizedBox(
                       height: 8,
                     ),
-                    ReactiveFormConsumer(
-                      builder: (context, formGroup, child) {
-                        return FormSaveButton(
-                          onCancel: () {
-                            context.goBack('/clubs');
-                          },
-                          onSave: () async {
-                            if (store.form.invalid) {
-                              // Mark al fields as touched so errors will show up
-                              store.form.markAllAsTouched();
-                            } else {
-                              SupabaseResultType result =
-                                  await store.onSubmit();
+                    FormSaveButton(
+                      onCancel: () {
+                        context.goBack('/clubs');
+                      },
+                      onSave: () async {
+                        if (store.form.invalid) {
+                          // Mark al fields as touched so errors will show up
+                          store.form.markAllAsTouched();
+                        } else {
+                          SupabaseResultType result = await store.onSubmit();
 
-                              if (context.mounted) {
-                                context.ShowSnackbar(
-                                  SnackBar(
-                                      content: Text(result.success
-                                          ? 'Successfully applied for a new club'
-                                          : result.message),
-                                      backgroundColor: result.success
-                                          ? theme.colorScheme.secondary
-                                          : theme.colorScheme.error),
-                                );
+                          if (context.mounted) {
+                            context.ShowSnackbar(
+                              SnackBar(
+                                  content: Text(result.success
+                                      ? 'Successfully applied for a new club'
+                                      : result.message),
+                                  backgroundColor: result.success
+                                      ? theme.colorScheme.secondary
+                                      : theme.colorScheme.error),
+                            );
 
-                                if (result.success) {
-                                  context.goBack('/clubs');
-                                }
-                              }
+                            if (result.success) {
+                              context.goBack('/clubs');
                             }
-                          },
-                        );
+                          }
+                        }
                       },
                     ),
                     const SizedBox(
