@@ -79,6 +79,7 @@ abstract class _TournamentStore with Store {
     if (players.isEmpty) throw Exception("There are no players in Tournament");
 
     // Get current player
+    // ToDo Make it so that it does not pull the player out of the list
     PlayerModel? player =
         players.firstWhereOrNull((player) => player.id == playerId);
 
