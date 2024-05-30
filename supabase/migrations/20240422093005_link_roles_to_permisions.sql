@@ -37,7 +37,7 @@ insert into
   club_role_permission (club_role_id, permission_id)
 values
   --members manager
-  (1, 18),
+  (1, 23),
   --club marketing
   (2, 24),
   (2, 25),

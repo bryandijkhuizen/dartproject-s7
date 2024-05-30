@@ -24,6 +24,7 @@ class _StartMatchState extends State<StartMatch> {
     date: DateTime.now(),
     setTarget: 0,
     legTarget: 0,
+    startingScore: 0,
     player1LastName: '',
     player2LastName: '',
   );
@@ -44,12 +45,9 @@ class _StartMatchState extends State<StartMatch> {
   Future<void> fetchMatchDetails() async {
     try {
       final matchResponse = await Supabase.instance.client
-          .from('match')
-          .select()
-          .eq('id', widget.matchId)
-          .single();
+          .rpc('get_match_by_id', params: {'match_id': widget.matchId});
 
-      MatchModel match = MatchModel.fromJson(matchResponse);
+      MatchModel match = MatchModel.fromJson(matchResponse[0]);
 
       final userResponse = await Supabase.instance.client.from('user').select();
 

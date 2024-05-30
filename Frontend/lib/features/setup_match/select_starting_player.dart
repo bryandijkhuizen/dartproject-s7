@@ -1,3 +1,4 @@
+import 'package:darts_application/features/app_router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/match.dart';
@@ -18,6 +19,7 @@ class SelectStartingPlayerPageWidget extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _SelectStartingPlayerPageWidgetState createState() =>
       _SelectStartingPlayerPageWidgetState();
 
@@ -30,10 +32,13 @@ class _SelectStartingPlayerPageWidgetState
   bool player2Selected = false;
   Random random = Random();
 
+  void redirectToGameplay(matchId) {
+    router.push('/matches/$matchId/gameplay');
+  }
+
   Future<void> updateStartingPlayer(playerId, matchId) async {
-    await Supabase.instance.client
-        .from('match')
-        .update({'starting_player_id': playerId}).match({'id': matchId});
+    await Supabase.instance.client.rpc('update_starting_player',
+        params: {'current_match_id': matchId, 'player_id': playerId});
   }
 
   @override
@@ -98,8 +103,6 @@ class _SelectStartingPlayerPageWidgetState
 
                 updateStartingPlayer(playerId, widget.matchDetails.id);
 
-                // directly redirect to gameplay here...
-
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -107,6 +110,7 @@ class _SelectStartingPlayerPageWidgetState
                     ),
                   ),
                 );
+                redirectToGameplay(widget.matchDetails.id);
               },
               style: widget.buttonStyles['random'],
               child: const Text('Random'),
@@ -132,6 +136,8 @@ class _SelectStartingPlayerPageWidgetState
                     ),
                   ),
                 );
+
+                redirectToGameplay(widget.matchDetails.id);
               },
               style: widget.buttonStyles['notJoined'],
               child: const Text('Confirm'),

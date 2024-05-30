@@ -11,8 +11,8 @@ class FormSaveButton extends StatelessWidget {
   final void Function()? onSave;
   final bool loading;
 
-  MaterialStateProperty<Color?> getMaterialStateOverlayColor(ThemeData theme) =>
-      MaterialStateProperty.resolveWith(
+  WidgetStateProperty<Color?> getMaterialStateOverlayColor(ThemeData theme) =>
+      WidgetStateProperty.resolveWith(
         (states) => theme.colorScheme.onPrimary.withOpacity(0.1),
       );
 
@@ -31,14 +31,14 @@ class FormSaveButton extends StatelessWidget {
     ThemeData theme = Theme.of(context);
 
     Color? cancelBackgroundColorResolver(states) {
-      if (states.contains(MaterialState.disabled)) {
+      if (states.contains(WidgetState.disabled)) {
         return theme.colorScheme.primary.withAlpha(128);
       }
       return theme.colorScheme.primary;
     }
 
     Color? saveBackgroundColorResolver(states) {
-      if (states.contains(MaterialState.disabled)) {
+      if (states.contains(WidgetState.disabled)) {
         return theme.colorScheme.secondary.withAlpha(128);
       }
       return theme.colorScheme.secondary;
@@ -49,40 +49,32 @@ class FormSaveButton extends StatelessWidget {
         Expanded(
           child: ElevatedButton(
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.resolveWith(
+              backgroundColor: WidgetStateProperty.resolveWith(
                   cancelBackgroundColorResolver),
               overlayColor: getMaterialStateOverlayColor(theme),
-              shape: MaterialStateProperty.resolveWith(
+              shape: WidgetStateProperty.resolveWith(
                 (states) => RoundedRectangleBorder(
                   borderRadius: leftButtonBorderRadius,
                 ),
               ),
             ),
-            onPressed: loading
-                ? null
-                : () {
-                    onCancel?.call();
-                  },
+            onPressed: loading || onCancel == null ? null : onCancel,
             child: const Text('Cancel'),
           ),
         ),
         Expanded(
           child: ElevatedButton(
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.resolveWith(
-                  saveBackgroundColorResolver),
+              backgroundColor:
+                  WidgetStateProperty.resolveWith(saveBackgroundColorResolver),
               overlayColor: getMaterialStateOverlayColor(theme),
-              shape: MaterialStateProperty.resolveWith(
+              shape: WidgetStateProperty.resolveWith(
                 (states) => RoundedRectangleBorder(
                   borderRadius: rightButtonBorderRadius,
                 ),
               ),
             ),
-            onPressed: loading
-                ? null
-                : () {
-                    onSave?.call();
-                  },
+            onPressed: (loading || onSave == null) ? null : onSave,
             child: const Text('Save'),
           ),
         ),
