@@ -1,4 +1,4 @@
-name: Deploy Migrations to Staging
+name: Deploy Migrations to DartMasters - Dev
 
 on:
   push:
