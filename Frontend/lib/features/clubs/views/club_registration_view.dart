@@ -3,26 +3,26 @@ import 'package:darts_application/components/form_save_button.dart';
 import 'package:darts_application/components/generic_screen.dart';
 import 'package:darts_application/extensions.dart';
 import 'package:darts_application/features/app_router/app_router_extentions.dart';
-import 'package:darts_application/features/clubs/stores/club_registration_store.dart';
+import 'package:darts_application/features/clubs/stores/club_registration_view_store.dart';
 import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:reactive_phone_form_field/reactive_phone_form_field.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class ClubRegistration extends StatefulWidget {
-  const ClubRegistration({super.key});
+class ClubRegistrationView extends StatefulWidget {
+  const ClubRegistrationView({super.key});
 
   @override
-  State<ClubRegistration> createState() => _ClubRegistrationState();
+  State<ClubRegistrationView> createState() => _ClubRegistrationViewState();
 }
 
-class _ClubRegistrationState extends State<ClubRegistration> {
-  late final ClubRegistrationStore store;
+class _ClubRegistrationViewState extends State<ClubRegistrationView> {
+  late final ClubRegistrationViewStore store;
 
   @override
   void initState() {
     super.initState();
-    store = ClubRegistrationStore(Supabase.instance.client);
+    store = ClubRegistrationViewStore(Supabase.instance.client);
   }
 
   InputDecoration createInputDecoration(String label, [String? hintText]) =>
