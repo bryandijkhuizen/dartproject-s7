@@ -1,9 +1,12 @@
 set check_function_bodies = off;
 
+create type "public"."result_type" as ("success" boolean, "message" text);
+
 CREATE OR REPLACE FUNCTION public.create_club(p_name text, p_address text, p_postal_code text, p_city text, p_email text, p_phone text, p_note text DEFAULT ''::text)
- RETURNS boolean
+ RETURNS result_type
  LANGUAGE plpgsql
-AS $function$
+AS $function$DECLARE
+    result result_type;
 BEGIN
     BEGIN
         INSERT INTO club (
@@ -12,8 +15,8 @@ BEGIN
             postal_code,
             city,
             owner_id,
-            email,
-            phone,
+            email_address,
+            phone_number,
             banner_image_url,
             application_status,
             note
@@ -29,13 +32,32 @@ BEGIN
             'Pending application',
             p_note
         );
-        RETURN TRUE;
+        
+        result.success := TRUE;
+        result.message := '';
     EXCEPTION
-        WHEN OTHERS THEN
-            RETURN FALSE;
-    END;
+    WHEN unique_violation THEN
+        result.success := FALSE;
+        result.message := 'A club with this information already exists.';
+    WHEN foreign_key_violation THEN
+        result.success := FALSE;
+        result.message := 'A referenced entity does not exist.';
+    WHEN check_violation THEN
+        result.success := FALSE;
+        result.message := 'A value fails a check constraint.';
+    WHEN data_exception THEN
+        result.success := FALSE;
+        result.message := 'Invalid data format.';
+    WHEN insufficient_privilege THEN
+        result.success := FALSE;
+        result.message := 'You do not have permission to perform this action.';
+    WHEN others THEN
+        result.success := FALSE;
+        result.message := 'An error occurred. Please try again later.';
 END;
-$function$
+
+    RETURN result;
+END;$function$
 ;
 
 CREATE OR REPLACE FUNCTION public.count_owned_clubs(user_id uuid)
