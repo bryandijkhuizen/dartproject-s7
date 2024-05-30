@@ -4,14 +4,14 @@ import 'package:reactive_forms/reactive_forms.dart';
 import 'package:reactive_phone_form_field/reactive_phone_form_field.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-part 'club_registration_store.g.dart';
+part 'club_registration_view_store.g.dart';
 
-class ClubRegistrationStore = _ClubRegistrationStore
-    with _$ClubRegistrationStore;
+class ClubRegistrationViewStore = _ClubRegistrationViewStore
+    with _$ClubRegistrationViewStore;
 
-abstract class _ClubRegistrationStore with Store {
+abstract class _ClubRegistrationViewStore with Store {
   final SupabaseClient _supabaseClient;
-  _ClubRegistrationStore(this._supabaseClient);
+  _ClubRegistrationViewStore(this._supabaseClient);
 
   final form = FormGroup({
     'clubName': FormControl<String>(
