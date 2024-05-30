@@ -8,7 +8,7 @@ class PostalCodeValidator extends Validator<dynamic> {
     final value = control.value;
     if (value is String) {
       // General regex for postal code validation
-      final RegExp regex = RegExp(r'^[a-zA-Z0-9]{5,10}$');
+      final RegExp regex = RegExp(r'^[a-zA-Z0-9]{4,10}$');
       if (!regex.hasMatch(value)) {
         return {ValidationMessage.pattern: true};
       }
