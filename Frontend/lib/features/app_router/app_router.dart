@@ -255,7 +255,7 @@ final router = GoRouter(
                   GoRoute(
                     path: '/matches',
                     builder: (context, state) {
-                      return const UpcomingMatchesPage();
+                      return const MatchListWidget();
                     },
                     routes: <RouteBase>[
                       GoRoute(
