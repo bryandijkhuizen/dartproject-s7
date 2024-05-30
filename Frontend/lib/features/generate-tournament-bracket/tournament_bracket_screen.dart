@@ -44,7 +44,7 @@ class TournamentBracketScreen extends StatelessWidget {
     }
 
     tournamentStore.players = players;
-    tournamentStore.unselectedPlayers = players;
+    tournamentStore.unselectedPlayers = List.from(players);
   }
 
   @override

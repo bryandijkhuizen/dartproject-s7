@@ -67,7 +67,6 @@ class _MatchupCardState extends State<MatchupCard> {
       setState(() {
         firstPlayer = null;
       });
-
       // Remove player from match
       widget.match.player1Id = "";
       widget.match.player1LastName = "";
