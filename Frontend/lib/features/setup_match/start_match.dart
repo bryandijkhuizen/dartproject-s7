@@ -6,7 +6,8 @@ import 'package:darts_application/models/player.dart';
 
 class StartMatch extends StatefulWidget {
   final String matchId;
-  const StartMatch({super.key, required this.matchId});
+  final bool isDesktop;
+  const StartMatch({super.key, required this.matchId, required this.isDesktop});
 
   @override
   State<StartMatch> createState() => _StartMatchState();
@@ -70,7 +71,9 @@ class _StartMatchState extends State<StartMatch> {
   }
 
   bool allPlayersJoined() {
-    return player1Joined && player2Joined && markerJoined;
+    return player1Joined &&
+        player2Joined &&
+        (widget.isDesktop ? markerJoined : true);
   }
 
   var buttonStyles = {
@@ -163,21 +166,22 @@ class _StartMatchState extends State<StartMatch> {
                   ? 'Joined as ${matchDetails.player2LastName}'
                   : 'Join as ${matchDetails.player2LastName}'),
             ),
-
-            SizedBox(height: buttonHeight * 0.15), // Space between buttons
-            ElevatedButton(
-              style: buttonStyles[markerJoined ? 'joined' : 'notJoined'],
-              onPressed: () {
-                setState(() {
-                  markerJoined = true;
-                });
-              },
-              child: const Text('Join as Marker'),
-            ),
-
+            if (widget.isDesktop) ...[
+              SizedBox(height: buttonHeight * 0.15), // Space between buttons
+              ElevatedButton(
+                style: buttonStyles[markerJoined ? 'joined' : 'notJoined'],
+                onPressed: () {
+                  setState(() {
+                    markerJoined = true;
+                  });
+                },
+                child: const Text('Join as Marker'),
+              ),
+            ],
             SizedBox(
                 height: startMatchPosition -
-                    (3 * buttonHeight)), // Adjust space accordingly
+                    ((widget.isDesktop ? 3 : 2) *
+                        buttonHeight)), // Adjust space accordingly
             if (allPlayersJoined())
               ElevatedButton(
                 style: buttonStyles['notJoined'],

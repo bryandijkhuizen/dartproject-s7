@@ -172,7 +172,7 @@ final router = GoRouter(
                         path: ':matchId',
                         builder: (context, state) {
                           final matchId = state.pathParameters['matchId']!;
-                          return StartMatch(matchId: matchId);
+                          return StartMatch(matchId: matchId, isDesktop: false);
                         },
                       ),
                     ],
@@ -269,6 +269,13 @@ final router = GoRouter(
                         path: 'create/single',
                         builder: (context, state) {
                           return const CreateSingleMatchPage();
+                        },
+                      ),
+                      GoRoute(
+                        path: ':matchId',
+                        builder: (context, state) {
+                          final matchId = state.pathParameters['matchId']!;
+                          return StartMatch(matchId: matchId, isDesktop: true);
                         },
                       ),
                       // GoRoute(
