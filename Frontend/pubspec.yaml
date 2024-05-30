@@ -49,6 +49,9 @@ dependencies:
   provider: ^6.1.2
   jwt_decoder: ^2.0.1
   fl_chart: ^0.68.0
+  reactive_forms: ^17.0.1
+  reactive_phone_form_field: ^3.0.0
+  phone_form_field: ^9.2.4
 
 dev_dependencies:
   flutter_test:
