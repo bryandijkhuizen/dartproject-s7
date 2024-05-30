@@ -70,6 +70,9 @@ class _StartMatchState extends State<StartMatch> {
   }
 
   bool allPlayersJoined() {
+    if (matchDetails.isFriendly) {
+      return player1Joined && player2Joined;
+    }
     return player1Joined && player2Joined && markerJoined;
   }
 
@@ -81,7 +84,7 @@ class _StartMatchState extends State<StartMatch> {
         borderRadius: BorderRadius.circular(10),
       ),
     ),
-    'random': ElevatedButton.styleFrom(
+    'notJoined': ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFF2C4789),
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
@@ -163,20 +166,23 @@ class _StartMatchState extends State<StartMatch> {
                   ? 'Joined as ${matchDetails.player2LastName}'
                   : 'Join as ${matchDetails.player2LastName}'),
             ),
-            SizedBox(height: buttonHeight * 0.15), // Space between buttons
-            ElevatedButton(
-              style: buttonStyles[markerJoined ? 'joined' : 'notJoined'],
-              onPressed: () {
-                setState(() {
-                  markerJoined = true;
-                });
-              },
-              child: const Text('Join as Marker'),
-            ),
+            if (!matchDetails.isFriendly) ...[
+              SizedBox(height: buttonHeight * 0.15), // Space between buttons
+              ElevatedButton(
+                style: buttonStyles[markerJoined ? 'joined' : 'notJoined'],
+                onPressed: () {
+                  setState(() {
+                    markerJoined = true;
+                  });
+                },
+                child: const Text('Join as Marker'),
+              ),
+            ],
             SizedBox(
                 height: startMatchPosition -
-                    (3 *
-                        buttonHeight)), // Space to push buttons to 3/4 of the page
+                    (matchDetails.isFriendly
+                        ? 2 * buttonHeight
+                        : 3 * buttonHeight)), // Adjust space accordingly
             if (allPlayersJoined())
               ElevatedButton(
                 style: buttonStyles['notJoined'],

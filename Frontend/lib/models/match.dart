@@ -11,6 +11,7 @@ class MatchModel {
   late String? startingPlayerId;
   late String player1LastName;
   late String player2LastName;
+  late bool isFriendly;
 
   MatchModel({
     required this.id,
@@ -25,6 +26,7 @@ class MatchModel {
     this.startingPlayerId,
     required this.player1LastName,
     required this.player2LastName,
+    this.isFriendly = false,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -34,6 +36,7 @@ class MatchModel {
       player2Id: json['player_2_id'].toString(),
       date: DateTime.parse(json['date']),
       location: json['location'] ?? 'Unknown',
+      isFriendly: json['is_friendly'] ?? false,
       setTarget: json['set_target'],
       legTarget: json['leg_target'],
       startingScore: json['starting_score'],
