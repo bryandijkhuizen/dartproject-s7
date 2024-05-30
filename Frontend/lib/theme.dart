@@ -6,11 +6,12 @@ ColorScheme darkColorScheme = ColorScheme.fromSeed(
 )
     // Overwrite the seeded colors with copyWith
     .copyWith(
+  primary: const Color(0xFFCD0612),
   brightness: Brightness.dark,
   secondary: const Color(0xFF2C4789),
-  background: const Color(0xFF101010),
-  surface: const Color(0xFF404040),
+  surface: const Color(0xFF101010),
   onSurface: Colors.white,
+  surfaceContainerHigh: const Color.fromARGB(255, 48, 48, 48),
 );
 
 ThemeData darkTheme = ThemeData(
@@ -19,24 +20,33 @@ ThemeData darkTheme = ThemeData(
         darkColorScheme.primary, // Ensures AppBar uses the exact red color
     foregroundColor: Colors.white, // Ensures text and icons are white
   ),
+  bottomSheetTheme: BottomSheetThemeData(
+    backgroundColor: const Color(0xFF444444),
+    dragHandleColor: darkColorScheme.primary,
+  ),
   brightness: Brightness.dark,
-  cardTheme: CardTheme(
-    color: darkColorScheme.surface,
-    margin: const EdgeInsets.all(0.0),
+  cardTheme: const CardTheme(
+    color: Color(0xFF444444),
+    margin: EdgeInsets.all(0.0),
   ),
   colorScheme: darkColorScheme,
+  dropdownMenuTheme: DropdownMenuThemeData(
+    menuStyle: MenuStyle(
+      backgroundColor: WidgetStatePropertyAll(darkColorScheme.surface),
+    ),
+  ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: MaterialStateProperty.all<Color>(
+      backgroundColor: WidgetStateProperty.all<Color>(
         darkColorScheme.primary,
       ),
-      foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-      shape: MaterialStateProperty.all<OutlinedBorder>(
+      foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+      shape: WidgetStateProperty.all<OutlinedBorder>(
         RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      padding: const MaterialStatePropertyAll(
+      padding: const WidgetStatePropertyAll(
         EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       ),
     ),
@@ -59,11 +69,16 @@ ThemeData darkTheme = ThemeData(
     backgroundColor: darkColorScheme.primary,
     height: 56,
     labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-    indicatorColor: darkColorScheme.background,
+    indicatorColor: darkColorScheme.surface,
     iconTheme:
-        MaterialStateProperty.resolveWith(getNavigationIconThemeMaterialState),
+        WidgetStateProperty.resolveWith(getNavigationIconThemeMaterialState),
   ),
-  scaffoldBackgroundColor: darkColorScheme.background,
+  popupMenuTheme: PopupMenuThemeData(
+    color: darkColorScheme.surface,
+    elevation: 2,
+    position: PopupMenuPosition.under,
+  ),
+  scaffoldBackgroundColor: darkColorScheme.surface,
   textTheme: TextTheme(
     displayLarge: GoogleFonts.poppins(
       fontSize: 94,
@@ -131,8 +146,8 @@ ThemeData darkTheme = ThemeData(
   ),
   textButtonTheme: TextButtonThemeData(
     style: ButtonStyle(
-      foregroundColor: MaterialStatePropertyAll(darkColorScheme.onPrimary),
-      padding: const MaterialStatePropertyAll(
+      foregroundColor: WidgetStatePropertyAll(darkColorScheme.onPrimary),
+      padding: const WidgetStatePropertyAll(
         EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       ),
     ),
@@ -142,7 +157,7 @@ ThemeData darkTheme = ThemeData(
 
 ThemeData lightTheme = ThemeData();
 
-IconThemeData? getNavigationIconThemeMaterialState(Set<MaterialState> states) {
+IconThemeData? getNavigationIconThemeMaterialState(Set<WidgetState> states) {
   // Return fallback with custom color no matter what states are active for now
   return const IconThemeData.fallback()
       .copyWith(color: darkColorScheme.onPrimary);
