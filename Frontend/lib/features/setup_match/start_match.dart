@@ -70,9 +70,6 @@ class _StartMatchState extends State<StartMatch> {
   }
 
   bool allPlayersJoined() {
-    if (matchDetails.isFriendly) {
-      return player1Joined && player2Joined;
-    }
     return player1Joined && player2Joined && markerJoined;
   }
 
@@ -166,23 +163,21 @@ class _StartMatchState extends State<StartMatch> {
                   ? 'Joined as ${matchDetails.player2LastName}'
                   : 'Join as ${matchDetails.player2LastName}'),
             ),
-            if (!matchDetails.isFriendly) ...[
-              SizedBox(height: buttonHeight * 0.15), // Space between buttons
-              ElevatedButton(
-                style: buttonStyles[markerJoined ? 'joined' : 'notJoined'],
-                onPressed: () {
-                  setState(() {
-                    markerJoined = true;
-                  });
-                },
-                child: const Text('Join as Marker'),
-              ),
-            ],
+
+            SizedBox(height: buttonHeight * 0.15), // Space between buttons
+            ElevatedButton(
+              style: buttonStyles[markerJoined ? 'joined' : 'notJoined'],
+              onPressed: () {
+                setState(() {
+                  markerJoined = true;
+                });
+              },
+              child: const Text('Join as Marker'),
+            ),
+
             SizedBox(
                 height: startMatchPosition -
-                    (matchDetails.isFriendly
-                        ? 2 * buttonHeight
-                        : 3 * buttonHeight)), // Adjust space accordingly
+                    (3 * buttonHeight)), // Adjust space accordingly
             if (allPlayersJoined())
               ElevatedButton(
                 style: buttonStyles['notJoined'],
