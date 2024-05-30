@@ -58,19 +58,15 @@ class FormSaveButton extends StatelessWidget {
                 ),
               ),
             ),
-            onPressed: loading
-                ? null
-                : () {
-                    onCancel?.call();
-                  },
+            onPressed: loading || onCancel == null ? null : onCancel,
             child: const Text('Cancel'),
           ),
         ),
         Expanded(
           child: ElevatedButton(
             style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.resolveWith(
-                  saveBackgroundColorResolver),
+              backgroundColor:
+                  WidgetStateProperty.resolveWith(saveBackgroundColorResolver),
               overlayColor: getMaterialStateOverlayColor(theme),
               shape: WidgetStateProperty.resolveWith(
                 (states) => RoundedRectangleBorder(
@@ -78,11 +74,7 @@ class FormSaveButton extends StatelessWidget {
                 ),
               ),
             ),
-            onPressed: loading
-                ? null
-                : () {
-                    onSave?.call();
-                  },
+            onPressed: (loading || onSave == null) ? null : onSave,
             child: const Text('Save'),
           ),
         ),

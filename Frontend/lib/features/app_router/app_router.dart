@@ -3,6 +3,7 @@ import 'package:darts_application/features/app_router/app_router_redirect.dart';
 import 'package:darts_application/features/auth/auth_notifier.dart';
 import 'package:darts_application/features/auth/auth_view.dart';
 import 'package:darts_application/features/clubs/views/club_overview.dart';
+import 'package:darts_application/features/clubs/views/club_registration_view.dart';
 import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
 import 'package:darts_application/features/create_match/single_match/edit_single_match_page.dart';
 import 'package:darts_application/features/settings/views/settings_email_view.dart';
@@ -64,6 +65,10 @@ final clubsBranch = StatefulShellBranch(
       path: '/clubs',
       builder: (context, state) => const ClubOverview(),
       routes: <RouteBase>[
+        GoRoute(
+          path: 'register',
+          builder: (context, state) => const ClubRegistrationView(),
+        ),
         GoRoute(
           path: ':id',
           builder: (context, state) {

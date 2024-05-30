@@ -5,6 +5,7 @@ import 'package:darts_application/models/club.dart';
 import 'package:darts_application/stores/clubs_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class ClubOverview extends StatefulWidget {
@@ -52,7 +53,7 @@ class _ClubOverviewState extends State<ClubOverview> {
     _listViewController.dispose();
   }
 
-  Widget getClubsList(Iterable<Club> clubs) {
+  Widget getClubsList(List<Club> clubs) {
     return Expanded(
       child: RefreshIndicator(
         child: clubs.isEmpty
@@ -66,6 +67,7 @@ class _ClubOverviewState extends State<ClubOverview> {
                 ],
               )
             : ListView.separated(
+                physics: const AlwaysScrollableScrollPhysics(),
                 controller: _listViewController,
                 itemCount: clubs.length + 1,
                 separatorBuilder: (context, index) =>
@@ -99,25 +101,35 @@ class _ClubOverviewState extends State<ClubOverview> {
       appBar: AppBar(
         title: const Text('Clubs'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+              context.push("/clubs/register");
+            },
+            icon: const Icon(Icons.add),
+            tooltip: 'Register club',
+          ),
+        ],
       ),
       body: GenericScreen(
         child: Observer(
-            builder: (context) => Column(
-                  children: [
-                    SearchInput(
-                      controller: searchTextController,
-                      onSearch: () {
-                        clubsStore.fetch(1, searchTextController.text);
-                      },
-                    ),
-                    Text(
-                      'Showing ${clubsStore.queryResults} result${clubsStore.queryResults == 1 ? '' : 's'}',
-                      style: theme.textTheme.bodySmall,
-                    ),
-                    const SizedBox(height: 4),
-                    getClubsList(clubsStore.clubs),
-                  ],
-                )),
+          builder: (context) => Column(
+            children: [
+              SearchInput(
+                controller: searchTextController,
+                onSearch: () {
+                  clubsStore.fetch(1, searchTextController.text);
+                },
+              ),
+              Text(
+                'Showing ${clubsStore.queryResults} result${clubsStore.queryResults == 1 ? '' : 's'}',
+                style: theme.textTheme.bodySmall,
+              ),
+              const SizedBox(height: 4),
+              getClubsList(clubsStore.clubs),
+            ],
+          ),
+        ),
       ),
     );
   }
