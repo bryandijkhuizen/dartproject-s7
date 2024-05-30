@@ -6,6 +6,7 @@ import 'package:darts_application/features/clubs/views/club_overview.dart';
 import 'package:darts_application/features/clubs/views/club_registration_view.dart';
 import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
 import 'package:darts_application/features/create_match/single_match/edit_single_match_page.dart';
+import 'package:darts_application/features/avatar_picker/views/avatar_picker_view.dart';
 import 'package:darts_application/features/settings/views/settings_email_view.dart';
 import 'package:darts_application/features/settings/views/settings_name_view.dart';
 import 'package:darts_application/features/settings/views/settings_password_view.dart';
@@ -53,7 +54,13 @@ final settingsBranch = StatefulShellBranch(
         GoRoute(
           path: 'password',
           builder: (context, state) => const SettingsPasswordView(),
-        )
+        ),
+        GoRoute(
+          path: 'avatar',
+          builder: (context, state) {
+            return const AvatarPickerView();
+          },
+        ),
       ],
     ),
   ],
