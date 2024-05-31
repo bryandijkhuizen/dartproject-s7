@@ -5,7 +5,9 @@ import 'package:darts_application/models/club_post.dart';
 
 class ClubPostsView extends StatefulWidget {
   final String clubId;
-  const ClubPostsView({super.key, required this.clubId});
+  final int? limit;
+
+  const ClubPostsView({super.key, required this.clubId, this.limit});
 
   @override
   ClubPostsViewState createState() => ClubPostsViewState();
@@ -22,8 +24,11 @@ class ClubPostsViewState extends State<ClubPostsView> {
 
   Future<List<ClubPost>> fetchPosts() async {
     try {
-      final postResponse =
-          await Supabase.instance.client.from('club_post').select().eq('club_id', widget.clubId);;
+      var query = Supabase.instance.client.from('club_post').select().eq('club_id', widget.clubId).order('id', ascending: false);
+      if (widget.limit != null) {
+        query = query.limit(widget.limit!);
+      }
+      final postResponse = await query;
       final List<dynamic> postData = postResponse as List<dynamic>;
       List<ClubPost> fetchedPosts = postData.map((row) {
         return ClubPost.fromJson(row);
@@ -49,17 +54,57 @@ class ClubPostsViewState extends State<ClubPostsView> {
           return const Center(child: Text('No posts available'));
         } else {
           final clubPosts = snapshot.data!;
-          return ListView.builder(
-            itemCount: clubPosts.length,
-            itemBuilder: (context, index) {
-              final post = clubPosts[index];
-              return PostCard(
-                post: post,
-              );
-            },
+          return Column(
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: clubPosts.length,
+                itemBuilder: (context, index) {
+                  final post = clubPosts[index];
+                  return PostCard(
+                    post: post,
+                  );
+                },
+              ),
+              if (widget.limit != null && clubPosts.length >= widget.limit!)
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ClubPostsFullView(clubId: widget.clubId),
+                      ),
+                    );
+                  },
+                  child: const Text('More posts'),
+                ),
+            ],
           );
         }
       },
+    );
+  }
+}
+
+class ClubPostsFullView extends StatelessWidget {
+  final String clubId;
+
+  const ClubPostsFullView({super.key, required this.clubId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('All Posts'),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            ClubPostsView(clubId: clubId),
+          ],
+        ),
+      ),
     );
   }
 }
