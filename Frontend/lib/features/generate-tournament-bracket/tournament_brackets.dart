@@ -47,6 +47,7 @@ class TournamentBrackets extends StatelessWidget {
               child: Scrollbar(
                 controller: _scrollController,
                 child: ListView.builder(
+                  addAutomaticKeepAlives: true,
                   controller: _scrollController,
                   scrollDirection: Axis.vertical,
                   itemCount: matches.length,

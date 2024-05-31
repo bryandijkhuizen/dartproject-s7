@@ -20,7 +20,10 @@ class MatchupCard extends StatefulWidget {
   State<MatchupCard> createState() => _MatchupCardState();
 }
 
-class _MatchupCardState extends State<MatchupCard> {
+class _MatchupCardState extends State<MatchupCard>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   PlayerModel? firstPlayer;
   PlayerModel? secondPlayer;
 
