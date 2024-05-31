@@ -25,7 +25,10 @@ class PlayerCard extends StatefulWidget {
   State<PlayerCard> createState() => _PlayerCardState();
 }
 
-class _PlayerCardState extends State<PlayerCard> {
+class _PlayerCardState extends State<PlayerCard>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   List<DropdownMenuEntry<dynamic>> dropdownMenuEntries = [];
   String? playerId;
   PlayerModel? player;
@@ -125,13 +128,13 @@ class _PlayerCardState extends State<PlayerCard> {
             width: 4,
             height: 60,
           ),
-          CircleAvatar(
-            radius: 20,
-            backgroundImage: AssetImage(
-              // Get avatar from database
-              player!.avatarId != "" ? "${player!.avatarId}" : avatarUrl,
-            ),
-          ),
+          // CircleAvatar(
+          //   radius: 20,
+          //   backgroundImage: AssetImage(
+          //       // Get avatar from database
+          //       player!.avatarId != "" ? "${player!.avatarId}" : avatarUrl,
+          //       ),
+          // ),
           const SizedBox(width: 8),
           Expanded(
             child: nameOfPlayer,
