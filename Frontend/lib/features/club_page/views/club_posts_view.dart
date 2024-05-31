@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../widgets/post_card.dart';
 import 'package:darts_application/models/club_post.dart';
+import 'post_detail_view.dart';
 
 class ClubPostsView extends StatefulWidget {
   final String clubId;
@@ -58,12 +59,20 @@ class ClubPostsViewState extends State<ClubPostsView> {
             children: [
               ListView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: clubPosts.length,
                 itemBuilder: (context, index) {
                   final post = clubPosts[index];
                   return PostCard(
                     post: post,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PostDetailView(post: post),
+                        ),
+                      );
+                    },
                   );
                 },
               ),
@@ -77,7 +86,7 @@ class ClubPostsViewState extends State<ClubPostsView> {
                       ),
                     );
                   },
-                  child: const Text('More posts'),
+                  child: const Text('Show more'),
                 ),
             ],
           );
