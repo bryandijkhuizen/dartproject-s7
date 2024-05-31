@@ -1,14 +1,14 @@
 import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-const iconSize = 36.0;
-
 class UserAvatar extends StatefulWidget {
-  const UserAvatar({super.key, this.userId});
+  const UserAvatar({super.key, this.userId, this.iconSize = 36.0});
 
   final String? userId;
+  final double iconSize;
 
   @override
   State<UserAvatar> createState() => _UserAvatarState();
@@ -21,8 +21,8 @@ class _UserAvatarState extends State<UserAvatar> {
   Widget getDefaultUserIcon(ThemeData theme) {
     return ClipOval(
       child: Container(
-        height: iconSize,
-        width: iconSize,
+        height: widget.iconSize,
+        width: widget.iconSize,
         color: theme.colorScheme.secondary,
         child: Icon(
           Icons.person,
@@ -38,21 +38,23 @@ class _UserAvatarState extends State<UserAvatar> {
     UserStore userStore = context.read<UserStore>();
 
     return SizedBox(
-      height: iconSize,
-      width: iconSize,
-      child: FutureBuilder(
-        future: getUserIconURL(widget.userId ?? userStore.currentUser?.id),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasData && snapshot.data != null) {
-              return CircleAvatar(
-                  foregroundImage: NetworkImage(snapshot.data!),
-                  child: getDefaultUserIcon(theme));
+      height: widget.iconSize,
+      width: widget.iconSize,
+      child: Observer(
+        builder: (context) => FutureBuilder(
+          future: getUserIconURL(widget.userId ?? userStore.currentUser?.id),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasData && snapshot.data != null) {
+                return CircleAvatar(
+                    foregroundImage: NetworkImage(snapshot.data!),
+                    child: getDefaultUserIcon(theme));
+              }
             }
-          }
 
-          return getDefaultUserIcon(theme);
-        },
+            return getDefaultUserIcon(theme);
+          },
+        ),
       ),
     );
   }
