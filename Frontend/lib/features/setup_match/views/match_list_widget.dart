@@ -82,6 +82,12 @@ class _MatchListWidgetState extends State<MatchListWidget> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Matches', style: TextStyle(color: Colors.white)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _fetchMatches,
+          ),
+        ],
       ),
       body: Container(
         decoration: const BoxDecoration(

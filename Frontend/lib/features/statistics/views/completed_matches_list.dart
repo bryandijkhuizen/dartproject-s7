@@ -39,6 +39,12 @@ class _CompletedMatchesListWidgetState
       appBar: AppBar(
         title: const Text('Completed Matches',
             style: TextStyle(color: Colors.white)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => _controller.fetchMatches(refresh: true),
+          ),
+        ],
       ),
       body: Column(
         children: [
