@@ -39,13 +39,10 @@ class ClubDetailsViewState extends State<ClubDetailsView> {
               Card(
                 elevation: 0,
                 child: Padding(
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     vertical: 16.0,
                   ),
-                  child: SizedBox(
-                    height: 300,
-                    child: ClubPostsView(clubId: widget.clubId),
-                  ),
+                  child: ClubPostsView(clubId: widget.clubId, limit: 3),
                 ),
               ),
               const SizedBox(
