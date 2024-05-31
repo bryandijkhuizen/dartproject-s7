@@ -1,4 +1,4 @@
-import 'package:darts_application/features/club_management/members_manager.dart';
+import 'package:darts_application/features/club_management/members_controller.dart';
 import 'package:darts_application/models/permission_list.dart';
 import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
@@ -13,13 +13,13 @@ class NewMembersManagerView extends StatefulWidget {
 }
 
 class _NewMembersManagerViewState extends State<NewMembersManagerView> {
-  late MembersManager manager;
+  late MembersController manager;
 
   void loadData() {
     UserStore userStore = context.read();
     int clubId = userStore.permissions
         .getClubIdByPermission(PermissionList.manageClubMembers);
-    manager = MembersManager(Supabase.instance.client, clubId);
+    manager = MembersController(Supabase.instance.client, clubId);
   }
 
   @override
