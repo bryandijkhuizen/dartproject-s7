@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
 import 'package:darts_application/features/create_match/single_match/edit_single_match_page.dart';
 // import 'package:darts_application/features/create_match/tournament/create_tournament_page.dart';
+import 'package:darts_application/features/generate-tournament-bracket/tournament_bracket_screen.dart';
 import 'package:darts_application/models/player.dart';
 
 class UpcomingMatchesPage extends StatefulWidget {
@@ -28,27 +29,29 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
 
   Future<List<Map<String, dynamic>>> fetchUpcomingMatches() async {
     final response = await Supabase.instance.client
-      .from('match')
-      .select()
-      .gte('date', DateTime.now().toIso8601String())
-      .order('date', ascending: true);
+        .from('match')
+        .select()
+        .gte('date', DateTime.now().toIso8601String())
+        .order('date', ascending: true);
 
     return List<Map<String, dynamic>>.from(response);
   }
 
   Future<List<Map<String, dynamic>>> fetchUpcomingTournaments() async {
     final response = await Supabase.instance.client
-      .from('tournament')
-      .select()
-      .gte('start_time', DateTime.now().toIso8601String())
-      .order('start_time', ascending: true);
+        .from('tournament')
+        .select()
+        .gte('start_time', DateTime.now().toIso8601String())
+        .order('start_time', ascending: true);
 
     return List<Map<String, dynamic>>.from(response);
   }
 
   Future<List<PlayerModel>> fetchPlayers() async {
     final response = await Supabase.instance.client.from('user').select();
-    return response.map<PlayerModel>((player) => PlayerModel.fromJson(player)).toList();
+    return response
+        .map<PlayerModel>((player) => PlayerModel.fromJson(player))
+        .toList();
   }
 
   @override
@@ -58,8 +61,20 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
         title: const Text('Upcoming Events'),
         actions: <Widget>[
           TextButton(
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateSingleMatchPage())),
-            child: const Text('Create Match', style: TextStyle(color: Colors.white)),
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => TournamentBracketScreen())),
+            child: const Text('Tournament Bracket screen',
+                style: TextStyle(color: Colors.white)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const CreateSingleMatchPage())),
+            child: const Text('Create Match',
+                style: TextStyle(color: Colors.white)),
           ),
           // TextButton(
           //   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTournamentPage())),
@@ -82,7 +97,8 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (snapshot.hasData) {
-                  final matches = snapshot.data![0] as List<Map<String, dynamic>>;
+                  final matches =
+                      snapshot.data![0] as List<Map<String, dynamic>>;
                   final playersList = snapshot.data![1] as List<PlayerModel>;
                   return ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
@@ -91,17 +107,22 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
                     itemBuilder: (context, index) {
                       var match = matches[index];
                       DateTime matchDate = DateTime.parse(match['date']);
-                      var player1 = playersList.firstWhere((player) => player.id == match['player_1_id']);
-                      var player2 = playersList.firstWhere((player) => player.id == match['player_2_id']);
+                      var player1 = playersList.firstWhere(
+                          (player) => player.id == match['player_1_id']);
+                      var player2 = playersList.firstWhere(
+                          (player) => player.id == match['player_2_id']);
                       return ListTile(
-                        title: Text('Match on ${DateFormat('EEEE, MMM d, y - HH:mm').format(matchDate)}'),
-                        subtitle: Text('Location: ${match['location']} - ${player1.lastName} vs ${player2.lastName}'),
+                        title: Text(
+                            'Match on ${DateFormat('EEEE, MMM d, y - HH:mm').format(matchDate)}'),
+                        subtitle: Text(
+                            'Location: ${match['location']} - ${player1.lastName} vs ${player2.lastName}'),
                         trailing: IconButton(
                           icon: const Icon(Icons.edit),
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => EditSingleMatchPage(match: match),
+                                builder: (context) =>
+                                    EditSingleMatchPage(match: match),
                               ),
                             );
                           },
@@ -133,15 +154,19 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
                     itemCount: tournaments.length,
                     itemBuilder: (context, index) {
                       var tournament = tournaments[index];
-                      DateTime tournamentDate = DateTime.parse(tournament['start_time']);
+                      DateTime tournamentDate =
+                          DateTime.parse(tournament['start_time']);
                       return ListTile(
-                        title: Text('${tournament['name']} on ${DateFormat('EEEE, MMM d, y - HH:mm').format(tournamentDate)}'),
-                        subtitle: Text('Location: ${tournament['location']} - Club: ${tournament['club_id']}'),
+                        title: Text(
+                            '${tournament['name']} on ${DateFormat('EEEE, MMM d, y - HH:mm').format(tournamentDate)}'),
+                        subtitle: Text(
+                            'Location: ${tournament['location']} - Club: ${tournament['club_id']}'),
                       );
                     },
                   );
                 } else {
-                  return const Center(child: Text('No upcoming tournaments found'));
+                  return const Center(
+                      child: Text('No upcoming tournaments found'));
                 }
               },
             ),
