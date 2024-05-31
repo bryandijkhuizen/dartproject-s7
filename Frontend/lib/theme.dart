@@ -9,8 +9,9 @@ ColorScheme darkColorScheme = ColorScheme.fromSeed(
   primary: const Color(0xFFCD0612),
   brightness: Brightness.dark,
   secondary: const Color(0xFF2C4789),
-  surface: const Color(0xFF404040),
+  surface: const Color(0xFF101010),
   onSurface: Colors.white,
+  surfaceContainerHigh: const Color.fromARGB(255, 48, 48, 48),
 );
 
 ThemeData darkTheme = ThemeData(
@@ -19,12 +20,21 @@ ThemeData darkTheme = ThemeData(
         darkColorScheme.primary, // Ensures AppBar uses the exact red color
     foregroundColor: Colors.white, // Ensures text and icons are white
   ),
+  bottomSheetTheme: BottomSheetThemeData(
+    backgroundColor: const Color(0xFF444444),
+    dragHandleColor: darkColorScheme.primary,
+  ),
   brightness: Brightness.dark,
-  cardTheme: CardTheme(
-    color: darkColorScheme.surface,
-    margin: const EdgeInsets.all(0.0),
+  cardTheme: const CardTheme(
+    color: Color(0xFF444444),
+    margin: EdgeInsets.all(0.0),
   ),
   colorScheme: darkColorScheme,
+  dropdownMenuTheme: DropdownMenuThemeData(
+    menuStyle: MenuStyle(
+      backgroundColor: WidgetStatePropertyAll(darkColorScheme.surface),
+    ),
+  ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
       backgroundColor: WidgetStateProperty.all<Color>(
@@ -62,6 +72,11 @@ ThemeData darkTheme = ThemeData(
     indicatorColor: darkColorScheme.surface,
     iconTheme:
         WidgetStateProperty.resolveWith(getNavigationIconThemeMaterialState),
+  ),
+  popupMenuTheme: PopupMenuThemeData(
+    color: darkColorScheme.surface,
+    elevation: 2,
+    position: PopupMenuPosition.under,
   ),
   scaffoldBackgroundColor: darkColorScheme.surface,
   textTheme: TextTheme(

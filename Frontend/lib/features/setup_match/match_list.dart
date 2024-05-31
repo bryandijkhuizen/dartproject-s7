@@ -70,7 +70,7 @@ class MatchList extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () async {
                   if (await matchAlreadyStarted(matchId)) {
-                    router.push('/gameplay/$matchId');
+                    router.push('/matches/$matchId/gameplay');
                   } else {
                     router.push('/matches/$matchId');
                   }

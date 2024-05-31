@@ -53,6 +53,12 @@ class SettingsViewState extends State<SettingsView> {
                           builder: (_) => Column(
                             children: [
                               SettingsItem(
+                                  callback: () {
+                                    context.push('/settings/avatar');
+                                  },
+                                  title: 'Avatar',
+                                  value: 'Change your avatar'),
+                              SettingsItem(
                                 callback: () {
                                   context.push('/settings/name');
                                 },
@@ -90,10 +96,10 @@ class SettingsViewState extends State<SettingsView> {
                       onPressed: () {
                         context.push('/clubs');
                       },
-                      style: ButtonStyle(
-                        elevation: const WidgetStatePropertyAll(0),
+                      style: const ButtonStyle(
+                        elevation: WidgetStatePropertyAll(0),
                         backgroundColor: WidgetStatePropertyAll(
-                          theme.colorScheme.surface,
+                          Color(0xFF444444),
                         ),
                       ),
                       child: const Row(
