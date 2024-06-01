@@ -2,7 +2,7 @@ import 'package:darts_application/components/form_field_label.dart';
 import 'package:darts_application/components/form_save_button.dart';
 import 'package:darts_application/components/generic_screen.dart';
 import 'package:darts_application/extensions.dart';
-import 'package:darts_application/features/app_router/app_router_extentions.dart';
+import 'package:darts_application/features/app_router/app_router_extensions.dart';
 import 'package:darts_application/features/clubs/stores/club_registration_view_store.dart';
 import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
