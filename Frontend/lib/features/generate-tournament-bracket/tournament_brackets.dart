@@ -1,160 +1,133 @@
+import 'package:darts_application/features/generate-tournament-bracket/round_card.dart';
 import 'package:darts_application/models/match.dart';
 import 'package:darts_application/models/player.dart';
 import 'package:darts_application/stores/tournament_store.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
 
 import 'matchup_card.dart';
 
 class TournamentBrackets extends StatelessWidget {
-  TournamentBrackets({
-    super.key,
-    required this.context,
-  });
+  const TournamentBrackets({super.key});
 
-  final BuildContext context;
+  // List<Widget> createRounds(
+  //   TournamentStore tournamentStore,
+  //   List<PlayerModel> players,
+  //   int round, {
+  //   bool canSelectPlayer = false,
+  //   bool fillInPlayers = false,
+  // }) {
+  //   List<Widget> tournamentBracket = [];
+  //   List<MatchupCard> matches = createMatches(
+  //     tournamentStore,
+  //     players,
+  //     canSelectPlayer: canSelectPlayer,
+  //     fillInPlayers: fillInPlayers,
+  //   );
 
-  List<Widget> createRounds(
-    TournamentStore tournamentStore,
-    List<PlayerModel> players,
-    int round, {
-    bool canSelectPlayer = false,
-    bool fillInPlayers = false,
-  }) {
-    List<Widget> tournamentBracket = [];
-    List<MatchupCard> matches = createMatches(
-      tournamentStore,
-      players,
-      canSelectPlayer: canSelectPlayer,
-      fillInPlayers: fillInPlayers,
-    );
+  //   Widget roundLayout =
+  //       round_card(scrollController: _scrollController, matches: matches);
 
-    final ScrollController _scrollController = ScrollController();
+  //   tournamentBracket.add(roundLayout);
 
-    Widget roundLayout = Row(
-      children: [
-        const SizedBox(width: 4),
-        Column(
-          children: [
-            Text(
-              "Round ${round.toString()}",
-            ),
-            Container(
-              color: Colors.white,
-              height: 400,
-              width: 400,
-              child: Scrollbar(
-                controller: _scrollController,
-                child: ListView.builder(
-                  addAutomaticKeepAlives: true,
-                  controller: _scrollController,
-                  scrollDirection: Axis.vertical,
-                  itemCount: matches.length,
-                  itemBuilder: (context, index) {
-                    return matches[index];
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(width: 4),
-      ],
-    );
+  //   if (matches.length > 1) {
+  //     List<PlayerModel> nextRoundPlayers = [];
+  //     for (var i = 1; i <= matches.length; i++) {
+  //       nextRoundPlayers
+  //           .add(PlayerModel.placeholderPlayer(lastName: "Winner match $i"));
+  //     }
 
-    tournamentBracket.add(roundLayout);
+  //     List<Widget> nextRoundBracket = createRounds(
+  //       tournamentStore,
+  //       nextRoundPlayers,
+  //       ++round,
+  //       canSelectPlayer: false,
+  //       fillInPlayers: true,
+  //     );
+  //     tournamentBracket.addAll(nextRoundBracket);
+  //   }
 
-    if (matches.length > 1) {
-      List<PlayerModel> nextRoundPlayers = [];
-      for (var i = 1; i <= matches.length; i++) {
-        nextRoundPlayers
-            .add(PlayerModel.placeholderPlayer(lastName: "Winner match $i"));
-      }
+  //   return tournamentBracket;
+  // }
 
-      List<Widget> nextRoundBracket = createRounds(
-        tournamentStore,
-        nextRoundPlayers,
-        ++round,
-        canSelectPlayer: false,
-        fillInPlayers: true,
-      );
-      tournamentBracket.addAll(nextRoundBracket);
-    }
+  // List<MatchupCard> createMatches(
+  //   TournamentStore tournamentStore,
+  //   List<PlayerModel> players, {
+  //   bool canSelectPlayer = false,
+  //   bool fillInPlayers = false,
+  // }) {
+  //   PlayerModel placeholderPlayer = PlayerModel.placeholderPlayer();
+  //   List<MatchupCard> matches = [];
+  //   var amountOfPlayers = players.length;
+  //   var amountOfMatches = (amountOfPlayers / 2).ceil();
 
-    return tournamentBracket;
-  }
+  //   if (amountOfPlayers < 1 || amountOfMatches < 1) {
+  //     throw Exception("Not enough players where found to create a match");
+  //   }
 
-  List<MatchupCard> createMatches(
-    TournamentStore tournamentStore,
-    List<PlayerModel> players, {
-    bool canSelectPlayer = false,
-    bool fillInPlayers = false,
-  }) {
-    PlayerModel placeholderPlayer = PlayerModel.placeholderPlayer();
-    List<MatchupCard> matches = [];
-    var amountOfPlayers = players.length;
-    var amountOfMatches = (amountOfPlayers / 2).ceil();
+  //   while (amountOfMatches >= 1) {
+  //     PlayerModel firstPlayer;
+  //     PlayerModel secondPlayer;
 
-    if (amountOfPlayers < 1 || amountOfMatches < 1) {
-      throw Exception("Not enough players where found to create a match");
-    }
+  //     if (fillInPlayers) {
+  //       firstPlayer =
+  //           players.isNotEmpty ? players.removeAt(0) : placeholderPlayer;
+  //       secondPlayer =
+  //           players.isNotEmpty ? players.removeAt(0) : placeholderPlayer;
+  //     } else {
+  //       firstPlayer = placeholderPlayer;
+  //       secondPlayer = placeholderPlayer;
+  //     }
 
-    while (amountOfMatches >= 1) {
-      PlayerModel firstPlayer;
-      PlayerModel secondPlayer;
+  //     MatchModel newMatch = tournamentStore.addMatch(
+  //       firstPlayer,
+  //       secondPlayer,
+  //       DateTime.now().add(const Duration(days: 1)),
+  //       501, // Get this information from tournament settings page
+  //       5,
+  //     );
 
-      if (fillInPlayers) {
-        firstPlayer =
-            players.isNotEmpty ? players.removeAt(0) : placeholderPlayer;
-        secondPlayer =
-            players.isNotEmpty ? players.removeAt(0) : placeholderPlayer;
-      } else {
-        firstPlayer = placeholderPlayer;
-        secondPlayer = placeholderPlayer;
-      }
+  //     matches.add(
+  //       MatchupCard(
+  //         match: newMatch,
+  //         canSelectPlayer: canSelectPlayer,
+  //       ),
+  //     );
 
-      MatchModel newMatch = tournamentStore.addMatch(
-        firstPlayer,
-        secondPlayer,
-        DateTime.now().add(const Duration(days: 1)),
-        501, // Get this information from tournament settings page
-        5,
-      );
+  //     amountOfMatches--;
+  //   }
 
-      matches.add(
-        MatchupCard(
-          match: newMatch,
-          canSelectPlayer: canSelectPlayer,
-        ),
-      );
-
-      amountOfMatches--;
-    }
-
-    return matches;
-  }
+  //   return matches;
+  // }
 
   @override
   Widget build(BuildContext context) {
-    TournamentStore tournamentStore = context.read<TournamentStore>();
+    TournamentStore store = context.read<TournamentStore>();
 
-    List<Widget> rounds = createRounds(
-      tournamentStore,
-      tournamentStore.players,
-      1,
-      canSelectPlayer: true,
-      fillInPlayers: false,
-    );
-
-    return Container(
-      margin: EdgeInsets.only(bottom: 20.0),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: rounds,
-        ),
-      ),
-    );
+    return Observer(builder: (context) {
+      if (!store.initialized) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      } else {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 20.0),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: store.rounds.entries.map((round) {
+                bool canSelectPlayer = round.key == 1 ? true : false;
+                return RoundCard(
+                  roundNumber: round.key,
+                  matches: round.value,
+                  canSelectPlayer: canSelectPlayer,
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      }
+    });
   }
 }

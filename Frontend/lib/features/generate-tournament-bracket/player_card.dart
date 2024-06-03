@@ -2,22 +2,21 @@ import 'package:darts_application/models/player.dart';
 import 'package:darts_application/stores/tournament_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:mobx/mobx.dart';
 import 'package:provider/provider.dart';
 
 class PlayerCard extends StatefulWidget {
   const PlayerCard({
     super.key,
     required this.canSelectPlayer,
-    required this.selectPlayerFunction,
-    required this.unselectPlayerFunction,
+    required this.roundNumber,
+    required this.matchIndex,
     PlayerModel? player,
     required this.isFirstPlayer,
   }) : _player = player;
 
   final bool canSelectPlayer;
-  final Function selectPlayerFunction;
-  final Function unselectPlayerFunction;
+  final int roundNumber;
+  final int matchIndex;
   final PlayerModel? _player;
   final bool isFirstPlayer;
 
@@ -30,7 +29,6 @@ class _PlayerCardState extends State<PlayerCard>
   @override
   bool get wantKeepAlive => true;
   List<DropdownMenuEntry<dynamic>> dropdownMenuEntries = [];
-  String? playerId;
   PlayerModel? player;
 
   final String avatarUrl = "assets/images/avatar_placeholder.png";
@@ -41,9 +39,10 @@ class _PlayerCardState extends State<PlayerCard>
     player = widget._player;
   }
 
-  void unselectPlayer(TournamentStore tournamentStore) {
+  void unselectPlayer() {
     if (this.player == null) return;
 
+    TournamentStore store = context.read<TournamentStore>();
     PlayerModel player = this.player!;
 
     // Remove from player_card
@@ -52,25 +51,36 @@ class _PlayerCardState extends State<PlayerCard>
     });
 
     // Remove player from matchup_card and tournament store
-    widget.unselectPlayerFunction(
-        tournamentStore, widget.isFirstPlayer, player);
+    store.unselectPlayer(
+      player,
+      widget.roundNumber,
+      widget.matchIndex,
+      widget.isFirstPlayer,
+    );
   }
 
-  void selectPlayer(TournamentStore tournamentStore, String playerId) {
-    PlayerModel player = tournamentStore.getPlayerFromPlayers(playerId);
+  void selectPlayer(String playerId) {
+    TournamentStore store = context.read<TournamentStore>();
+    PlayerModel player = store.getPlayerFromPlayers(playerId);
 
     // Add player to player_card
     setState(() {
       this.player = player;
     });
 
-    // Add player to matchup_card and tournament store
-    widget.selectPlayerFunction(tournamentStore, widget.isFirstPlayer, player);
+    // Add player to tournament store
+    store.selectPlayer(
+      player,
+      widget.roundNumber,
+      widget.matchIndex,
+      widget.isFirstPlayer,
+    );
   }
 
-  void updateDropdownMenuEntries(TournamentStore tournamentStore) {
-    dropdownMenuEntries =
-        tournamentStore.unselectedPlayers.map((unselectedPlayer) {
+  void updateDropdownMenuEntries(BuildContext context) {
+    TournamentStore store = context.read<TournamentStore>();
+
+    dropdownMenuEntries = store.unselectedPlayers.map((unselectedPlayer) {
       return DropdownMenuEntry<dynamic>(
         value: unselectedPlayer.id.toString(),
         label: unselectedPlayer.fullName,
@@ -79,29 +89,30 @@ class _PlayerCardState extends State<PlayerCard>
   }
 
   Observer makeDropdown(BuildContext context) {
-    TournamentStore tournamentStore = context.read<TournamentStore>();
+    TournamentStore store = context.read<TournamentStore>();
 
-    if (tournamentStore.unselectedPlayers.isEmpty) {
-      if (tournamentStore.players.isNotEmpty) {
-        tournamentStore.unselectedPlayers = tournamentStore.players;
+    // Check if unselectedPlayers is not empty
+    if (store.unselectedPlayers.isEmpty) {
+      if (store.players.isNotEmpty) {
+        store.unselectedPlayers = List.from(store.players);
       } else {
-        tournamentStore.unselectedPlayers.add(PlayerModel.placeholderPlayer());
+        store.unselectedPlayers.add(PlayerModel.placeholderPlayer());
       }
     }
 
-    updateDropdownMenuEntries(tournamentStore);
+    updateDropdownMenuEntries(context);
+
     return Observer(builder: (context) {
+      print(store.unselectedPlayers.length);
       return DropdownMenu(
         width: 230,
-        // label: const Text('Name'),
         dropdownMenuEntries: dropdownMenuEntries,
         onSelected: (value) {
           setState(() {
-            playerId = value;
             if (player != null) {
-              unselectPlayer(tournamentStore);
+              unselectPlayer();
             }
-            selectPlayer(tournamentStore, value);
+            selectPlayer(value);
           });
         },
       );
@@ -110,7 +121,7 @@ class _PlayerCardState extends State<PlayerCard>
 
   @override
   Widget build(BuildContext context) {
-    TournamentStore tournamentStore = context.read<TournamentStore>();
+    super.build(context);
     Widget nameOfPlayer;
 
     if (widget.canSelectPlayer) {
@@ -139,7 +150,7 @@ class _PlayerCardState extends State<PlayerCard>
           Expanded(
             child: nameOfPlayer,
           ),
-          SizedBox(width: 4),
+          const SizedBox(width: 4),
         ],
       ),
     );

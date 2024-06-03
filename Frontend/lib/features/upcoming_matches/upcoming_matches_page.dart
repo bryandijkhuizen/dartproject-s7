@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
 import 'package:darts_application/features/create_match/single_match/edit_single_match_page.dart';
 // import 'package:darts_application/features/create_match/tournament/create_tournament_page.dart';
-import 'package:darts_application/features/generate-tournament-bracket/tournament_bracket_screen.dart';
+import 'package:darts_application/features/generate-tournament-bracket/views/tournament_bracket_screen.dart';
 import 'package:darts_application/models/player.dart';
 
 class UpcomingMatchesPage extends StatefulWidget {
@@ -60,14 +60,6 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
       appBar: AppBar(
         title: const Text('Upcoming Events'),
         actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => TournamentBracketScreen())),
-            child: const Text('Tournament Bracket screen',
-                style: TextStyle(color: Colors.white)),
-          ),
           TextButton(
             onPressed: () => Navigator.push(
                 context,
