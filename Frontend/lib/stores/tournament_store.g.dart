@@ -9,19 +9,19 @@ part of 'tournament_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$TournamentStore on _TournamentStore, Store {
-  late final _$matchesAtom =
-      Atom(name: '_TournamentStore.matches', context: context);
+  late final _$initializedAtom =
+      Atom(name: '_TournamentStore.initialized', context: context);
 
   @override
-  List<MatchModel> get matches {
-    _$matchesAtom.reportRead();
-    return super.matches;
+  bool get initialized {
+    _$initializedAtom.reportRead();
+    return super.initialized;
   }
 
   @override
-  set matches(List<MatchModel> value) {
-    _$matchesAtom.reportWrite(value, super.matches, () {
-      super.matches = value;
+  set initialized(bool value) {
+    _$initializedAtom.reportWrite(value, super.initialized, () {
+      super.initialized = value;
     });
   }
 
@@ -44,7 +44,7 @@ mixin _$TournamentStore on _TournamentStore, Store {
   @override
   String toString() {
     return '''
-matches: ${matches},
+initialized: ${initialized},
 unselectedPlayers: ${unselectedPlayers}
     ''';
   }
