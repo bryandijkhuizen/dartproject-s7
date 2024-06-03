@@ -68,7 +68,9 @@ class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
         },
       ),
       NavigationItem(
-        enabled: permissions.chechClubManagmentRole(),
+        enabled: (permissions.systemPermissions
+            .contains(PermissionList.deleteClub.permissionName) ||permissions.systemPermissions
+            .contains(PermissionList.createClub.permissionName)),
         label: 'Club management',
         location: '/club-management',
         active: currentShell.currentIndex == 4,

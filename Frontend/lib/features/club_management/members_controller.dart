@@ -17,7 +17,7 @@ class MembersController {
         "get_club_member_names_and_ids",
         params: {'current_club_id': clubId});
     for (var userdata in response ?? []) {
-      membersmap.addAll(<String,String>{userdata['user_id']: userdata['first_name'] });
+      membersmap.addAll(<String,String>{userdata['user_id']: userdata['full_name'] });
     }
     return membersmap;
   }
@@ -29,7 +29,7 @@ class MembersController {
         "get_not_approved_club_member_names_and_ids",
         params: {'current_club_id': clubId});
     for (var userdata in response ?? []) {
-      newmembers.addAll(<String,String>{userdata['user_id']: userdata['first_name'] });
+      newmembers.addAll(<String,String>{userdata['user_id']: userdata['full_name'] });
     }
     return newmembers;
   }
