@@ -30,8 +30,8 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
   String playerOneName = "";
   String playerTwoName = "";
 
-  int legAmount = 0;
-  int setAmount = 0;
+  int legAmount = 1;
+  int setAmount = 1;
 
   @override
   void dispose() {
@@ -216,7 +216,7 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                 child: TextFormField(
                   onChanged: (value) {
                     setState(() {
-                      legAmount = int.tryParse(value) ?? 0;
+                      legAmount = int.tryParse(value) ?? 1;
                     });
                   },
                   decoration: const InputDecoration(
@@ -226,8 +226,8 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter leg amount';
+                    if (value == null || value.isEmpty || int.parse(value) < 1) {
+                      return 'Please enter a leg amount of at least 1';
                     }
                     return null;
                   },
@@ -249,7 +249,7 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                 child: TextFormField(
                   onChanged: (value) {
                     setState(() {
-                      setAmount = int.tryParse(value) ?? 0;
+                      setAmount = int.tryParse(value) ?? 1;
                     });
                   },
                   decoration: const InputDecoration(
@@ -259,8 +259,8 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter set amount';
+                    if (value == null || value.isEmpty || int.parse(value) < 1) {
+                      return 'Please enter a set amount of at least 1';
                     }
                     return null;
                   },
