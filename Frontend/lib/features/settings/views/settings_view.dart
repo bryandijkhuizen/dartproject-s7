@@ -53,6 +53,12 @@ class SettingsViewState extends State<SettingsView> {
                           builder: (_) => Column(
                             children: [
                               SettingsItem(
+                                  callback: () {
+                                    context.push('/settings/avatar');
+                                  },
+                                  title: 'Avatar',
+                                  value: 'Change your avatar'),
+                              SettingsItem(
                                 callback: () {
                                   context.push('/settings/name');
                                 },
