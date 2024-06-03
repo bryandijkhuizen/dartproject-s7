@@ -1,6 +1,5 @@
 import 'package:darts_application/components/form_field_label.dart';
 import 'package:darts_application/components/form_save_button.dart';
-import 'package:darts_application/components/generic_screen.dart';
 import 'package:darts_application/extensions.dart';
 import 'package:darts_application/features/app_router/app_router_extensions.dart';
 import 'package:darts_application/features/club_management/club_edit_controller.dart';

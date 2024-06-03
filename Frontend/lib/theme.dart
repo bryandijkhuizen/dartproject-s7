@@ -15,6 +15,8 @@ ColorScheme darkColorScheme = ColorScheme.fromSeed(
 );
 
 ThemeData darkTheme = ThemeData(
+  tooltipTheme:
+          const TooltipThemeData(preferBelow: false),
   appBarTheme: AppBarTheme(
     backgroundColor:
         darkColorScheme.primary, // Ensures AppBar uses the exact red color
