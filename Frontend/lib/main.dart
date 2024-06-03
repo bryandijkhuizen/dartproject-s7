@@ -6,8 +6,36 @@ import 'package:darts_application/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:win32_registry/win32_registry.dart';
+import 'dart:io';
+
+Future<void> registerScheme(String scheme) async {
+  String appPath = Platform.resolvedExecutable;
+
+  String protocolRegKey = 'Software\\Classes\\$scheme';
+  RegistryValue protocolRegValue = const RegistryValue(
+    'URL Protocol',
+    RegistryValueType.string,
+    '',
+  );
+  String protocolCmdRegKey = 'shell\\open\\command';
+  RegistryValue protocolCmdRegValue = RegistryValue(
+    '',
+    RegistryValueType.string,
+    '"$appPath" "%1"',
+  );
+
+  final regKey = Registry.currentUser.createKey(protocolRegKey);
+  regKey.createValue(protocolRegValue);
+  regKey.createKey(protocolCmdRegKey).createValue(protocolCmdRegValue);
+}
 
 void main() {
+  // Register scheme for windows if we're on Windows
+  if (Platform.isWindows) {
+    registerScheme('dartinmolema');
+  }
+
   Supabase.initialize(
     url: Constants.supabaseUrl,
     anonKey: Constants.supabaseAnonKey,

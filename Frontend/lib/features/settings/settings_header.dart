@@ -6,7 +6,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
 
 class SettingsHeader extends StatefulWidget {
-  SettingsHeader({super.key});
+  const SettingsHeader({super.key});
 
   @override
   State<SettingsHeader> createState() => _SettingsHeaderState();
@@ -20,7 +20,9 @@ class _SettingsHeaderState extends State<SettingsHeader> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const UserAvatar(),
+        const UserAvatar(
+          iconSize: 48,
+        ),
         const SizedBox(
           width: 12,
         ),

@@ -1,7 +1,12 @@
 import 'package:darts_application/components/navigation_divider.dart';
 import 'package:darts_application/components/navigation_item.dart';
+import 'package:darts_application/models/permission_list.dart';
+import 'package:darts_application/models/permissions.dart';
+import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
   final double height;
@@ -16,45 +21,78 @@ class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(height);
 
+  void _goBranch(int index) {
+    currentShell.goBranch(
+      index,
+      // A common pattern when using bottom navigation bars is to support
+      // navigating to the initial location when tapping the item that is
+      // already active.
+      initialLocation: index == currentShell.currentIndex,
+    );
+  }
+
+  List<NavigationItem> getNavigationItems(Permissions permissions) {
+    var navigationItems = [
+      NavigationItem(
+        label: 'Home',
+        location: '/',
+        active: currentShell.currentIndex == 0,
+        callback: () {
+          _goBranch(0);
+        },
+      ),
+      NavigationItem(
+        label: 'Statistics',
+        location: '/statistics',
+        active: currentShell.currentIndex == 1,
+        callback: () {
+          _goBranch(1);
+        },
+      ),
+      NavigationItem(
+        label: 'Matches',
+        location: '/matches',
+        active: currentShell.currentIndex == 2,
+        callback: () {
+          _goBranch(2);
+        },
+      ),
+      NavigationItem(
+        enabled: (permissions.systemPermissions
+            .contains(PermissionList.assignRole.permissionName) || permissions.checkClubPermission(PermissionList.assignClubRole)),
+        label: 'User management',
+        location: '/user-management',
+        active: currentShell.currentIndex == 3,
+        callback: () {
+          _goBranch(3);
+        },
+      ),
+      NavigationItem(
+        enabled: (permissions.systemPermissions
+            .contains(PermissionList.deleteClub.permissionName) ||permissions.systemPermissions
+            .contains(PermissionList.createClub.permissionName)),
+        label: 'Club management',
+        location: '/club-management',
+        active: currentShell.currentIndex == 4,
+        callback: () {
+          _goBranch(4);
+        },
+      ),
+      NavigationItem(
+        label: 'Settings',
+        location: '/settings',
+        active: currentShell.currentIndex == 5,
+        callback: () {
+          _goBranch(5);
+        },
+      ),
+    ];
+    return navigationItems;
+  }
+
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-    var navigationItems = [
-      const NavigationItem(
-        label: 'Home',
-        location: '/',
-      ),
-      const NavigationItem(
-        label: 'Statistics',
-        location: '/statistics',
-      ),
-      const NavigationItem(
-        label: 'Matches',
-        location: '/matches',
-      ),
-      const NavigationItem(
-        label: 'User management',
-        location: '/user-management',
-      ),
-      const NavigationItem(
-        label: 'Club management',
-        location: '/club-management',
-      ),
-      const NavigationItem(
-        label: 'Settings',
-        location: '/settings',
-      ),
-    ];
-
-    // Get current navigationItem (synced with router's branches)
-    var currentItem = navigationItems[currentShell.currentIndex];
-
-    // Replace navigationItem to make it active (Replace because its immutable)
-    navigationItems[currentShell.currentIndex] = NavigationItem(
-      label: currentItem.label,
-      location: currentItem.location,
-      active: true,
-    );
 
     return Container(
       color: theme.colorScheme.primary,
@@ -68,15 +106,26 @@ class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
             width: 60,
           ),
           Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (BuildContext _, int index) {
-                return navigationItems[index];
+            child: Observer(
+              builder: (context) {
+                UserStore userStore = context.read();
+                List<NavigationItem> navigationItems =
+                    getNavigationItems(userStore.permissions);
+                return ListView.separated(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (BuildContext _, int index) {
+                    return navigationItems[index];
+                  },
+                  separatorBuilder: (BuildContext context, int index) {
+                    if (navigationItems[index].enabled) {
+                      return const NavigationDivider();
+                    }
+                    return Container();
+                  },
+                  itemCount: navigationItems.length,
+                );
               },
-              separatorBuilder: (BuildContext context, int index) =>
-                  const NavigationDivider(),
-              itemCount: navigationItems.length,
             ),
           ),
           const Text(
