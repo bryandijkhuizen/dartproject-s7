@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:darts_application/stores/match_store.dart';
-import 'package:darts_application/features/gameplay/score_suggestion.dart';
 
 class ScoreInput extends StatelessWidget {
   final MatchStore matchStore;
@@ -19,17 +18,25 @@ class ScoreInput extends StatelessWidget {
           children: [
             Observer(
               builder: (_) {
-                return AnimatedAngledBox(
-                  isPlayer1: true,
-                  suggestion: matchStore.showPlayer1Suggestion ? matchStore.player1Suggestion : '',
+                return Container( // Placeholder for AnimatedAngledBox
+                  alignment: Alignment.center,
+                  color: Colors.blue,
+                  child: Text(
+                    matchStore.showPlayer1Suggestion ? matchStore.player1Suggestion : '',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 );
               },
             ),
             Observer(
               builder: (_) {
-                return AnimatedAngledBox(
-                  isPlayer1: false,
-                  suggestion: matchStore.showPlayer2Suggestion ? matchStore.player2Suggestion : '',
+                return Container( // Placeholder for AnimatedAngledBox
+                  alignment: Alignment.center,
+                  color: Colors.red,
+                  child: Text(
+                    matchStore.showPlayer2Suggestion ? matchStore.player2Suggestion : '',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 );
               },
             ),
@@ -45,7 +52,7 @@ class ScoreInput extends StatelessWidget {
               const SizedBox(width: 10), // Add spacing between buttons
               Expanded(child: scoreDisplay()),
               const SizedBox(width: 10), // Add spacing between buttons
-              Expanded(child: enterButton()),
+              Expanded(child: enterButton(context)),
             ],
           ),
         ),
@@ -86,12 +93,16 @@ class ScoreInput extends StatelessWidget {
     );
   }
 
-  Widget enterButton() {
+  Widget enterButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        // Logic to validate and submit the score
-        matchStore.recordScore(int.parse(matchStore.temporaryScore.toString()));
-        matchStore.updateTemporaryScore(''); // Reset temporary score after submitting
+        int score = int.parse(matchStore.temporaryScore);
+        if (score < 50) {
+          _showCheckoutDialog(context, score);
+        } else {
+          matchStore.recordScore(score);
+          matchStore.updateTemporaryScore(''); // Reset temporary score after submitting
+        }
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xFFCD0612),
@@ -101,6 +112,53 @@ class ScoreInput extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 15),
       ),
       child: const Text('Enter', style: TextStyle(color: Colors.white)),
+    );
+  }
+
+  void _showCheckoutDialog(BuildContext context, int score) {
+    TextEditingController dartsController = TextEditingController();
+    TextEditingController attemptsController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Enter Checkout Details'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: dartsController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(labelText: 'Darts for Checkout'),
+              ),
+              TextField(
+                controller: attemptsController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(labelText: 'Double Attempts'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                int dartsForCheckout = int.parse(dartsController.text);
+                int doubleAttempts = int.parse(attemptsController.text);
+                matchStore.recordScore(score, dartsForCheckout: dartsForCheckout, doubleAttempts: doubleAttempts);
+                matchStore.updateTemporaryScore(''); // Reset temporary score after submitting
+                Navigator.of(context).pop();
+              },
+              child: Text('Submit'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

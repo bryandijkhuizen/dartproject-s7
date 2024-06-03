@@ -313,18 +313,26 @@ abstract class _MatchStore with Store {
     }
   }
 
-  @action
-  Future<void> recordScore(int score) async {
+ @action
+Future<void> recordScore(int score, {int? dartsForCheckout, int? doubleAttempts}) async {
     if (score < 0 || score > 180) {
       errorMessage = 'Invalid score: $score';
       return;
     }
     try {
-      final response = await _supabaseClient.rpc('record_turn', params: {
+      Map<String, dynamic> params = {
         'p_player_id': currentPlayerId,
         'p_new_leg_id': currentLegId,
         'p_score': score,
-      });
+      };
+
+      if (score < 50 && dartsForCheckout != null && doubleAttempts != null) {
+        params['p_darts_for_checkout'] = dartsForCheckout;
+        params['p_double_attempts'] = doubleAttempts;
+        params['p_double_hit'] = true;
+      }
+
+      final response = await _supabaseClient.rpc('record_turn', params: params);
 
       final legWinnerId =
           response.isNotEmpty ? response[0]['leg_winner_id'] : null;
@@ -356,6 +364,19 @@ abstract class _MatchStore with Store {
       errorMessage = 'Failed to record score: $error';
       print('Error recording score: $error');
     }
+  }
+
+
+  @action
+  Future<int> _promptForDartsForCheckout() async {
+    // Implement logic to show a dialog and get the user input
+    return 0;
+  }
+
+  @action
+  Future<int> _promptForDoubleAttempts() async {
+    // Implement logic to show a dialog and get the user input
+    return 0;
   }
 
   @action
