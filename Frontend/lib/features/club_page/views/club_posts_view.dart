@@ -1,8 +1,9 @@
+import 'package:darts_application/features/club_page/views/post_detail_view.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../widgets/post_card.dart';
+import 'package:darts_application/features/club_page/widgets/post_card.dart';
 import 'package:darts_application/models/club_post.dart';
-import 'post_detail_view.dart';
+import 'package:go_router/go_router.dart';
 
 class ClubPostsView extends StatefulWidget {
   final String clubId;
@@ -25,7 +26,11 @@ class ClubPostsViewState extends State<ClubPostsView> {
 
   Future<List<ClubPost>> fetchPosts() async {
     try {
-      var query = Supabase.instance.client.from('club_post').select().eq('club_id', widget.clubId).order('id', ascending: false);
+      var query = Supabase.instance.client
+          .from('club_post')
+          .select()
+          .eq('club_id', widget.clubId)
+          .order('id', ascending: false);
       if (widget.limit != null) {
         query = query.limit(widget.limit!);
       }
@@ -34,7 +39,7 @@ class ClubPostsViewState extends State<ClubPostsView> {
       List<ClubPost> fetchedPosts = postData.map((row) {
         return ClubPost.fromJson(row);
       }).toList();
-      
+
       return fetchedPosts;
     } catch (e) {
       print('Error fetching data: $e');
@@ -82,7 +87,8 @@ class ClubPostsViewState extends State<ClubPostsView> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ClubPostsFullView(clubId: widget.clubId),
+                        builder: (context) =>
+                            ClubPostsFullView(clubId: widget.clubId),
                       ),
                     );
                   },
@@ -105,12 +111,21 @@ class ClubPostsFullView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('All Posts'),
+        title: Text('All Posts'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              context.push('/clubs/${clubId}/create-post');
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            ClubPostsView(clubId: clubId),
+            ClubPostsView(
+                clubId: clubId, limit: null), // No limit for full view
           ],
         ),
       ),

@@ -88,7 +88,10 @@ final clubsBranch = StatefulShellBranch(
           routes: <RouteBase>[
             GoRoute(
               path: 'create-post',
-              builder: (context, state) => const CreatePostView(),
+              builder: (context, state) {
+                final clubId = state.pathParameters['id']!;
+                return CreatePostView(clubId: clubId);
+              },
             ),
             GoRoute(
               path: 'edit-post/:postId',

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/score_card.dart';
+import 'package:darts_application/features/club_page/widgets/score_card.dart';
 
 class RecentScoresView extends StatelessWidget {
   const RecentScoresView({super.key});

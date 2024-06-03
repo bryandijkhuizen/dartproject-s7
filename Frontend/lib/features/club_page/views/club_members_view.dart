@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/member_card.dart';
+import 'package:darts_application/features/club_page/widgets/member_card.dart';
 
 class ClubMembersView extends StatelessWidget {
   const ClubMembersView({super.key});

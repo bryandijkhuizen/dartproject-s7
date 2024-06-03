@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/match_card.dart';
+import 'package:darts_application/features/club_page/widgets/match_card.dart';
 
 class UpcomingMatchesView extends StatelessWidget {
   const UpcomingMatchesView({super.key});

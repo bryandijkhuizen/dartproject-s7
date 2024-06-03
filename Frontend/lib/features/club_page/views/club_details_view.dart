@@ -1,12 +1,13 @@
 import 'package:darts_application/components/generic_screen.dart';
 import 'package:flutter/material.dart';
-import 'club_members_view.dart';
-import 'upcoming_matches_view.dart';
-import 'recent_scores_view.dart';
-import 'club_posts_view.dart';
+import 'package:darts_application/features/club_page/views/club_members_view.dart';
+import 'package:darts_application/features/club_page/views/upcoming_matches_view.dart';
+import 'package:darts_application/features/club_page/views/recent_scores_view.dart';
+import 'package:darts_application/features/club_page/views/club_posts_view.dart';
 
 class ClubDetailsView extends StatefulWidget {
   final String clubId;
+
   const ClubDetailsView({super.key, required this.clubId});
 
   @override

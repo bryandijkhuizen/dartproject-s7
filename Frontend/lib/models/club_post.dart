@@ -1,14 +1,14 @@
 class ClubPost {
   final int id;
   final String title;
-  final String? imageUrl;
+  final String imageUrl;
   final String body;
   final int clubId;
 
   ClubPost({
     required this.id,
     required this.title,
-    this.imageUrl,
+    required this.imageUrl,
     required this.body,
     required this.clubId,
   });
