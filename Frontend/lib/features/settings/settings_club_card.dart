@@ -9,8 +9,22 @@ const double textButtonPadding = 12;
 const double iconSize = 32;
 const double iconSpacing = 12;
 
-class SettingsClubCard extends StatelessWidget {
+class SettingsClubCard extends StatefulWidget {
   const SettingsClubCard({super.key});
+
+  @override
+  State<SettingsClubCard> createState() => _SettingsClubCardState();
+}
+
+class _SettingsClubCardState extends State<SettingsClubCard> {
+  late final ClubsStore clubsStore;
+
+  @override
+  void initState() {
+    super.initState();
+    clubsStore = context.read<ClubsStore>();
+    clubsStore.fetchUserClubs();
+  }
 
   Widget getLoadingIndicator() => const Center(
         child: CircularProgressIndicator(),
@@ -43,7 +57,6 @@ class SettingsClubCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final clubsStore = context.read<ClubsStore>();
     ThemeData theme = Theme.of(context);
     return Observer(
       builder: (_) {
@@ -57,7 +70,7 @@ class SettingsClubCard extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () {
-                  if (!clubsStore.loading) {
+                  if (!clubsStore.loadingAssignedClubs) {
                     clubsStore.fetchUserClubs();
                   }
                 },
@@ -69,9 +82,10 @@ class SettingsClubCard extends StatelessWidget {
             ],
           ),
           Card(
+            elevation: 0,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: clubsStore.loading
+              child: clubsStore.loadingAssignedClubs
                   ? getLoadingIndicator()
                   : getUserClubs(clubsStore.assignedClubs),
             ),
