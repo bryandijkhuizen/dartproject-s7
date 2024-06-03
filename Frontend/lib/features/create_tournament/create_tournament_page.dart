@@ -75,6 +75,9 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Tournament ${tournament.location} created!')),
         );
+
+        // TODO: Redirect naar Luuk's tournament pagina :)
+
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Something went wrong: $e')),
