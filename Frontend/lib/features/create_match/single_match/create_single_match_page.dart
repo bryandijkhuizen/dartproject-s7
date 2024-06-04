@@ -25,6 +25,8 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
   bool is301Match = true;
   bool is501Match = false;
 
+  bool isFriendly = false;
+
   String playerOne = "";
   String playerTwo = "";
   String playerOneName = "";
@@ -78,6 +80,7 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
         startingScore: is301Match ? 301 : 501,
         player1LastName: playerOneName,
         player2LastName: playerTwoName,
+        isFriendly: isFriendly,
       );
 
       try {
@@ -314,6 +317,18 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
               ),
               const Text(
                 '501',
+                style: TextStyle(fontSize: 16),
+              ),
+              Checkbox(
+                value: isFriendly,
+                onChanged: (value) {
+                  setState(() {
+                    isFriendly = value!;
+                  });
+                },
+              ),
+              const Text(
+                'Friendly match',
                 style: TextStyle(fontSize: 16),
               ),
             ],
