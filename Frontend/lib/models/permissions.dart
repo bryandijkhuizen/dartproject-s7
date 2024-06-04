@@ -13,4 +13,5 @@ class Permissions {
   int getClubIdByPermission(PermissionList permission){
     return clubPermissions.keys.firstWhere((key) => clubPermissions[key]?.contains(permission.permissionName) ?? false, orElse: () => -1,);
   }
+
 }

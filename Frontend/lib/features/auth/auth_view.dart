@@ -45,10 +45,10 @@ class AuthView extends StatelessWidget {
                       height: 24,
                     ),
                     SupaSocialsAuth(
+                      redirectUrl: 'dartinmolema://login-callback',
+                      colored: false,
                       socialProviders: const [
                         OAuthProvider.google,
-                        OAuthProvider.facebook,
-                        OAuthProvider.twitter,
                       ],
                       onSuccess: (response) {},
                     ),
