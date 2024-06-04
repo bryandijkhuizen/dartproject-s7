@@ -4,6 +4,8 @@ import 'package:darts_application/features/club_page/views/club_members_view.dar
 import 'package:darts_application/features/club_page/views/upcoming_matches_view.dart';
 import 'package:darts_application/features/club_page/views/recent_scores_view.dart';
 import 'package:darts_application/features/club_page/views/club_posts_view.dart';
+import 'package:darts_application/features/club_management/views/current_members_manager_view.dart';
+import 'package:darts_application/features/club_management/views/new_members_manager_view.dart';
 
 class ClubDetailsView extends StatefulWidget {
   final String clubId;
@@ -60,6 +62,41 @@ class ClubDetailsViewState extends State<ClubDetailsView> {
                     vertical: 16.0,
                   ),
                   child: ClubMembersView(),
+                ),
+              ),              const SizedBox(
+                height: 12,
+              ),
+                            Card(
+                elevation: 0,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const CurrentMembersManagerView(),
+                            ),
+                          );
+                        },
+                        child: const Text('Current Members'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const NewMembersManagerView(),
+                            ),
+                          );
+                        },
+                        child: const Text('New Members'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(

@@ -1,5 +1,5 @@
 create policy "Users can view posts"
-on "public"."match"
+on "public"."club_post"
 as permissive
 for select
 to public
