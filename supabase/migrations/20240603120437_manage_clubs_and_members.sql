@@ -1,7 +1,5 @@
 alter table "public"."club" alter column "application_status" drop default;
 
-create type "public"."Club application status" as enum ('Pending application', 'Approved', 'Rejected', 'Archived', 'Suspeneded');
-
 alter table "public"."club" alter column application_status type "public"."Club application status" using application_status::text::"public"."Club application status";
 
 alter table "public"."club" alter column "application_status" set default 'Pending application'::"Club application status";
