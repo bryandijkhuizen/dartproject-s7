@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:darts_application/features/clubs/stores/club_registration_view_store.dart';
 import 'package:flutter/material.dart';
 import 'package:darts_application/models/match.dart';
 import 'package:darts_application/models/player.dart';
@@ -43,22 +44,22 @@ abstract class _TournamentStore with Store {
   Future<void> setTournamentPlayers() async {
     // For now use test data
     final List<String> playerIds = [
-      "f66f7d7b-9375-4169-86d3-f33d0c90404a",
-      "57161ed6-9d97-440f-96e8-a23640465bc7",
-      "65e7049d-d54a-420f-887e-547e21f53c46",
-      "70cb4e90-c241-44f0-9cd6-7b4366f5bf8b",
-      "e1345329-7f8f-4eb5-ac91-c2874fb47ef4",
-      "17b6d72a-ef9a-4dc2-8556-74f6b009da32",
-      "be427ad1-055b-450c-83dd-e76e428fe261",
-      "47f51364-e7b7-4340-8972-52326c371a16",
-      "3ba4c167-db09-4ec2-9d00-48cd666b43e0",
-      "b1ba72e3-e8ee-491a-b9dc-90193efa4b67",
-      "a64aab42-8e0b-41b6-8144-68863211283b",
-      "c1fa1326-3443-43c8-83c5-6807279746e7",
-      "bb91e207-1745-437a-af0d-d7ce17cad353",
-      "854b4e24-9b2a-4ee1-bff7-4a219099153d",
-      "dfc7bbc5-2e03-49d1-90a2-717e18fd2fd3",
-      "d6671320-b614-4b44-a9e1-5eafbae25372"
+      "0ae2876c-fd04-42d8-9628-fdc0114bd266",
+      "9147fbea-4ae7-4942-a22c-26bf837d7d91",
+      "ac2aab4b-0782-43cd-bb1c-1ecd2634782e",
+      "522ee4ba-2aab-4b79-8a28-5993f3d675cb",
+      "21daf6df-ac80-439e-bf52-ff00bf45aa0e",
+      "9b84e770-f578-4d8a-9abb-bd350acb0cb5",
+      "0e7616b4-ef22-40cf-816a-28b43c064f24",
+      "848b4a42-c5b0-400d-9e64-786e831ef7f4",
+      "12a04654-a72c-4faf-9c9a-70d8bdebb935",
+      "0a31e269-b3b7-41c9-85e2-a7f072f565a2",
+      "686b091a-ba3b-467e-b7b3-62145a55afbf",
+      "d4324948-a902-4c83-af3b-6cdfbf8c4d84",
+      "17ced10b-4b21-46d6-867b-f9b438d8a09c",
+      "a66186b5-4f5e-41ec-9d85-870aa6ac800b",
+      "5b7cc84d-82ac-45fb-89fc-2eb977105526",
+      "47c9de89-be90-457c-aede-b1496b3e37ca"
     ];
 
     players = await getPlayersByIds(playerIds);
@@ -275,21 +276,41 @@ abstract class _TournamentStore with Store {
     );
   }
 
-  void createTournament() async {
-    rounds.forEach((roundNumber, matches) async {
-      final List<Map<String, dynamic>> allMatches = [];
-      var json = jsonEncode(matches.map((e) => e.toJson()).toList());
-      // for (final match in matches) {
-      // allMatches.add(match.toJson());
-      // await _supabase.rpc("save_player_ids", params: {"match_data": json});
-      await _supabase.rpc('save_player_ids', params: {"match_data": json});
-      return;
-      // }
-    });
+  Future<SupabaseResultType> createTournament() async {
+    SupabaseResultType resultType;
+    try {
+      rounds.forEach(
+        (roundNumber, matches) async {
+          var json = jsonEncode(matches);
+          Map<String, dynamic> resultJson = await _supabase
+              .rpc<Map<String, dynamic>>('save_player_ids',
+                  params: {"match_data": matches});
 
-    // print("je moeder");
-    // await Supabase.instance.client.from('match').upsert(allMatches);
-    // await Supabase.instance.client.from('match').insert(allMatches);
-    // await _supabase.from("match").insert(allMatches);
+          SupabaseResultType result =  SupabaseResultType.fromJson(resultJson);
+          if(!result.success){
+            throw SupabaseException(result.message);
+          } 
+        },
+      );
+    } on SupabaseException catch (e) {
+      return SupabaseResultType(
+        success: false,
+        message: e.cause,
+      );
+    }
+    catch (e) {
+      return const SupabaseResultType(
+        success: false,
+        message: 'Unknown error occurred.',
+      );
+    }
+    return const SupabaseResultType(success: true, message: 'Succesfully created tournament');
+
   }
+
+}
+
+class SupabaseException implements Exception {
+  String cause;
+  SupabaseException(this.cause);
 }
