@@ -8,9 +8,10 @@ class ClubMembersView extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Column(
       children: [
-        MemberCard(memberName: 'John Doe'),
-        SizedBox(height: 20),
-        MemberCard(memberName: 'John Doe'),
+        Text("Coming soon!")
+        // MemberCard(memberName: 'John Doe'),
+        // SizedBox(height: 20),
+        // MemberCard(memberName: 'John Doe'),
       ],
     );
   }

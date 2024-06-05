@@ -8,10 +8,11 @@ class RecentScoresView extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Column(
       children: [
-        Text('Recent Scores'),
-        ScoreCard(scoreDetails: 'Player A vs Player B: 3-2'),
-        SizedBox(height: 20),
-        ScoreCard(scoreDetails: 'Player C vs Player D: 1-3'),
+        Text("Coming soon!")
+        // Text('Recent Scores'),
+        // ScoreCard(scoreDetails: 'Player A vs Player B: 3-2'),
+        // SizedBox(height: 20),
+        // ScoreCard(scoreDetails: 'Player C vs Player D: 1-3'),
       ],
     );
   }

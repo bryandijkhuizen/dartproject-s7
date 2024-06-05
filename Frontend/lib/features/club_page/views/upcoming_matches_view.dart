@@ -8,10 +8,11 @@ class UpcomingMatchesView extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Column(
       children: [
-        Text('Upcoming Matches'),
-        MatchCard(matchTitle: 'Match 1'),
-        SizedBox(height: 20),
-        MatchCard(matchTitle: 'Match 2'),
+        Text("Coming soon!")
+        // Text('Upcoming Matches'),
+        // MatchCard(matchTitle: 'Match 1'),
+        // SizedBox(height: 20),
+        // MatchCard(matchTitle: 'Match 2'),
       ],
     );
   }
