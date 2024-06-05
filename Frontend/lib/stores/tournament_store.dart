@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:darts_application/models/match.dart';
 import 'package:darts_application/models/player.dart';
 import 'package:mobx/mobx.dart';
@@ -10,10 +13,12 @@ class TournamentStore = _TournamentStore with _$TournamentStore;
 
 abstract class _TournamentStore with Store {
   final SupabaseClient _supabase;
+  int setTarget = 3;
+  int legTarget = 5;
+  int startingScore = 501;
   @observable
   bool initialized = false;
 
-  // List<MatchModel> matches = [];
   List<PlayerModel> players;
   late Map<int, List<MatchModel>> rounds;
   @observable
@@ -21,7 +26,6 @@ abstract class _TournamentStore with Store {
 
   _TournamentStore(this._supabase, this.players)
       : unselectedPlayers = players.toList() {
-    // Decide how many rounds I have
     _setup();
   }
 
@@ -39,28 +43,56 @@ abstract class _TournamentStore with Store {
   Future<void> setTournamentPlayers() async {
     // For now use test data
     final List<String> playerIds = [
-      "d9f932b0-242b-40e5-b315-71946e74e728",
-      "b58264e3-60d7-473c-8192-bde60f8ffc9d",
-      "73d4b35f-1019-400d-b182-e129af87e93c",
-      "f472ea91-5abf-4084-b60f-e1f01b35b915",
-      "b516b1d7-bf51-4b03-95c6-f33a673dba91",
-      "e8123017-ac48-471f-8cf1-bafff5e26457",
-      "e2f1738a-183a-4512-9ae6-c07fab252043",
-      "a299635f-3df3-40f9-ab37-10dcf8c5874c",
-      "ca4d4f39-3585-4a17-a0ba-9b6566c0dcc7",
-      "f081d7b8-0d03-4f3b-9092-da0a297e7817",
-      "bf00e9d4-dcbc-46cc-84ef-1b5f6fa4d385",
-      "1d49f93f-a389-4bc6-817e-1393176daad0",
-      "8b1851a2-be16-4fbf-a3aa-2c5eef41a4d6",
-      "e93ea6ab-170f-4637-ad5c-5c693c881475",
-      "9d615e21-6699-4d13-a68c-865b6d333cad",
-      "01f73f6d-741c-4ef1-afd4-af145336dde2"
+      "f66f7d7b-9375-4169-86d3-f33d0c90404a",
+      "57161ed6-9d97-440f-96e8-a23640465bc7",
+      "65e7049d-d54a-420f-887e-547e21f53c46",
+      "70cb4e90-c241-44f0-9cd6-7b4366f5bf8b",
+      "e1345329-7f8f-4eb5-ac91-c2874fb47ef4",
+      "17b6d72a-ef9a-4dc2-8556-74f6b009da32",
+      "be427ad1-055b-450c-83dd-e76e428fe261",
+      "47f51364-e7b7-4340-8972-52326c371a16",
+      "3ba4c167-db09-4ec2-9d00-48cd666b43e0",
+      "b1ba72e3-e8ee-491a-b9dc-90193efa4b67",
+      "a64aab42-8e0b-41b6-8144-68863211283b",
+      "c1fa1326-3443-43c8-83c5-6807279746e7",
+      "bb91e207-1745-437a-af0d-d7ce17cad353",
+      "854b4e24-9b2a-4ee1-bff7-4a219099153d",
+      "dfc7bbc5-2e03-49d1-90a2-717e18fd2fd3",
+      "d6671320-b614-4b44-a9e1-5eafbae25372"
     ];
 
     players = await getPlayersByIds(playerIds);
 
     players = players;
     unselectedPlayers = List.from(players);
+  }
+
+  Future<Map<String, dynamic>> getPlayerById(String id) async {
+    Map<String, dynamic> response =
+        await _supabase.from('user').select('*').eq('id', id).single();
+
+    return response;
+  }
+
+  Future<List<PlayerModel>> getPlayersByIds(List<String> playerIds) async {
+    // ToDo add try catch
+    final response = await _supabase
+        .rpc("get_users_by_uuids", params: {"uuid_list": playerIds});
+
+    if (response.isEmpty) {
+      throw Exception(
+          'Error fetching data: ${response.length} amount of user\'s found');
+    }
+
+    final List<dynamic> userData = response;
+
+    List<PlayerModel> playerModels = userData.map((userMap) {
+      return PlayerModel.fromJson(userMap);
+    }).toList();
+
+    // initialized = true;
+
+    return playerModels;
   }
 
   Map<int, List<MatchModel>> createRounds(
@@ -70,7 +102,7 @@ abstract class _TournamentStore with Store {
   }) {
     Map<int, List<MatchModel>> rounds = {};
 
-    List<MatchModel> matches = createMatches(
+    List<MatchModel> matches = addMatches(
       players,
       fillInPlayers: fillInPlayers,
     );
@@ -96,7 +128,7 @@ abstract class _TournamentStore with Store {
     return rounds;
   }
 
-  List<MatchModel> createMatches(
+  List<MatchModel> addMatches(
     List<PlayerModel> players, {
     bool fillInPlayers = false,
   }) {
@@ -124,8 +156,8 @@ abstract class _TournamentStore with Store {
         firstPlayer,
         secondPlayer,
         DateTime.now().add(const Duration(days: 1)),
-        501, // Get this information from tournament settings page
-        5,
+        setTarget, // Get this information from tournament settings page
+        legTarget,
       );
 
       matches.add(newMatch);
@@ -136,54 +168,27 @@ abstract class _TournamentStore with Store {
     return matches;
   }
 
-  Future<Map<String, dynamic>> getPlayerById(String id) async {
-    Map<String, dynamic> response =
-        await _supabase.from('user').select('*').eq('id', id).single();
-
-    return response;
-  }
-
-  Future<List<PlayerModel>> getPlayersByIds(List<String> playerIds) async {
-    final response = await _supabase
-        .rpc("get_users_by_uuids", params: {"uuid_list": playerIds});
-
-    if (response.isEmpty) {
-      throw Exception(
-          'Error fetching data: ${response.length} amount of user\'s found');
-    }
-
-    final List<dynamic> userData = response;
-
-    List<PlayerModel> playerModels = userData.map((userMap) {
-      return PlayerModel.fromJson(userMap);
-    }).toList();
-
-    // initialized = true;
-
-    return playerModels;
-  }
-
   MatchModel addMatch(
     PlayerModel firstPlayer,
     PlayerModel secondPlayer,
     DateTime date,
     int setTarget,
-    int legTarget,
-  ) {
-    int matchId = 0;
+    int legTarget, {
+    String id = "",
+  }) {
+    // String matchId = "";
     final MatchModel newMatch = MatchModel(
-      id: matchId.toString(),
+      id: id,
       player1Id: firstPlayer.id,
       player2Id: secondPlayer.id,
       date: date,
       setTarget: setTarget,
       legTarget: legTarget,
-      startingScore: 0,
+      startingScore: startingScore,
       player1LastName: firstPlayer.lastName,
       player2LastName: secondPlayer.lastName,
     );
 
-    // matches.add(newMatch);
     return newMatch;
   }
 
@@ -268,5 +273,23 @@ abstract class _TournamentStore with Store {
     unselectedPlayers.removeWhere(
       (unselectedPlayer) => unselectedPlayer.id == player.id,
     );
+  }
+
+  void createTournament() async {
+    rounds.forEach((roundNumber, matches) async {
+      final List<Map<String, dynamic>> allMatches = [];
+      var json = jsonEncode(matches.map((e) => e.toJson()).toList());
+      // for (final match in matches) {
+      // allMatches.add(match.toJson());
+      // await _supabase.rpc("save_player_ids", params: {"match_data": json});
+      await _supabase.rpc('save_player_ids', params: {"match_data": json});
+      return;
+      // }
+    });
+
+    // print("je moeder");
+    // await Supabase.instance.client.from('match').upsert(allMatches);
+    // await Supabase.instance.client.from('match').insert(allMatches);
+    // await _supabase.from("match").insert(allMatches);
   }
 }
