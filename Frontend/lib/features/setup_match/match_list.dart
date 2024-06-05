@@ -1,6 +1,7 @@
 // ignore_for_file: use_super_parameters, use_build_context_synchronously
 
 import 'package:darts_application/features/app_router/app_router.dart';
+import 'package:darts_application/features/setup_match/controllers/match_data_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/match.dart';
@@ -14,23 +15,6 @@ class MatchList extends StatelessWidget {
     required this.matches,
     required this.title,
   }) : super(key: key);
-
-  Future<bool> matchAlreadyStarted(matchID) async {
-    try {
-      final response = await Supabase.instance.client
-          .rpc('get_sets_by_match_id', params: {'current_match_id': matchID});
-
-      final match = matches.where((match) => match.id == matchID).first;
-
-      if (response.length > 0 && match.startingPlayerId != null) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      throw Exception('Failed to check if match already started: $e');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +62,7 @@ class MatchList extends StatelessWidget {
                       width: buttonWidth,
                       child: ElevatedButton(
                         onPressed: () async {
-                          if (await matchAlreadyStarted(matchId)) {
+                          if (await matchAlreadyStarted(matches, matchId)) {
                             router.push('/gameplay/$matchId');
                           } else {
                             router.push('/matches/$matchId');

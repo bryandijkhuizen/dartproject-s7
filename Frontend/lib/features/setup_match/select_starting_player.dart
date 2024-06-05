@@ -1,6 +1,5 @@
-import 'package:darts_application/features/app_router/app_router.dart';
+import 'package:darts_application/features/setup_match/controllers/match_data_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/match.dart';
 import 'dart:math';
 
@@ -22,8 +21,6 @@ class SelectStartingPlayerPageWidget extends StatefulWidget {
   // ignore: library_private_types_in_public_api
   _SelectStartingPlayerPageWidgetState createState() =>
       _SelectStartingPlayerPageWidgetState();
-
-  Future<void> updateStartingPlayer(String playerId, String matchId) async {}
 }
 
 class _SelectStartingPlayerPageWidgetState
@@ -31,15 +28,6 @@ class _SelectStartingPlayerPageWidgetState
   bool player1Selected = false;
   bool player2Selected = false;
   Random random = Random();
-
-  void redirectToGameplay(matchId) {
-    router.push('/gameplay/$matchId');
-  }
-
-  Future<void> updateStartingPlayer(playerId, matchId) async {
-    await Supabase.instance.client.rpc('update_starting_player',
-        params: {'current_match_id': matchId, 'player_id': playerId});
-  }
 
   @override
   Widget build(BuildContext context) {
