@@ -278,13 +278,15 @@ abstract class _TournamentStore with Store {
 
   Future<SupabaseResultType> createTournament() async {
     SupabaseResultType resultType;
+    //TODO when intergrations is build this should be set to the tournament ID given bij wietses page
+    int tournament_id = 2;
     try {
       rounds.forEach(
         (roundNumber, matches) async {
           var json = jsonEncode(matches);
           Map<String, dynamic> resultJson = await _supabase
-              .rpc<Map<String, dynamic>>('save_player_ids',
-                  params: {"match_data": matches});
+              .rpc<Map<String, dynamic>>('create_tournament_round',
+                  params: {"match_data": matches, 'current_tournament_id' : tournament_id, 'current_round_number' : roundNumber });
 
           SupabaseResultType result =  SupabaseResultType.fromJson(resultJson);
           if(!result.success){
