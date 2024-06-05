@@ -68,7 +68,7 @@ class TournamentBracketScreen extends StatelessWidget {
                         child: const Text("Create"),
                         onPressed: () async {
                           try {
-                            // store.createTournament();
+                            store.createTournament();
                           } catch (error) {
                             if (context.mounted) {
                               context.ShowSnackbar(
