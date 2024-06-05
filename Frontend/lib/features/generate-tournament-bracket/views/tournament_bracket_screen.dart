@@ -67,15 +67,20 @@ class TournamentBracketScreen extends StatelessWidget {
                       ElevatedButton(
                         child: const Text("Create"),
                         onPressed: () async {
-                          try {
-                            store.createTournament();
-                          } catch (error) {
-                            if (context.mounted) {
-                              context.ShowSnackbar(
-                                const SnackBar(
-                                  content: Text('Something went wrong.'),
-                                ),
-                              );
+                          var result = await store.createTournament();
+                          if (context.mounted) {
+                            context.ShowSnackbar(
+                              SnackBar(
+                                  content: Text(result.success
+                                      ? 'Successfully applied for a new club'
+                                      : result.message),
+                                  backgroundColor: result.success
+                                      ? theme.colorScheme.secondary
+                                      : theme.colorScheme.error),
+                            );
+
+                            if (result.success) {
+                              print("het werkt ");
                             }
                           }
                         },
