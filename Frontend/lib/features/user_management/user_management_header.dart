@@ -6,25 +6,25 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserManagementHeader extends StatelessWidget {
-  UserManagementHeader(this.supabaseClient, {super.key, required this.onSearch}) {
+  UserManagementHeader(this.supabaseClient,
+      {super.key, required this.onSearch}) {
     _searchController = TextEditingController();
   }
-  final void Function(String? searchedName,String? searchedRole ) onSearch;
+  final void Function(String? searchedName, String? searchedRole) onSearch;
 
-  
   final SupabaseClient supabaseClient;
   String? selectedRole;
   late TextEditingController _searchController;
 
   Future loadRoles(Permissions permission) {
-    if(permission.systemPermissions.contains(PermissionList.assignRole.permissionName)){
+    if (permission.systemPermissions
+        .contains(PermissionList.assignRole.permissionName)) {
       return Supabase.instance.client.rpc("get_role_names");
     }
-    if(permission.checkClubPermission(PermissionList.assignClubRole)){
+    if (permission.checkClubPermission(PermissionList.assignClubRole)) {
       return Supabase.instance.client.rpc("get_club_role_names");
     }
     return Future(() => null);
-    
   }
 
   @override
@@ -76,8 +76,7 @@ class UserManagementHeader extends StatelessWidget {
                         List<DropdownMenuEntry<dynamic>> dropdownMenuEntries =
                             roles.map((role) {
                           return DropdownMenuEntry<dynamic>(
-                            value:
-                                role["role_name"].toString(),
+                            value: role["role_name"].toString(),
                             label: role["role_name"].toString(),
                           );
                         }).toList();
@@ -106,7 +105,7 @@ class UserManagementHeader extends StatelessWidget {
                   onPressed: () {
                     // Get the search term from the text field
                     String searchedName = _searchController.text;
-                  // Trigger the callback with the search term
+                    // Trigger the callback with the search term
                     onSearch(searchedName, selectedRole);
                   },
                   child: const Text("Search"),

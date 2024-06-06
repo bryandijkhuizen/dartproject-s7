@@ -168,7 +168,7 @@ final router = GoRouter(
                         ],
                         builder: (context, state) {
                           final matchId = state.pathParameters['matchId']!;
-                          return StartMatch(matchId: matchId);
+                          return StartMatch(matchId: matchId, isDesktop: false);
                         },
                       ),
                     ],
@@ -228,7 +228,7 @@ final router = GoRouter(
                   GoRoute(
                     path: '/matches',
                     builder: (context, state) {
-                      return const UpcomingMatchesPage();
+                      return const MatchListWidget();
                     },
                     routes: <RouteBase>[
                       GoRoute(
@@ -251,6 +251,19 @@ final router = GoRouter(
                           return const CreateSingleMatchPage();
                         },
                       ),
+                      GoRoute(
+                        path: ':matchId',
+                        builder: (context, state) {
+                          final matchId = state.pathParameters['matchId']!;
+                          return StartMatch(matchId: matchId, isDesktop: true);
+                        },
+                      ),
+                      // GoRoute(
+                      //   path: 'create/tournament',
+                      //   builder: (context, state) {
+                      //     return const CreateTournamentPage();
+                      //   },
+                      // ),
                     ],
                   ),
                 ],

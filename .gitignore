@@ -18,5 +18,7 @@ Frontend/macos/Runner.xcworkspace/contents.xcworkspacedata
 Frontend/macos/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
 Frontend/supabase
 Frontend/macos/Runner.xcodeproj/project.pbxproj
+Frontend/ios/Podfile.lock
+
 .DS_Store
 .idea

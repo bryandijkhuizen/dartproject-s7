@@ -620,7 +620,7 @@ packages:
     source: hosted
     version: "2.6.1"
   mockito:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: mockito
       sha256: "6841eed20a7befac0ce07df8116c8b8233ed1f4486a7647c7fc5a02ae6163917"
@@ -836,7 +836,7 @@ packages:
     source: hosted
     version: "0.27.7"
   shared_preferences:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences
       sha256: d3bbe5553a986e83980916ded2f0b435ef2e1893dfaa29d5a7a790d0eca12180

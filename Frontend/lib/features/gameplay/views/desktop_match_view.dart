@@ -1,3 +1,4 @@
+import 'package:darts_application/features/app_router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -38,11 +39,14 @@ class DesktopMatchView extends StatelessWidget {
               return KeyboardListener(
                 focusNode: FocusNode(),
                 onKeyEvent: (event) {
-                  if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.enter)) {
-                    matchStore.recordScore(int.parse(matchStore.temporaryScore));
+                  if (HardwareKeyboard.instance
+                      .isLogicalKeyPressed(LogicalKeyboardKey.enter)) {
+                    matchStore
+                        .recordScore(int.parse(matchStore.temporaryScore));
                     matchStore.updateTemporaryScore('');
                   }
-                  if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.keyZ)) {
+                  if (HardwareKeyboard.instance
+                      .isLogicalKeyPressed(LogicalKeyboardKey.keyZ)) {
                     matchStore.undoLastScore();
                   }
                 },
@@ -138,9 +142,7 @@ class DesktopMatchView extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () {
-              // Your routing logic
-            },
+            onPressed: () => router.push('/'),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text(
               'Quit and Save Game',
