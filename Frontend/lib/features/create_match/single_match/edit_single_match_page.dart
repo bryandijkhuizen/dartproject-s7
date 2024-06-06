@@ -107,19 +107,24 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
             .from('match')
             .update(match.toJson())
             .eq('id', match.id);
+        if (mounted) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ConfirmationPage(match: match),
+            ),
+          );
 
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ConfirmationPage(match: match),
-          ),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Match updated!')),
-        );
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Match updated!')),
+          );
+        }
       } catch (e) {
+        if(mounted){
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Something went wrong: $e')),
         );
+        }
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
