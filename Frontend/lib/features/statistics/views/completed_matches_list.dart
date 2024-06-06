@@ -1,6 +1,8 @@
 import 'package:darts_application/features/statistics/components/match_card.dart';
-import 'package:darts_application/features/statistics/controllers/completed_matches_controller.dart';
+import 'package:darts_application/features/statistics/stores/statistics_store.dart';
+import 'package:darts_application/models/match.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CompletedMatchesListWidget extends StatefulWidget {
   const CompletedMatchesListWidget({super.key});
@@ -12,17 +14,18 @@ class CompletedMatchesListWidget extends StatefulWidget {
 
 class _CompletedMatchesListWidgetState
     extends State<CompletedMatchesListWidget> {
-  final CompletedMatchesController _controller = CompletedMatchesController();
+  late StatisticsStore _statisticsStore;
   final ScrollController _listViewController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _controller.init();
+    _statisticsStore = Provider.of<StatisticsStore>(context, listen: false);
+    _statisticsStore.init();
     _listViewController.addListener(() {
       if (_listViewController.position.atEdge &&
           _listViewController.position.pixels != 0) {
-        _controller.fetchMatches();
+        _statisticsStore.fetchMatches();
       }
     });
   }
@@ -42,7 +45,7 @@ class _CompletedMatchesListWidgetState
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () => _controller.fetchMatches(refresh: true),
+            onPressed: () => _statisticsStore.fetchMatches(refresh: true),
           ),
         ],
       ),
@@ -50,9 +53,9 @@ class _CompletedMatchesListWidgetState
         children: [
           Expanded(
             child: RefreshIndicator(
-              onRefresh: () => _controller.fetchMatches(refresh: true),
-              child: StreamBuilder(
-                stream: _controller.matchesStream,
+              onRefresh: () => _statisticsStore.fetchMatches(refresh: true),
+              child: StreamBuilder<List<MatchModel>>(
+                stream: _statisticsStore.matchesStream,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(child: CircularProgressIndicator());
@@ -60,14 +63,16 @@ class _CompletedMatchesListWidgetState
                   final matches = snapshot.data!;
                   return ListView.separated(
                     controller: _listViewController,
-                    itemCount: matches.length + (_controller.hasMore ? 1 : 0),
+                    itemCount:
+                        matches.length + (_statisticsStore.hasMore ? 1 : 0),
                     separatorBuilder: (context, index) =>
                         const Divider(height: 1, color: Colors.grey),
                     itemBuilder: (context, index) {
                       if (index < matches.length) {
                         return MatchCard(
-                            match: matches[index], controller: _controller);
-                      } else if (_controller.hasMore) {
+                            match: matches[index],
+                            key: ValueKey(matches[index]));
+                      } else if (_statisticsStore.hasMore) {
                         return const Padding(
                           padding: EdgeInsets.symmetric(vertical: 32),
                           child: Center(

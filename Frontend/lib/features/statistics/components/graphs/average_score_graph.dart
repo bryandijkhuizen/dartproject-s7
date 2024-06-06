@@ -1,18 +1,23 @@
-import 'package:darts_application/features/statistics/controllers/statistics_data_controller.dart';
+import 'package:darts_application/features/statistics/stores/statistics_store.dart';
+import 'package:darts_application/stores/user_store.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AverageScoreGraph extends StatelessWidget {
   final bool isShowingMainData;
   final List<FlSpot> player1AverageScores;
   final List<FlSpot> player2AverageScores;
 
-  const AverageScoreGraph({
+  AverageScoreGraph({
     super.key,
     required this.isShowingMainData,
     required this.player1AverageScores,
     required this.player2AverageScores,
   });
+
+  final StatisticsStore _statisticsStore = StatisticsStore(
+      Supabase.instance.client, UserStore(Supabase.instance.client));
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +60,13 @@ class AverageScoreGraph extends StatelessWidget {
       ),
       minX: 0,
       maxX: player1AverageScores.length.toDouble() - 1.round(),
-      minY: findLowestAverage(player1AverageScores, player2AverageScores)
+      minY: _statisticsStore
+              .findLowestAverage(player1AverageScores, player2AverageScores)
               .reduce((a, b) => a.y < b.y ? a : b)
               .y -
           10,
-      maxY: findHighestAverage(player1AverageScores, player2AverageScores)
+      maxY: _statisticsStore
+          .findHighestAverage(player1AverageScores, player2AverageScores)
           .reduce((a, b) => a.y > b.y ? a : b)
           .y,
       lineBarsData: [
