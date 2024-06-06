@@ -257,14 +257,36 @@ final router = GoRouter(
                       GoRoute(
                         path: 'create_tournament',
                         builder: (context, state) {
-                          // TODO: Fallback error screen als je geen player list hebt
+                          if (state.extra == null) {
+                            throw Exception(
+                                "No required extra values where given to the tournament route.");
+                          }
+
                           final data = state.extra! as Map<String, dynamic>;
+
+                          if (!data.containsKey('players') ||
+                              // !data.containsKey('tournament') ||
+                              !data.containsKey('setTarget') ||
+                              !data.containsKey('legTarget') ||
+                              !data.containsKey('startingScore')) {
+                            return const Center(
+                              child: Text(
+                                  "Error: Missing required data for tournament."),
+                            );
+                          }
 
                           // final List<PlayerModel> tournament = data['tournament'];
                           final List<PlayerModel> players = data['players'];
                           final int setTarget = data['setTarget'];
                           final int legTarget = data['legTarget'];
                           final int startingScore = data['startingScore'];
+
+                          if (players.isEmpty) {
+                            return const Center(
+                              child: Text(
+                                  "Error: No players where given for tournament."),
+                            );
+                          }
 
                           return Provider(
                             create: (_) => TournamentStore(
