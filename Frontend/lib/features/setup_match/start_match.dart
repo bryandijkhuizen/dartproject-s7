@@ -1,3 +1,5 @@
+import 'package:darts_application/features/setup_match/stores/match_setup_store.dart';
+import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/features/setup_match/select_starting_player.dart';
@@ -7,6 +9,7 @@ import 'package:darts_application/models/player.dart';
 class StartMatch extends StatefulWidget {
   final String matchId;
   final bool isDesktop;
+
   const StartMatch({super.key, required this.matchId, required this.isDesktop});
 
   @override
@@ -18,6 +21,8 @@ class _StartMatchState extends State<StartMatch> {
   bool player1Joined = false;
   bool player2Joined = false;
   bool markerJoined = false;
+  MatchSetupStore matchSetupStore = MatchSetupStore(
+      Supabase.instance.client, UserStore(Supabase.instance.client));
   MatchModel matchDetails = MatchModel(
     id: '',
     player1Id: '',
@@ -114,6 +119,7 @@ class _StartMatchState extends State<StartMatch> {
             startMatchPosition: startMatchPosition,
             buttonStyles: buttonStyles,
             matchDetails: matchDetails,
+            matchSetupStore: matchSetupStore,
           ),
         ],
       ),

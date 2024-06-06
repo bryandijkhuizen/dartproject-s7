@@ -1,8 +1,8 @@
 // ignore_for_file: unused_element
 
 import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
-import 'package:darts_application/features/setup_match/controllers/match_data_controller.dart';
 import 'package:darts_application/features/setup_match/match_list.dart';
+import 'package:darts_application/features/setup_match/stores/match_setup_store.dart';
 import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -18,17 +18,18 @@ class MatchListWidget extends StatefulWidget {
 class _MatchListWidgetState extends State<MatchListWidget> {
   late Future<Map<String, List<MatchModel>>> _matchesFuture;
   late String currentUserId;
-  UserStore userStore = UserStore(Supabase.instance.client);
+  MatchSetupStore matchSetupStore = MatchSetupStore(
+      Supabase.instance.client, UserStore(Supabase.instance.client));
 
   @override
   void initState() {
     super.initState();
-    _matchesFuture = fetchMatches();
+    _matchesFuture = matchSetupStore.fetchMatches();
   }
 
   Future<void> _fetchMatches() async {
     setState(() {
-      _matchesFuture = fetchMatches();
+      _matchesFuture = matchSetupStore.fetchMatches();
     });
   }
 

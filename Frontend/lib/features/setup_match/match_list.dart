@@ -1,7 +1,8 @@
 // ignore_for_file: use_super_parameters, use_build_context_synchronously
 
 import 'package:darts_application/features/app_router/app_router.dart';
-import 'package:darts_application/features/setup_match/controllers/match_data_controller.dart';
+import 'package:darts_application/features/setup_match/stores/match_setup_store.dart';
+import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/match.dart';
@@ -10,11 +11,14 @@ class MatchList extends StatelessWidget {
   final List<MatchModel> matches;
   final String title;
 
-  const MatchList({
+  MatchList({
     Key? key,
     required this.matches,
     required this.title,
   }) : super(key: key);
+
+  final MatchSetupStore matchSetupStore = MatchSetupStore(
+      Supabase.instance.client, UserStore(Supabase.instance.client));
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +66,8 @@ class MatchList extends StatelessWidget {
                       width: buttonWidth,
                       child: ElevatedButton(
                         onPressed: () async {
-                          if (await matchAlreadyStarted(matches, matchId)) {
+                          if (await matchSetupStore.matchAlreadyStarted(
+                              matches, matchId)) {
                             router.push('/gameplay/$matchId');
                           } else {
                             router.push('/matches/$matchId');
