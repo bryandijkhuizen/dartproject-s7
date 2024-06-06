@@ -20,13 +20,20 @@ abstract class _TournamentStore with Store {
   @observable
   bool initialized = false;
 
+  // TournamentModel tournament;
   List<PlayerModel> players;
   late Map<int, List<MatchModel>> rounds;
   @observable
   List<PlayerModel> unselectedPlayers;
 
-  _TournamentStore(this._supabase, this.players)
-      : unselectedPlayers = players.toList() {
+  _TournamentStore(
+    this._supabase,
+    // this.tournament,
+    this.players,
+    this.setTarget,
+    this.legTarget,
+    this.startingScore,
+  ) : unselectedPlayers = players.toList() {
     _setup();
   }
 
@@ -44,22 +51,22 @@ abstract class _TournamentStore with Store {
   Future<void> setTournamentPlayers() async {
     // For now use test data
     final List<String> playerIds = [
-      "0ae2876c-fd04-42d8-9628-fdc0114bd266",
-      "9147fbea-4ae7-4942-a22c-26bf837d7d91",
-      "ac2aab4b-0782-43cd-bb1c-1ecd2634782e",
-      "522ee4ba-2aab-4b79-8a28-5993f3d675cb",
-      "21daf6df-ac80-439e-bf52-ff00bf45aa0e",
-      "9b84e770-f578-4d8a-9abb-bd350acb0cb5",
-      "0e7616b4-ef22-40cf-816a-28b43c064f24",
-      "848b4a42-c5b0-400d-9e64-786e831ef7f4",
-      "12a04654-a72c-4faf-9c9a-70d8bdebb935",
-      "0a31e269-b3b7-41c9-85e2-a7f072f565a2",
-      "686b091a-ba3b-467e-b7b3-62145a55afbf",
-      "d4324948-a902-4c83-af3b-6cdfbf8c4d84",
-      "17ced10b-4b21-46d6-867b-f9b438d8a09c",
-      "a66186b5-4f5e-41ec-9d85-870aa6ac800b",
-      "5b7cc84d-82ac-45fb-89fc-2eb977105526",
-      "47c9de89-be90-457c-aede-b1496b3e37ca"
+      "b0d5f57c-1bcf-4938-8fd5-d6e0029e35b9",
+      "5c8a9ee9-5b39-4b51-9db4-e08d96692d61",
+      "c45cb315-fb5c-49aa-9b74-5d61cc7e6b97",
+      "b47e6277-6ad8-466e-9f42-2edfe35db124",
+      "642fb7c0-d802-4328-9bb4-e9a6ffded095",
+      "6eaeca05-173e-41f6-a3ff-53efa756c33f",
+      "66aeb3a3-2b9c-4ab0-9aea-f06a14de59c0",
+      "0241827b-fdb4-457a-96f1-728b55a0e1fe",
+      "49ee81e5-f511-40ae-8e5a-bc15b9bdad1e",
+      "2229b2fa-ff59-4130-abb2-244add6f9485",
+      "eb940c08-9648-4bdd-9aae-bdc02b89be36",
+      "20dabff4-2416-497f-90c5-a7ad14fecece",
+      "88adb7d4-df4f-4e78-852f-6922e3994cec",
+      "a3d95799-cf11-4d78-9f5f-5b39cd8bf151",
+      "eb867f48-25e2-4965-86bf-59005d46aa08",
+      "e31ba84e-8e31-4015-a04e-5e1052ced1f0"
     ];
 
     players = await getPlayersByIds(playerIds);
@@ -285,13 +292,16 @@ abstract class _TournamentStore with Store {
         (roundNumber, matches) async {
           var json = jsonEncode(matches);
           Map<String, dynamic> resultJson = await _supabase
-              .rpc<Map<String, dynamic>>('create_tournament_round',
-                  params: {"match_data": matches, 'current_tournament_id' : tournament_id, 'current_round_number' : roundNumber });
+              .rpc<Map<String, dynamic>>('create_tournament_round', params: {
+            "match_data": matches,
+            'current_tournament_id': tournament_id,
+            'current_round_number': roundNumber
+          });
 
-          SupabaseResultType result =  SupabaseResultType.fromJson(resultJson);
-          if(!result.success){
+          SupabaseResultType result = SupabaseResultType.fromJson(resultJson);
+          if (!result.success) {
             throw SupabaseException(result.message);
-          } 
+          }
         },
       );
     } on SupabaseException catch (e) {
@@ -299,17 +309,15 @@ abstract class _TournamentStore with Store {
         success: false,
         message: e.cause,
       );
-    }
-    catch (e) {
+    } catch (e) {
       return const SupabaseResultType(
         success: false,
         message: 'Unknown error occurred.',
       );
     }
-    return const SupabaseResultType(success: true, message: 'Succesfully created tournament');
-
+    return const SupabaseResultType(
+        success: true, message: 'Succesfully created tournament');
   }
-
 }
 
 class SupabaseException implements Exception {

@@ -204,7 +204,12 @@ final router = GoRouter(
                           onPressed: () {
                             context.push(
                               '/matches/create_tournament',
-                              extra: {'players': players},
+                              extra: {
+                                'players': players,
+                                'setTarget': 3,
+                                'legTarget': 5,
+                                'startingScore': 501,
+                              },
                             );
                           },
                           child: const Text(
@@ -255,11 +260,21 @@ final router = GoRouter(
                           // TODO: Fallback error screen als je geen player list hebt
                           final data = state.extra! as Map<String, dynamic>;
 
+                          // final List<PlayerModel> tournament = data['tournament'];
                           final List<PlayerModel> players = data['players'];
+                          final int setTarget = data['setTarget'];
+                          final int legTarget = data['legTarget'];
+                          final int startingScore = data['startingScore'];
 
                           return Provider(
                             create: (_) => TournamentStore(
-                                Supabase.instance.client, players),
+                              Supabase.instance.client,
+                              // tournament,
+                              players,
+                              setTarget,
+                              legTarget,
+                              startingScore,
+                            ),
                             child: const TournamentBracketScreen(),
                           );
                         },
