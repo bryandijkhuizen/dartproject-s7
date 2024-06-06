@@ -1,6 +1,7 @@
 import 'package:darts_application/models/tournament.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:darts_application/components/input_fields/time_picker.dart';
@@ -27,6 +28,12 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
   bool isBulloffTournament = true;
   bool isRandomTournament = false;
 
+  bool is301Match = true;
+  bool is501Match = false;
+
+  int legAmount = 1;
+  int setAmount = 1;
+
   List<PlayerModel> selectedPlayers = [];
 
   @override
@@ -52,41 +59,53 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
     setState(() {
       selectedPlayers = players;
     });
-    print(selectedPlayers);
   }
 
   Future<void> submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
       String name = _nameController.text;
       String location = _locationController.text;
-      DateTime tournamentDateTime = DateTime(selectedDate.year, selectedDate.month,
-          selectedDate.day, selectedTime.hour, selectedTime.minute);
+      DateTime tournamentDateTime = DateTime(
+          selectedDate.year,
+          selectedDate.month,
+          selectedDate.day,
+          selectedTime.hour,
+          selectedTime.minute);
 
       final tournament = TournamentModel(
         id: UniqueKey().toString(),
         name: name,
         location: location,
         startTime: tournamentDateTime,
-        startingMethod: isBulloffTournament ? StartingMethod.bulloff : StartingMethod.random,
+        startingMethod: isBulloffTournament
+            ? StartingMethod.bulloff
+            : StartingMethod.random,
       );
 
       try {
-        await Supabase.instance.client.from('tournament').upsert(tournament.toJson());
+        await Supabase.instance.client
+            .from('tournament')
+            .upsert(tournament.toJson());
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Tournament ${tournament.location} created!')),
+          SnackBar(content: Text('Tournament ${tournament.name} created!')),
         );
 
-        // TODO: Redirect naar Luuk's tournament pagina :)
-
+        context.push('/matches/create_tournament', extra: {
+          'tournament': tournament,
+          'players': selectedPlayers,
+          'setTarget': setAmount,
+          'legTarget': legAmount,
+          'startingScore': is301Match ? 301 : 501
+        });
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Something went wrong: $e')),
         );
       }
-
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You did not fill in all the required fields!')),
+        const SnackBar(
+            content: Text('You did not fill in all the required fields!')),
       );
     }
   }
@@ -186,14 +205,6 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
             },
           ),
         ),
-      ],
-    );
-  }
-
-  Widget buildRightColumn() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
         const Padding(
           padding: EdgeInsets.all(8.0),
           child: Text(
@@ -210,6 +221,136 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
           ),
         ),
         TimePicker(onTimeSelected: updateSelectedTime),
+      ],
+    );
+  }
+
+  Widget buildRightColumn() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            'Duration (best of)',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  onChanged: (value) {
+                    setState(() {
+                      legAmount = int.tryParse(value) ?? 1;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    labelText: 'Leg amount',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        int.parse(value) < 1) {
+                      return 'Please enter a leg amount of at least 1';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              const SizedBox(width: 20),
+              const Text(
+                'Legs',
+                style: TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  onChanged: (value) {
+                    setState(() {
+                      setAmount = int.tryParse(value) ?? 1;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    labelText: 'Set amount',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        int.parse(value) < 1) {
+                      return 'Please enter a set amount of at least 1';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              const SizedBox(width: 20),
+              const Text(
+                'Sets',
+                style: TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            'Match type',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Checkbox(
+                value: is301Match,
+                onChanged: (value) {
+                  setState(() {
+                    is301Match = value!;
+                    if (is301Match) {
+                      is501Match = false;
+                    }
+                  });
+                },
+              ),
+              const Text(
+                '301',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(width: 20),
+              Checkbox(
+                value: is501Match,
+                onChanged: (value) {
+                  setState(() {
+                    is501Match = value!;
+                    if (is501Match) {
+                      is301Match = false;
+                    }
+                  });
+                },
+              ),
+              const Text(
+                '501',
+                style: TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
+        ),
         const Padding(
           padding: EdgeInsets.all(8.0),
           child: Text(
@@ -264,9 +405,8 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: PlayerSelector(onSelectionChanged: updateSelectedPlayers)
-        ),
+            padding: const EdgeInsets.all(8.0),
+            child: PlayerSelector(onSelectionChanged: updateSelectedPlayers)),
         const SizedBox(height: 20),
         Center(
           child: ElevatedButton(
