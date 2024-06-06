@@ -1,7 +1,6 @@
 set check_function_bodies = off;
 
 
-
 CREATE OR REPLACE FUNCTION public.get_tournament_matches(current_tournament_id integer)
  RETURNS TABLE(match_id bigint, player_1_name text, player_2_name text, match_date timestamp with time zone, match_location text, round_number bigint)
  LANGUAGE plpgsql
@@ -12,7 +11,7 @@ BEGIN
            COALESCE(u1.first_name || ' ' || u1.last_name, 'To be decided') AS player_1_name, 
            COALESCE(u2.first_name || ' ' || u2.last_name, 'To be decided') AS player_2_name, 
            m.date AS match_date, 
-           m.location AS match_location, 
+           coalesce(m.location,'To be decided' )AS match_location, 
            tm.round_number
     FROM tournament t
     JOIN tournament_match tm ON t.id = tm.tournament_id
