@@ -57,7 +57,9 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Upcoming Events'),
-        actions: <Widget>[
+        actions: <Widget>[ IconButton(onPressed: (){setState(() {
+          
+        });}, icon: const Icon(Icons.refresh)),
           TextButton(
             onPressed: () => Navigator.push(
                 context,
@@ -157,7 +159,7 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    TournamentView(tournamentId: tournament['id']),
+                                    TournamentView(tournamentId: tournament['id'], clubId: tournament['club_id'],),
                               ),
                             );
                           },

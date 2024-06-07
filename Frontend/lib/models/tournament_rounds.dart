@@ -1,40 +1,50 @@
-class TournamentRounds {
-  List<Round> rounds = [];
+import 'package:darts_application/models/match.dart';
 
-  TournamentRounds({required this.rounds});
+class Tournament {
+  List<TournamentRound> rounds = [];
 
-  TournamentRounds.fromJson(List<dynamic> dataMap)
+  Tournament({required this.rounds});
+
+  Tournament.fromJson(List<dynamic> dataMap)
       : rounds = sortRounds(dataMap);
 
-  static List<Round> sortRounds(List<dynamic> dataMap) {
-    List<Round> allRounds = [];
+  static List<TournamentRound> sortRounds(List<dynamic> dataMap) {
+    List<TournamentRound> allRounds = [];
 
     for (var match in dataMap) {
       int roundNumber = match['round_number'];
       if (allRounds.length < roundNumber) {
-        allRounds.add(Round(roundNumber: roundNumber, roundHeader: "Round: ${roundNumber}", matches: [match]));
+        allRounds.add(TournamentRound(
+            roundNumber: roundNumber,
+            roundHeader: "Round: ${roundNumber}",
+            matches: [Match.fromJson(match)]));
       } else {
         allRounds[roundNumber - 1].addMatch(match);
       }
     }
-    if(allRounds.length >= 1 ){
+    if (allRounds.length >= 1) {
       allRounds.last.roundHeader = "Finals";
     }
-    if(allRounds.length >= 2 ){
-      allRounds[allRounds.length -2].roundHeader = "Semi Finals";
+    if (allRounds.length >= 2) {
+      allRounds[allRounds.length - 2].roundHeader = "Semi Finals";
     }
     return allRounds;
   }
 }
 
-class Round{
+class TournamentRound {
   String roundHeader;
   int roundNumber;
-  List<Map<String, dynamic>> matches;
+  List<Match> matches;
 
-  Round({required this.roundNumber, required this.roundHeader, required this.matches});
+  TournamentRound(
+      {required this.roundNumber,
+      required this.roundHeader,
+      required this.matches});
 
-  void addMatch(Map<String, dynamic> match){
-    matches.add(match);
+  void addMatch(Map<String, dynamic> datamap) {
+    matches.add(Match.fromJson(datamap));
   }
 }
+
+
