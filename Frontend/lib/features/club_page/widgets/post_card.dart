@@ -3,7 +3,7 @@ import 'package:darts_application/models/club_post.dart';
 
 class PostCard extends StatelessWidget {
   final ClubPost post;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const PostCard({super.key, required this.post, required this.onTap});
 
