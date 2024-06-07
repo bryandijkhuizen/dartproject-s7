@@ -356,6 +356,7 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
                 '501',
                 style: TextStyle(fontSize: 16),
               ),
+              const SizedBox(width: 20),
               Checkbox(
                 value: isFriendly,
                 onChanged: (value) {

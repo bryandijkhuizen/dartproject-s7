@@ -52,7 +52,11 @@ class _PlayerSelectorState extends State<PlayerSelector> {
         }).toList();
 
         setState(() {
-          allPlayers = players;
+          if (players.isNotEmpty) {
+            allPlayers = players;
+          } else {
+            allPlayers = [];
+          }
         });
       } else {
         final response = await Supabase.instance.client
