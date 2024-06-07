@@ -43,7 +43,7 @@ class HomeView extends StatelessWidget {
         Provider(
           create: (_) => NewsFeedStore(
             context.read<PostService>(),
-          )..limit = 2,
+          ),
         ),
         Provider(
           create: (_) => NextMatchStore(
