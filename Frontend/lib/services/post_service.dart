@@ -1,4 +1,4 @@
-import 'package:darts_application/models/club_post.dart';
+import 'package:darts_application/models/club_posts_response.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PostService {
@@ -6,7 +6,7 @@ class PostService {
 
   const PostService(this._supabaseClient);
 
-  Future<List<ClubPost>> getLastClubPosts({
+  Future<ClubPostsResponse> getLastClubPosts({
     int limit = 3,
     int offset = 0,
     List<int> clubIds = const [],
@@ -23,11 +23,9 @@ class PostService {
 
     final response = await supabaseRequest
         .order('created_at', ascending: false)
-        .range(from, to);
+        .range(from, to)
+        .count();
 
-    List<ClubPost> posts =
-        response.map((post) => ClubPost.fromJson(post)).toList();
-
-    return posts;
+    return ClubPostsResponse.fromPostgrestResponse(response);
   }
 }

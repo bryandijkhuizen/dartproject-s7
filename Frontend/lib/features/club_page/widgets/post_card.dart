@@ -12,7 +12,6 @@ class PostCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        margin: const EdgeInsets.all(8.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15.0),
         ),
@@ -42,7 +41,8 @@ class PostCard extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.8),
-                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(15.0)),
+                  borderRadius: const BorderRadius.vertical(
+                      bottom: Radius.circular(15.0)),
                 ),
                 padding: const EdgeInsets.all(8.0),
                 child: Text(

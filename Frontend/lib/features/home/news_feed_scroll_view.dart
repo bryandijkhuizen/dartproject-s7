@@ -9,8 +9,14 @@ import 'package:provider/provider.dart';
 class NewsFeedScrollView extends StatelessWidget {
   final List<Widget>? prefixSlivers;
   final List<Widget>? suffixSlivers;
+  final bool enableShowMore;
 
-  const NewsFeedScrollView({super.key, this.prefixSlivers, this.suffixSlivers});
+  const NewsFeedScrollView({
+    super.key,
+    this.prefixSlivers,
+    this.suffixSlivers,
+    this.enableShowMore = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -59,14 +65,43 @@ class NewsFeedScrollView extends StatelessWidget {
 
               return SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (context, index) => PostCard(
-                    post: newsFeedStore.posts[index],
-                    onTap: () {
-                      context
-                          .go('/clubs/posts/${newsFeedStore.posts[index].id}');
-                    },
-                  ),
-                  childCount: newsFeedStore.posts.length,
+                  (context, index) {
+                    if (index > newsFeedStore.posts.length) {
+                      return null;
+                    }
+
+                    if (index == newsFeedStore.posts.length) {
+                      return enableShowMore &&
+                              newsFeedStore.queryResults >
+                                  newsFeedStore.posts.length
+                          ? Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                                vertical: 16.0,
+                              ),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  newsFeedStore.loadMorePosts();
+                                },
+                                child: const Text('Show more'),
+                              ),
+                            )
+                          : null;
+                    }
+
+                    return Padding(
+                      padding: const EdgeInsets.all(
+                        8.0,
+                      ),
+                      child: PostCard(
+                        post: newsFeedStore.posts[index],
+                        onTap: () {
+                          context.go(
+                              '/clubs/posts/${newsFeedStore.posts[index].id}');
+                        },
+                      ),
+                    );
+                  },
                 ),
               );
             },
