@@ -1,9 +1,10 @@
 import 'package:darts_application/features/club_page/widgets/post_card.dart';
+import 'package:darts_application/features/home/post_detail_dialog_view.dart';
+import 'package:darts_application/models/club_post.dart';
 import 'package:darts_application/stores/news_feed_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class NewsFeedScrollView extends StatelessWidget {
@@ -89,15 +90,39 @@ class NewsFeedScrollView extends StatelessWidget {
                           : null;
                     }
 
+                    ClubPost post = newsFeedStore.posts[index];
+
                     return Padding(
                       padding: const EdgeInsets.all(
                         8.0,
                       ),
                       child: PostCard(
-                        post: newsFeedStore.posts[index],
+                        post: post,
                         onTap: () {
-                          context.go(
-                              '/clubs/posts/${newsFeedStore.posts[index].id}');
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              Widget dialogContent =
+                                  PostDetailDialogView(post: post);
+
+                              final showFullScreenDialog =
+                                  MediaQuery.sizeOf(context).width < 600;
+
+                              if (showFullScreenDialog) {
+                                return Dialog.fullscreen(
+                                  child: dialogContent,
+                                );
+                              } else {
+                                return Dialog(
+                                  child: ConstrainedBox(
+                                    constraints:
+                                        const BoxConstraints(maxWidth: 400),
+                                    child: dialogContent,
+                                  ),
+                                );
+                              }
+                            },
+                          );
                         },
                       ),
                     );

@@ -30,6 +30,9 @@ ThemeData darkTheme = ThemeData(
     margin: EdgeInsets.all(0.0),
   ),
   colorScheme: darkColorScheme,
+  dialogTheme: DialogTheme(
+    backgroundColor: darkColorScheme.surface,
+  ),
   dropdownMenuTheme: DropdownMenuThemeData(
     menuStyle: MenuStyle(
       backgroundColor: WidgetStatePropertyAll(darkColorScheme.surface),
