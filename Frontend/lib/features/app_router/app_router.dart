@@ -7,6 +7,7 @@ import 'package:darts_application/features/clubs/views/club_registration_view.da
 import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
 import 'package:darts_application/features/create_match/single_match/edit_single_match_page.dart';
 import 'package:darts_application/features/avatar_picker/views/avatar_picker_view.dart';
+import 'package:darts_application/features/home/views/home_view.dart';
 import 'package:darts_application/features/settings/views/settings_email_view.dart';
 import 'package:darts_application/features/settings/views/settings_name_view.dart';
 import 'package:darts_application/features/settings/views/settings_password_view.dart';
@@ -133,7 +134,7 @@ final router = GoRouter(
                   GoRoute(
                     path: '/',
                     builder: (context, state) {
-                      return helloComponent;
+                      return const HomeView();
                     },
                   ),
                 ],
@@ -207,8 +208,7 @@ final router = GoRouter(
                   GoRoute(
                     path: '/',
                     builder: (context, state) {
-                      // Ignore this for now
-                      return helloComponent;
+                      return const HomeView();
                     },
                   ),
                 ],

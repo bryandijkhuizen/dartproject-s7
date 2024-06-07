@@ -96,13 +96,16 @@ abstract class _ClubRegistrationViewStore with Store {
 class SupabaseResultType {
   final bool success;
   final String message;
+  final dynamic data;
 
-  const SupabaseResultType({required this.success, required this.message});
+  const SupabaseResultType(
+      {required this.success, required this.message, this.data});
 
   factory SupabaseResultType.fromJson(Map<String, dynamic> json) {
     return SupabaseResultType(
       success: json['success'],
       message: json['message'],
+      data: json['data'],
     );
   }
 }

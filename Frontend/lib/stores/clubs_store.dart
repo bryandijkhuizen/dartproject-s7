@@ -11,7 +11,9 @@ abstract class _ClubsStore with Store {
   final SupabaseClient _supabase;
   final UserStore _userStore;
 
-  _ClubsStore(this._supabase, this._userStore);
+  _ClubsStore(this._supabase, this._userStore) {
+    fetchUserClubs();
+  }
 
   // Clubs
   @observable
