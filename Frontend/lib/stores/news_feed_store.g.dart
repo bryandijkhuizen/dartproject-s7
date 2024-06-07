@@ -52,6 +52,22 @@ mixin _$NewsFeedStore on _NewsFeedStore, Store {
     });
   }
 
+  late final _$queryResultsAtom =
+      Atom(name: '_NewsFeedStore.queryResults', context: context);
+
+  @override
+  int get queryResults {
+    _$queryResultsAtom.reportRead();
+    return super.queryResults;
+  }
+
+  @override
+  set queryResults(int value) {
+    _$queryResultsAtom.reportWrite(value, super.queryResults, () {
+      super.queryResults = value;
+    });
+  }
+
   late final _$_postsAtom =
       Atom(name: '_NewsFeedStore._posts', context: context);
 
@@ -145,6 +161,7 @@ mixin _$NewsFeedStore on _NewsFeedStore, Store {
   String toString() {
     return '''
 loading: ${loading},
+queryResults: ${queryResults},
 posts: ${posts},
 limit: ${limit},
 offset: ${offset},
