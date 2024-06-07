@@ -13,6 +13,9 @@ abstract class _NewsFeedStore with Store {
   bool loading = true;
 
   @observable
+  int queryResults = 0;
+
+  @observable
   List<ClubPost> _posts = [];
 
   @computed
@@ -47,16 +50,19 @@ abstract class _NewsFeedStore with Store {
 
   @action
   Future<void> _loadClubPosts({bool append = false}) async {
-    final posts = await _postService.getLastClubPosts(
+    final postsResponse = await _postService.getLastClubPosts(
       limit: _limit,
       offset: _offset,
       clubIds: _clubIds,
     );
+
     if (append) {
-      _posts = [..._posts, ...posts];
+      _posts = [..._posts, ...postsResponse.posts];
     } else {
-      _posts = posts;
+      _posts = postsResponse.posts;
     }
+
+    queryResults = postsResponse.queryResults;
   }
 
   @action

@@ -43,7 +43,7 @@ class HomeView extends StatelessWidget {
         Provider(
           create: (_) => NewsFeedStore(
             context.read<PostService>(),
-          ),
+          )..limit = 2,
         ),
         Provider(
           create: (_) => NextMatchStore(
@@ -142,7 +142,6 @@ class HomeView extends StatelessWidget {
       constraints: const BoxConstraints(maxWidth: 840),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
             flex: 2,
@@ -154,7 +153,9 @@ class HomeView extends StatelessWidget {
             width: 48,
           ),
           const Expanded(
-            child: NewsFeedScrollView(),
+            child: NewsFeedScrollView(
+              enableShowMore: true,
+            ),
           ),
         ],
       ),
