@@ -4,7 +4,7 @@ enum StartingMethod {
 }
 
 class TournamentModel {
-  final String id;
+  final String? id;
   final String name;
   final String location;
   final DateTime startTime;
@@ -27,18 +27,18 @@ class TournamentModel {
       location: json['location'],
       startTime: DateTime.parse(json['start_time']),
       clubId: json['club_id'],
-      startingMethod: StartingMethod.values.firstWhere((e) => e.toString().split('.').last == json['starting_method']),
+      startingMethod: json['starting_method'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      // 'id': id,
+      'id': id,
       'name': name,
       'location': location,
       'start_time': startTime.toIso8601String(),
       'club_id': clubId,
-      'starting_method': startingMethod.toString().split('.').last,
+      'starting_method': startingMethod.toString(),
     };
   }
 }
