@@ -61,33 +61,46 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
     });
   }
 
+  DateTime parseDateTime(DateTime date, TimeOfDay time) {
+    return DateTime(date.year, date.month, date.day, time.hour, time.minute);
+  }
+
   Future<void> submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
-      String name = _nameController.text;
-      String location = _locationController.text;
-      DateTime tournamentDateTime = DateTime(
-          selectedDate.year,
-          selectedDate.month,
-          selectedDate.day,
-          selectedTime.hour,
-          selectedTime.minute);
+      final String tournamentName = _nameController.text;
+      final String tournamentLocation = _locationController.text;
+      final DateTime tournamentDateTime =
+          parseDateTime(selectedDate, selectedTime);
+      final StartingMethod tournamentStartingMethod =
+          isBulloffTournament ? StartingMethod.bulloff : StartingMethod.random;
 
-      final tournament = TournamentModel(
-        id: UniqueKey().toString(),
-        name: name,
-        location: location,
-        startTime: tournamentDateTime,
-        startingMethod: isBulloffTournament
-            ? StartingMethod.bulloff
-            : StartingMethod.random,
-      );
+      TournamentModel tournament = TournamentModel(
+          id: null,
+          name: tournamentName,
+          location: tournamentLocation,
+          startTime: tournamentDateTime,
+          startingMethod: tournamentStartingMethod);
 
       try {
-        await Supabase.instance.client
-            .from('tournament')
-            .upsert(tournament.toJson());
+        final result =
+            await Supabase.instance.client.rpc('create_tournament', params: {
+          'p_name': tournament.name,
+          'p_location': tournament.location,
+          'p_start_time': tournament.startTime.toIso8601String(),
+          'p_starting_method': tournament.startingMethod.name,
+        });
+
+        final String newTournamentID = result.data.toString();
+
+        tournament = TournamentModel(
+            id: newTournamentID,
+            name: tournamentName,
+            location: tournamentLocation,
+            startTime: tournamentDateTime,
+            startingMethod: tournamentStartingMethod);
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Tournament ${tournament.name} created!')),
+          SnackBar(content: Text('Tournament $tournamentName created!')),
         );
 
         context.push('/matches/create_tournament', extra: {
