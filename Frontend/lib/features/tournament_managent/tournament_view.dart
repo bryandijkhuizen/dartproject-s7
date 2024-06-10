@@ -5,6 +5,7 @@ import 'package:darts_application/models/permission_list.dart';
 import 'package:darts_application/models/permissions.dart';
 import 'package:darts_application/models/tournament_rounds.dart';
 import 'package:darts_application/stores/user_store.dart';
+import 'package:darts_application/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -101,6 +102,7 @@ class _TournamentViewState extends State<TournamentView> {
         if (permissions.systemPermissions
             .contains(PermissionList.markInTournament.permissionName)) {
           trail.add(IconButton(
+            color: darkColorScheme.onSecondary,
             icon: const Icon(Icons.play_arrow),
             onPressed: () async {
               Navigator.of(context).push(
@@ -117,6 +119,7 @@ class _TournamentViewState extends State<TournamentView> {
       if (permissions.systemPermissions
           .contains(PermissionList.updateTournament.permissionName)) {
         trail.add(IconButton(
+          color: darkColorScheme.onSecondary,
           icon: const Icon(Icons.edit),
           onPressed: () async {
             Navigator.of(context).push(
@@ -135,6 +138,7 @@ class _TournamentViewState extends State<TournamentView> {
                 .getClubIdByPermission(PermissionList.markInClubTournament) ==
             clubId) {
           trail.add(IconButton(
+            color: darkColorScheme.onSecondary,
             icon: const Icon(Icons.play_arrow),
             onPressed: () async {
               Navigator.of(context).push(
@@ -152,6 +156,7 @@ class _TournamentViewState extends State<TournamentView> {
               .getClubIdByPermission(PermissionList.updateClubTournament) ==
           clubId) {
         trail.add(IconButton(
+          color: darkColorScheme.onSecondary,
           icon: const Icon(Icons.edit),
           onPressed: () async {
             Navigator.of(context).push(
