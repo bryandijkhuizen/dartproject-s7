@@ -19,16 +19,16 @@ void main() {
       expect(find.text('Please enter a location'), findsOneWidget);
     });
 
-    // testWidgets('Updates leg amount state on user input',
-    //     (WidgetTester tester) async {
-    //   await tester.pumpWidget(const MaterialApp(home: CreateSingleMatchPage()));
+    testWidgets('Updates leg amount state on user input',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: CreateSingleMatchPage()));
 
-    //   // Enter the leg amount
-    //   await tester.enterText(find.byType(TextFormField).at(1), '3');
-    //   await tester.pump();
+      // Enter the leg amount
+      await tester.enterText(find.byType(TextFormField).at(1), '3');
+      await tester.pump();
 
-    //   // Verify if the leg amount state is updated
-    //   expect(find.text('3'), findsOneWidget);
-    // });
+      // Verify if the leg amount state is updated
+      expect(find.text('3'), findsOneWidget);
+    });
   });
 }
