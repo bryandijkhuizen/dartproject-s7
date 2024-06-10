@@ -325,38 +325,55 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
-              Checkbox(
-                value: is301Match,
-                onChanged: (value) {
-                  setState(() {
-                    is301Match = value!;
-                    if (is301Match) {
-                      is501Match = false;
-                    }
-                  });
-                },
+              Expanded(
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: is301Match,
+                      onChanged: (value) {
+                        setState(() {
+                          is301Match = value!;
+                          if (is301Match) {
+                            is501Match = false;
+                          }
+                        });
+                      },
+                    ),
+                    const Text(
+                      '301',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
               ),
-              const Text(
-                '301',
-                style: TextStyle(fontSize: 16),
+              Expanded(
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: is501Match,
+                      onChanged: (value) {
+                        setState(() {
+                          is501Match = value!;
+                          if (is501Match) {
+                            is301Match = false;
+                          }
+                        });
+                      },
+                    ),
+                    const Text(
+                      '501',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(width: 20),
-              Checkbox(
-                value: is501Match,
-                onChanged: (value) {
-                  setState(() {
-                    is501Match = value!;
-                    if (is501Match) {
-                      is301Match = false;
-                    }
-                  });
-                },
-              ),
-              const Text(
-                '501',
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(width: 20),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
               Checkbox(
                 value: isFriendly,
                 onChanged: (value) {
