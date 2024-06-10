@@ -8,10 +8,10 @@ void main() {
       await tester.pumpWidget(const MaterialApp(home: CreateTournamentPage()));
 
       // Ensure the "Create tournament" button is visible
-      await tester.ensureVisible(find.text('Create tournament'));
+      await tester.ensureVisible(find.text('Set up tournament'));
 
       // Leave the name field empty and click the create tournament button
-      await tester.tap(find.text('Create tournament'));
+      await tester.tap(find.text('Set up tournament'));
       await tester.pump();
 
       // Check if validation error is shown
@@ -22,10 +22,10 @@ void main() {
       await tester.pumpWidget(const MaterialApp(home: CreateTournamentPage()));
 
       // Ensure the "Create tournament" button is visible
-      await tester.ensureVisible(find.text('Create tournament'));
+      await tester.ensureVisible(find.text('Set up tournament'));
 
       // Leave the location field empty and click the create tournament button
-      await tester.tap(find.text('Create tournament'));
+      await tester.tap(find.text('Set up tournament'));
       await tester.pump();
 
       // Check if validation error is shown
