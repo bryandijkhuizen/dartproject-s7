@@ -67,10 +67,20 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
 
   Future<void> submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
-      final String tournamentName = _nameController.text;
-      final String tournamentLocation = _locationController.text;
       final DateTime tournamentDateTime =
           parseDateTime(selectedDate, selectedTime);
+
+      if (tournamentDateTime.isBefore(DateTime.now())) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content:
+                  Text('The tournament date and time must be in the future.')),
+        );
+        return;
+      }
+      
+      final String tournamentName = _nameController.text;
+      final String tournamentLocation = _locationController.text;
       final StartingMethod tournamentStartingMethod =
           isBulloffTournament ? StartingMethod.bulloff : StartingMethod.random;
 
@@ -98,10 +108,6 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
             location: tournamentLocation,
             startTime: tournamentDateTime,
             startingMethod: tournamentStartingMethod);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Tournament $tournamentName created!')),
-        );
 
         context.push('/matches/create_tournament', extra: {
           'tournament': tournament,
