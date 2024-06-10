@@ -22,3 +22,7 @@ Frontend/ios/Podfile.lock
 
 .DS_Store
 .idea
+Frontend/ios/Podfile.lock
+Frontend/ios/Runner.xcodeproj/project.pbxproj
+Frontend/ios/Runner/Info.plist
+Frontend/pubspec.lock
