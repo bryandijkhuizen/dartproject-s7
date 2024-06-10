@@ -136,8 +136,8 @@ abstract class _TournamentStore with Store {
       MatchModel newMatch = addMatch(
         firstPlayer,
         secondPlayer,
-        DateTime.now().add(const Duration(days: 1)),
-        setTarget, // Get this information from tournament settings page
+        tournament.startTime,
+        setTarget,
         legTarget,
       );
 
