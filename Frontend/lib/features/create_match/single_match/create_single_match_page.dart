@@ -69,8 +69,8 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
       DateTime matchDateTime = DateTime(selectedDate.year, selectedDate.month,
           selectedDate.day, selectedTime.hour, selectedTime.minute);
 
-      final match = MatchModel(
-        id: UniqueKey().toString(),
+      var match = Match(
+        id: null,
         player1Id: playerOne,
         player2Id: playerTwo,
         date: matchDateTime,
@@ -84,7 +84,9 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
       );
 
       try {
-        await Supabase.instance.client.from('match').upsert(match.toJson());
+        int matchId = await Supabase.instance.client
+            .rpc('create_match', params: match.toInsertableJson());
+        match.id = matchId;
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => ConfirmationPage(match: match),
