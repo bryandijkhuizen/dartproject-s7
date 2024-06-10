@@ -17,15 +17,12 @@ class Club {
     required this.bannerImageURL,
   });
 
-  factory Club.fromJson(Map<String, dynamic> dataMap) {
-    return Club(
-      id: dataMap['id'],
-      name: dataMap['name']?.toString() ?? '',
-      address: dataMap['address']?.toString() ?? '',
-      postalCode: dataMap['postal_code']?.toString() ?? '',
-      city: dataMap['city']?.toString() ?? '',
-      ownerID: dataMap['owner_id']?.toString(),
-      bannerImageURL: dataMap['banner_image_url']?.toString() ?? '',
-    );
-  }
+  Club.fromJson(Map<String, dynamic> dataMap)
+      : id = dataMap['id'],
+        name = dataMap['name'],
+        address = dataMap['address'],
+        postalCode = dataMap['postal_code'],
+        city = dataMap['city'],
+        ownerID = dataMap['owner_id'],
+        bannerImageURL = dataMap['banner_image_url'];
 }
