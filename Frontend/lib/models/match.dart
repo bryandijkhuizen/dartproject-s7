@@ -60,7 +60,7 @@ class MatchModel {
 }
 
 class Match {
-  late final int? id;
+  int? id;
   final String? player1Id;
   final String? player2Id;
   final DateTime date;
