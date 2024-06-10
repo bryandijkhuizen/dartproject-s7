@@ -67,7 +67,7 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
       DateTime matchDateTime = DateTime(selectedDate.year, selectedDate.month,
           selectedDate.day, selectedTime.hour, selectedTime.minute);
 
-      final match = Match(
+        var match = Match(
         id: null,
         player1Id: playerOne,
         player2Id: playerTwo,
