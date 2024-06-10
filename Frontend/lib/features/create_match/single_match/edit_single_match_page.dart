@@ -27,10 +27,12 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
   bool is301Match = true;
   bool is501Match = false;
 
-  String? playerOne;
-  String? playerTwo;
-  String playerOneName = 'to be decided';
-  String playerTwoName = 'to be decided';
+  bool isFriendly = false;
+
+  String playerOne = "";
+  String playerTwo = "";
+  String playerOneName = "";
+  String playerTwoName = "";
 
   int legAmount = 0;
   int setAmount = 0;
@@ -47,12 +49,13 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
     selectedTime = TimeOfDay.fromDateTime(selectedDate);
     is301Match = widget.match['starting_score'] == 301;
     is501Match = widget.match['starting_score'] == 501;
-    playerOne = widget.match['player_1_id'];
-    playerTwo = widget.match['player_2_id'];
-    playerOneName = widget.match['player_1_last_name'] ?? 'to be decided';
-    playerTwoName = widget.match['player_2_last_name'] ?? 'to be decided';
+    playerOne = widget.match['player_1_id'] ?? '';
+    playerTwo = widget.match['player_2_id'] ?? '';
+    playerOneName = widget.match['player_1_last_name'] ?? '';
+    playerTwoName = widget.match['player_2_last_name'] ?? '';
     legAmount = widget.match['leg_target'] ?? 0;
     setAmount = widget.match['set_target'] ?? 0;
+    isFriendly = widget.match['is_friendly'] ?? false;
   }
 
   @override
@@ -73,6 +76,12 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
     });
   }
 
+  void updateIsFriendly(bool value) {
+    setState(() {
+      isFriendly = value;
+    });
+  }
+
   void updateSelectedPlayer(String selectedOne, String selectedTwo,
       String selectedOneName, String selectedTwoName) {
     setState(() {
@@ -89,8 +98,8 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
       DateTime matchDateTime = DateTime(selectedDate.year, selectedDate.month,
           selectedDate.day, selectedTime.hour, selectedTime.minute);
 
-      final match = Match(
-        id: widget.match['id'],
+      final match = MatchModel(
+        id: widget.match['id'].toString(),
         player1Id: playerOne,
         player2Id: playerTwo,
         date: matchDateTime,
@@ -100,31 +109,27 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
         startingScore: is301Match ? 301 : 501,
         player1LastName: playerOneName,
         player2LastName: playerTwoName,
+        isFriendly: isFriendly,
       );
 
       try {
         await Supabase.instance.client
             .from('match')
             .update(match.toJson())
-            .eq('id', match.id as Object);
-        if (mounted) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => ConfirmationPage(match: match),
-            ),
-          );
+            .eq('id', match.id);
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Match updated!')),
-          );
-        }
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ConfirmationPage(match: match),
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Match updated!')),
+        );
       } catch (e) {
-        if(mounted){
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Something went wrong: $e')),
         );
-        }
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -320,35 +325,65 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: is301Match,
+                      onChanged: (value) {
+                        setState(() {
+                          is301Match = value!;
+                          if (is301Match) {
+                            is501Match = false;
+                          }
+                        });
+                      },
+                    ),
+                    const Text(
+                      '301',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: is501Match,
+                      onChanged: (value) {
+                        setState(() {
+                          is501Match = value!;
+                          if (is501Match) {
+                            is301Match = false;
+                          }
+                        });
+                      },
+                    ),
+                    const Text(
+                      '501',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
               Checkbox(
-                value: is301Match,
+                value: isFriendly,
                 onChanged: (value) {
                   setState(() {
-                    is301Match = value!;
-                    if (is301Match) {
-                      is501Match = false;
-                    }
+                    isFriendly = value!;
                   });
                 },
               ),
               const Text(
-                '301',
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(width: 20),
-              Checkbox(
-                value: is501Match,
-                onChanged: (value) {
-                  setState(() {
-                    is501Match = value!;
-                    if (is501Match) {
-                      is301Match = false;
-                    }
-                  });
-                },
-              ),
-              const Text(
-                '501',
+                'Friendly match',
                 style: TextStyle(fontSize: 16),
               ),
             ],
@@ -369,7 +404,8 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
-        PlayerSelector(onSelectionChanged: updateSelectedPlayer),
+        PlayerSelector(
+            onSelectionChanged: updateSelectedPlayer, isFriendly: isFriendly),
         const SizedBox(height: 20),
         Center(
           child: ElevatedButton(

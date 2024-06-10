@@ -25,6 +25,8 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
   bool is301Match = true;
   bool is501Match = false;
 
+  bool isFriendly = false;
+
   String playerOne = "";
   String playerTwo = "";
   String playerOneName = "";
@@ -67,8 +69,8 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
       DateTime matchDateTime = DateTime(selectedDate.year, selectedDate.month,
           selectedDate.day, selectedTime.hour, selectedTime.minute);
 
-        var match = Match(
-        id: null,
+      final match = MatchModel(
+        id: UniqueKey().toString(),
         player1Id: playerOne,
         player2Id: playerTwo,
         date: matchDateTime,
@@ -78,11 +80,11 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
         startingScore: is301Match ? 301 : 501,
         player1LastName: playerOneName,
         player2LastName: playerTwoName,
+        isFriendly: isFriendly,
       );
 
       try {
-        int matchId = await Supabase.instance.client.rpc('create_match' , params: match.toInsertableJson());
-        match.id = matchId;
+        await Supabase.instance.client.from('match').upsert(match.toJson());
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => ConfirmationPage(match: match),
@@ -286,35 +288,65 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: is301Match,
+                      onChanged: (value) {
+                        setState(() {
+                          is301Match = value!;
+                          if (is301Match) {
+                            is501Match = false;
+                          }
+                        });
+                      },
+                    ),
+                    const Text(
+                      '301',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: is501Match,
+                      onChanged: (value) {
+                        setState(() {
+                          is501Match = value!;
+                          if (is501Match) {
+                            is301Match = false;
+                          }
+                        });
+                      },
+                    ),
+                    const Text(
+                      '501',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
               Checkbox(
-                value: is301Match,
+                value: isFriendly,
                 onChanged: (value) {
                   setState(() {
-                    is301Match = value!;
-                    if (is301Match) {
-                      is501Match = false;
-                    }
+                    isFriendly = value!;
                   });
                 },
               ),
               const Text(
-                '301',
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(width: 20),
-              Checkbox(
-                value: is501Match,
-                onChanged: (value) {
-                  setState(() {
-                    is501Match = value!;
-                    if (is501Match) {
-                      is301Match = false;
-                    }
-                  });
-                },
-              ),
-              const Text(
-                '501',
+                'Friendly match',
                 style: TextStyle(fontSize: 16),
               ),
             ],
@@ -335,7 +367,10 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
-        PlayerSelector(onSelectionChanged: updateSelectedPlayer),
+        PlayerSelector(
+          onSelectionChanged: updateSelectedPlayer,
+          isFriendly: isFriendly,
+        ),
         const SizedBox(height: 20),
         Center(
           child: ElevatedButton(
