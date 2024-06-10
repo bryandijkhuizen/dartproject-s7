@@ -1,6 +1,7 @@
 import 'package:darts_application/extensions.dart';
 import 'package:darts_application/stores/tournament_store.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../tournament_brackets.dart';
 
@@ -81,9 +82,7 @@ class TournamentBracketScreen extends StatelessWidget {
 
                             if (result.success) {
                               // ToDo return to home page
-                              Navigator.push('/');
-                              context.push('/matches/create_tournament');
-                              print("het werkt ");
+                              GoRouter.of(context).go('/');
                             }
                           }
                         },
