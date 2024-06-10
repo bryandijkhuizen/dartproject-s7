@@ -1,62 +1,44 @@
+import 'package:darts_application/models/tournament.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:darts_application/components/input_fields/time_picker.dart';
 import 'package:darts_application/components/input_fields/date_picker.dart';
-import 'package:darts_application/features/create_match/single_match/player_selector.dart';
-import 'package:darts_application/features/create_match/single_match/confirmation_page.dart';
-import 'package:darts_application/models/match.dart';
+import 'package:darts_application/features/create_tournament/player_selector.dart';
+import 'package:darts_application/models/player.dart';
 
-class EditSingleMatchPage extends StatefulWidget {
-  final Map<String, dynamic> match;
-
-  const EditSingleMatchPage({super.key, required this.match});
+class CreateTournamentPage extends StatefulWidget {
+  const CreateTournamentPage({super.key});
 
   @override
-  State<EditSingleMatchPage> createState() => _EditSingleMatchPageState();
+  State<CreateTournamentPage> createState() => _CreateTournamentPageState();
 }
 
-class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
+class _CreateTournamentPageState extends State<CreateTournamentPage> {
   final _formKey = GlobalKey<FormState>();
+
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
 
-  late DateTime selectedDate;
-  late TimeOfDay selectedTime;
+  late DateTime selectedDate = DateTime.now();
+  late TimeOfDay selectedTime = TimeOfDay.now();
+
+  bool isBulloffTournament = true;
+  bool isRandomTournament = false;
 
   bool is301Match = true;
   bool is501Match = false;
 
-  String playerOne = "";
-  String playerTwo = "";
-  String playerOneName = "";
-  String playerTwoName = "";
+  int legAmount = 1;
+  int setAmount = 1;
 
-  int legAmount = 0;
-  int setAmount = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeFields();
-  }
-
-  void _initializeFields() {
-    _locationController.text = widget.match['location'] ?? '';
-    selectedDate = DateTime.parse(widget.match['date']);
-    selectedTime = TimeOfDay.fromDateTime(selectedDate);
-    is301Match = widget.match['starting_score'] == 301;
-    is501Match = widget.match['starting_score'] == 501;
-    playerOne = widget.match['player_1_id'] ?? '';
-    playerTwo = widget.match['player_2_id'] ?? '';
-    playerOneName = widget.match['player_1_last_name'] ?? '';
-    playerTwoName = widget.match['player_2_last_name'] ?? '';
-    legAmount = widget.match['leg_target'] ?? 0;
-    setAmount = widget.match['set_target'] ?? 0;
-  }
+  List<PlayerModel> selectedPlayers = [];
 
   @override
   void dispose() {
+    _nameController.dispose();
     _locationController.dispose();
     super.dispose();
   }
@@ -73,49 +55,67 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
     });
   }
 
-  void updateSelectedPlayer(String selectedOne, String selectedTwo,
-      String selectedOneName, String selectedTwoName) {
+  void updateSelectedPlayers(List<PlayerModel> players) {
     setState(() {
-      playerOne = selectedOne;
-      playerTwo = selectedTwo;
-      playerOneName = selectedOneName;
-      playerTwoName = selectedTwoName;
+      selectedPlayers = players;
     });
+  }
+
+  DateTime parseDateTime(DateTime date, TimeOfDay time) {
+    return DateTime(date.year, date.month, date.day, time.hour, time.minute);
   }
 
   Future<void> submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
-      String location = _locationController.text;
-      DateTime matchDateTime = DateTime(selectedDate.year, selectedDate.month,
-          selectedDate.day, selectedTime.hour, selectedTime.minute);
+      final DateTime tournamentDateTime =
+          parseDateTime(selectedDate, selectedTime);
 
-      final match = MatchModel(
-        id: widget.match['id'].toString(),
-        player1Id: playerOne,
-        player2Id: playerTwo,
-        date: matchDateTime,
-        location: location,
-        setTarget: setAmount,
-        legTarget: legAmount,
-        startingScore: is301Match ? 301 : 501,
-        player1LastName: playerOneName,
-        player2LastName: playerTwoName,
-      );
+      if (tournamentDateTime.isBefore(DateTime.now())) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content:
+                  Text('The tournament date and time must be in the future.')),
+        );
+        return;
+      }
+      
+      final String tournamentName = _nameController.text;
+      final String tournamentLocation = _locationController.text;
+      final StartingMethod tournamentStartingMethod =
+          isBulloffTournament ? StartingMethod.bulloff : StartingMethod.random;
+
+      TournamentModel tournament = TournamentModel(
+          id: null,
+          name: tournamentName,
+          location: tournamentLocation,
+          startTime: tournamentDateTime,
+          startingMethod: tournamentStartingMethod);
 
       try {
-        await Supabase.instance.client
-            .from('match')
-            .update(match.toJson())
-            .eq('id', match.id);
+        final result =
+            await Supabase.instance.client.rpc('create_tournament', params: {
+          'p_name': tournament.name,
+          'p_location': tournament.location,
+          'p_start_time': tournament.startTime.toIso8601String(),
+          'p_starting_method': tournament.startingMethod.name,
+        });
 
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ConfirmationPage(match: match),
-          ),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Match updated!')),
-        );
+        final int newTournamentID = result;
+
+        tournament = TournamentModel(
+            id: newTournamentID,
+            name: tournamentName,
+            location: tournamentLocation,
+            startTime: tournamentDateTime,
+            startingMethod: tournamentStartingMethod);
+
+        context.push('/matches/create_tournament', extra: {
+          'tournament': tournament,
+          'players': selectedPlayers,
+          'setTarget': setAmount,
+          'legTarget': legAmount,
+          'startingScore': is301Match ? 301 : 501
+        });
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Something went wrong: $e')),
@@ -124,7 +124,7 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('You did not fill in all the required fields!')),
+            content: Text('Provide a valid input for the required fields!')),
       );
     }
   }
@@ -132,16 +132,15 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Match')),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
+      appBar: AppBar(title: const Text('Create Tournament')),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
           child: Form(
             key: _formKey,
             child: LayoutBuilder(
               builder: (context, constraints) {
                 if (constraints.maxWidth > 600) {
-                  // For larger screens, display two columns side by side
                   return Column(
                     children: [
                       Row(
@@ -157,7 +156,6 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
                     ],
                   );
                 } else {
-                  // For smaller screens, display columns vertically
                   return Column(
                     children: [
                       buildLeftColumn(),
@@ -183,6 +181,29 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
         const Padding(
           padding: EdgeInsets.all(8.0),
           child: Text(
+            'Name',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextFormField(
+            controller: _nameController,
+            decoration: const InputDecoration(
+              labelText: 'Enter the name of the tournament',
+              border: OutlineInputBorder(),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a name';
+              }
+              return null;
+            },
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
             'Location',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
@@ -192,7 +213,7 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
           child: TextFormField(
             controller: _locationController,
             decoration: const InputDecoration(
-              labelText: 'Enter the location of the match',
+              labelText: 'Enter the location of the tournament',
               border: OutlineInputBorder(),
             ),
             validator: (value) {
@@ -210,8 +231,7 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
-        DatePicker(
-            onDateSelected: updateSelectedDate, initialDate: selectedDate),
+        DatePicker(onDateSelected: updateSelectedDate),
         const Padding(
           padding: EdgeInsets.all(8.0),
           child: Text(
@@ -219,8 +239,7 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
-        TimePicker(
-            onTimeSelected: updateSelectedTime, initialTime: selectedTime),
+        TimePicker(onTimeSelected: updateSelectedTime),
       ],
     );
   }
@@ -242,10 +261,9 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
             children: [
               Expanded(
                 child: TextFormField(
-                  initialValue: legAmount.toString(),
                   onChanged: (value) {
                     setState(() {
-                      legAmount = int.tryParse(value) ?? 0;
+                      legAmount = int.tryParse(value) ?? 1;
                     });
                   },
                   decoration: const InputDecoration(
@@ -255,8 +273,10 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter leg amount';
+                    if (value == null ||
+                        value.isEmpty ||
+                        int.parse(value) < 1) {
+                      return 'Please enter a leg amount of at least 1';
                     }
                     return null;
                   },
@@ -276,10 +296,9 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
             children: [
               Expanded(
                 child: TextFormField(
-                  initialValue: setAmount.toString(),
                   onChanged: (value) {
                     setState(() {
-                      setAmount = int.tryParse(value) ?? 0;
+                      setAmount = int.tryParse(value) ?? 1;
                     });
                   },
                   decoration: const InputDecoration(
@@ -289,8 +308,10 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter set amount';
+                    if (value == null ||
+                        value.isEmpty ||
+                        int.parse(value) < 1) {
+                      return 'Please enter a set amount of at least 1';
                     }
                     return null;
                   },
@@ -349,6 +370,51 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
             ],
           ),
         ),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            'Starting method',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Checkbox(
+                value: isBulloffTournament,
+                onChanged: (value) {
+                  setState(() {
+                    isBulloffTournament = value!;
+                    if (isBulloffTournament) {
+                      isRandomTournament = false;
+                    }
+                  });
+                },
+              ),
+              const Text(
+                'Bull-off',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(width: 20),
+              Checkbox(
+                value: isRandomTournament,
+                onChanged: (value) {
+                  setState(() {
+                    isRandomTournament = value!;
+                    if (isRandomTournament) {
+                      isBulloffTournament = false;
+                    }
+                  });
+                },
+              ),
+              const Text(
+                'Random',
+                style: TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -357,14 +423,9 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text(
-            'Select players',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-        ),
-        PlayerSelector(onSelectionChanged: updateSelectedPlayer),
+        Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: PlayerSelector(onSelectionChanged: updateSelectedPlayers)),
         const SizedBox(height: 20),
         Center(
           child: ElevatedButton(
@@ -378,7 +439,7 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
             ),
             onPressed: submitForm,
             child: const Text(
-              'Update match',
+              'Set up tournament',
               style: TextStyle(fontSize: 20),
               overflow: TextOverflow.ellipsis,
             ),
