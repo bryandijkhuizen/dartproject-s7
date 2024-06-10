@@ -81,7 +81,8 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
       );
 
       try {
-        await Supabase.instance.client.from('match').upsert(match.toJson());
+        int matchId = await Supabase.instance.client.rpc('create_match' , params: match.toInsertableJson());
+        match.id = matchId;
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => ConfirmationPage(match: match),
