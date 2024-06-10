@@ -14,9 +14,73 @@ ColorScheme darkColorScheme = ColorScheme.fromSeed(
   surfaceContainerHigh: const Color.fromARGB(255, 48, 48, 48),
 );
 
+TextTheme darkTextTheme = TextTheme(
+  displayLarge: GoogleFonts.poppins(
+    fontSize: 94,
+    fontWeight: FontWeight.w300,
+    letterSpacing: -1.5,
+  ),
+  displayMedium: GoogleFonts.poppins(
+    fontSize: 59,
+    fontWeight: FontWeight.w300,
+    letterSpacing: -0.5,
+  ),
+  displaySmall: GoogleFonts.poppins(
+    fontSize: 47,
+    fontWeight: FontWeight.w400,
+  ),
+  headlineMedium: GoogleFonts.poppins(
+    fontSize: 33,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.25,
+  ),
+  headlineSmall: GoogleFonts.poppins(
+    fontSize: 24,
+    fontWeight: FontWeight.w400,
+  ),
+  titleLarge: GoogleFonts.poppins(
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+    letterSpacing: 0.15,
+  ),
+  titleMedium: GoogleFonts.poppins(
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+    letterSpacing: 0.15,
+  ),
+  titleSmall: GoogleFonts.poppins(
+    fontSize: 14,
+    fontWeight: FontWeight.bold,
+    letterSpacing: 0.1,
+  ),
+  bodyLarge: GoogleFonts.poppins(
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.5,
+  ),
+  bodyMedium: GoogleFonts.poppins(
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.25,
+  ),
+  labelLarge: GoogleFonts.poppins(
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 1.25,
+  ),
+  bodySmall: GoogleFonts.poppins(
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.4,
+  ),
+  labelSmall: GoogleFonts.poppins(
+    fontSize: 10,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 1.5,
+  ),
+);
+
 ThemeData darkTheme = ThemeData(
-  tooltipTheme:
-          const TooltipThemeData(preferBelow: false),
   appBarTheme: AppBarTheme(
     backgroundColor:
         darkColorScheme.primary, // Ensures AppBar uses the exact red color
@@ -32,6 +96,9 @@ ThemeData darkTheme = ThemeData(
     margin: EdgeInsets.all(0.0),
   ),
   colorScheme: darkColorScheme,
+  datePickerTheme: DatePickerThemeData(
+    headerForegroundColor: darkColorScheme.onSurface,
+  ),
   dropdownMenuTheme: DropdownMenuThemeData(
     menuStyle: MenuStyle(
       backgroundColor: WidgetStatePropertyAll(darkColorScheme.surface),
@@ -81,71 +148,7 @@ ThemeData darkTheme = ThemeData(
     position: PopupMenuPosition.under,
   ),
   scaffoldBackgroundColor: darkColorScheme.surface,
-  textTheme: TextTheme(
-    displayLarge: GoogleFonts.poppins(
-      fontSize: 94,
-      fontWeight: FontWeight.w300,
-      letterSpacing: -1.5,
-    ),
-    displayMedium: GoogleFonts.poppins(
-      fontSize: 59,
-      fontWeight: FontWeight.w300,
-      letterSpacing: -0.5,
-    ),
-    displaySmall: GoogleFonts.poppins(
-      fontSize: 47,
-      fontWeight: FontWeight.w400,
-    ),
-    headlineMedium: GoogleFonts.poppins(
-      fontSize: 33,
-      fontWeight: FontWeight.w400,
-      letterSpacing: 0.25,
-    ),
-    headlineSmall: GoogleFonts.poppins(
-      fontSize: 24,
-      fontWeight: FontWeight.w400,
-    ),
-    titleLarge: GoogleFonts.poppins(
-      fontSize: 20,
-      fontWeight: FontWeight.bold,
-      letterSpacing: 0.15,
-    ),
-    titleMedium: GoogleFonts.poppins(
-      fontSize: 16,
-      fontWeight: FontWeight.bold,
-      letterSpacing: 0.15,
-    ),
-    titleSmall: GoogleFonts.poppins(
-      fontSize: 14,
-      fontWeight: FontWeight.bold,
-      letterSpacing: 0.1,
-    ),
-    bodyLarge: GoogleFonts.poppins(
-      fontSize: 16,
-      fontWeight: FontWeight.w400,
-      letterSpacing: 0.5,
-    ),
-    bodyMedium: GoogleFonts.poppins(
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
-      letterSpacing: 0.25,
-    ),
-    labelLarge: GoogleFonts.poppins(
-      fontSize: 14,
-      fontWeight: FontWeight.w500,
-      letterSpacing: 1.25,
-    ),
-    bodySmall: GoogleFonts.poppins(
-      fontSize: 12,
-      fontWeight: FontWeight.w400,
-      letterSpacing: 0.4,
-    ),
-    labelSmall: GoogleFonts.poppins(
-      fontSize: 10,
-      fontWeight: FontWeight.w400,
-      letterSpacing: 1.5,
-    ),
-  ),
+  textTheme: darkTextTheme,
   textButtonTheme: TextButtonThemeData(
     style: ButtonStyle(
       foregroundColor: WidgetStatePropertyAll(darkColorScheme.onPrimary),
@@ -154,6 +157,21 @@ ThemeData darkTheme = ThemeData(
       ),
     ),
   ),
+  timePickerTheme: TimePickerThemeData(
+    dialBackgroundColor: darkColorScheme.secondary,
+    dialHandColor: darkColorScheme.primary,
+    hourMinuteColor: darkColorScheme.secondary,
+    hourMinuteTextStyle: darkTextTheme.displayMedium,
+    hourMinuteTextColor: WidgetStateColor.resolveWith(
+      (states) {
+        if (states.contains(WidgetState.selected)) {
+          return darkColorScheme.primary;
+        }
+        return darkColorScheme.onSecondary;
+      },
+    ),
+  ),
+  tooltipTheme: const TooltipThemeData(preferBelow: false),
   useMaterial3: true,
 );
 
