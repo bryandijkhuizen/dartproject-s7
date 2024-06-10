@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:darts_application/models/match.dart';
 
 class ConfirmationPage extends StatelessWidget {
-  final Match match;
+  final MatchModel match;
 
   const ConfirmationPage({
     super.key,
