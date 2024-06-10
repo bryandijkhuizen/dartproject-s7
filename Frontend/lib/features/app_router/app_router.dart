@@ -196,26 +196,6 @@ final router = GoRouter(
                   GoRoute(
                     path: '/',
                     builder: (context, state) {
-                      // List<PlayerModel> players = [
-                      //   PlayerModel.placeholderPlayer(),
-                      //   PlayerModel.placeholderPlayer()
-                      // ];
-
-                      // return ElevatedButton(
-                      //     onPressed: () {
-                      //       context.push(
-                      //         '/matches/create_tournament',
-                      //         extra: {
-                      //           'players': players,
-                      //           'setTarget': 3,
-                      //           'legTarget': 5,
-                      //           'startingScore': 501,
-                      //         },
-                      //       );
-                      //     },
-                      //     child: const Text(
-                      //         'Go to tournament bracket view with some list'));
-                      // Ignore this for now
                       return helloComponent;
                     },
                   ),
