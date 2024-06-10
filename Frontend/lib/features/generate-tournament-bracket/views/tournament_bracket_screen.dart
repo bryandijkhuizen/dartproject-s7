@@ -72,7 +72,7 @@ class TournamentBracketScreen extends StatelessWidget {
                             context.ShowSnackbar(
                               SnackBar(
                                   content: Text(result.success
-                                      ? 'Successfully applied for a new club'
+                                      ? 'Tournament successfully created'
                                       : result.message),
                                   backgroundColor: result.success
                                       ? theme.colorScheme.secondary
@@ -80,6 +80,7 @@ class TournamentBracketScreen extends StatelessWidget {
                             );
 
                             if (result.success) {
+                              // ToDo return to home page
                               print("het werkt ");
                             }
                           }

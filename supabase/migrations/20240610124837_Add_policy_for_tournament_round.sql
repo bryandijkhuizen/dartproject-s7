@@ -1,6 +1,9 @@
+set check_function_bodies = off;
 
-CREATE
-OR REPLACE FUNCTION create_tournament_round (match_data JSON, current_tournament_id int, current_round_number int) RETURNS result_type AS $$
+CREATE OR REPLACE FUNCTION public.create_tournament_round(match_data json, current_tournament_id integer, current_round_number integer)
+ RETURNS result_type
+ LANGUAGE plpgsql
+AS $function$
 DECLARE
     elem JSON;
     result result_type;
@@ -81,7 +84,20 @@ BEGIN
                 RETURN result;
         END;
     END LOOP;
+      result.success := TRUE;
+      result.message := 'Succesfully created round!';
     
     RETURN result;
 END;
-$$ LANGUAGE plpgsql;
+$function$
+;
+
+create policy "Enable insert access for all users"
+on "public"."tournament_match"
+as permissive
+for insert
+to public
+with check (true);
+
+
+
