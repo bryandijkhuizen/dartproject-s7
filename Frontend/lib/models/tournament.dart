@@ -38,7 +38,7 @@ class TournamentModel {
       'location': location,
       'start_time': startTime.toIso8601String(),
       'club_id': clubId,
-      'starting_method': startingMethod.toString(),
+      'starting_method': startingMethod.name,
     };
   }
 }

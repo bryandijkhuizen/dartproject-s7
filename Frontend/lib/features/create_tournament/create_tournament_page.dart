@@ -439,7 +439,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
             ),
             onPressed: submitForm,
             child: const Text(
-              'Create tournament',
+              'Set up tournament',
               style: TextStyle(fontSize: 20),
               overflow: TextOverflow.ellipsis,
             ),
