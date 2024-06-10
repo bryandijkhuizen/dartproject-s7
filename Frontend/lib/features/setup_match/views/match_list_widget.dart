@@ -1,6 +1,6 @@
 // ignore_for_file: unused_element
 
-import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
+import 'package:darts_application/features/create_match/create_single_match_page.dart';
 import 'package:darts_application/features/setup_match/match_list.dart';
 import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';

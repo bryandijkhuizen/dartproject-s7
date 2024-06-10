@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
-import 'package:darts_application/features/create_match/single_match/edit_single_match_page.dart';
-// import 'package:darts_application/features/create_match/tournament/create_tournament_page.dart';
+import 'package:darts_application/features/create_match/create_single_match_page.dart';
+import 'package:darts_application/features/create_match/edit_single_match_page.dart';
 import 'package:darts_application/models/player.dart';
+import 'package:darts_application/features/create_tournament/create_tournament_page.dart';
 
 class UpcomingMatchesPage extends StatefulWidget {
   const UpcomingMatchesPage({super.key});
@@ -61,10 +61,10 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateSingleMatchPage())),
             child: const Text('Create Match', style: TextStyle(color: Colors.white)),
           ),
-          // TextButton(
-          //   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTournamentPage())),
-          //   child: const Text('Create Tournament', style: TextStyle(color: Colors.white)),
-          // ),
+          TextButton(
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTournamentPage())),
+            child: const Text('Create Tournament', style: TextStyle(color: Colors.white)),
+          ),
         ],
       ),
       body: SingleChildScrollView(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
+import 'package:darts_application/features/create_match/create_single_match_page.dart';
 
 void main() {
   group('Match creation tests', () {
