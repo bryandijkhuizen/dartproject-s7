@@ -90,7 +90,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
           'p_starting_method': tournament.startingMethod.name,
         });
 
-        final String newTournamentID = result.data.toString();
+        final int newTournamentID = result;
 
         tournament = TournamentModel(
             id: newTournamentID,
@@ -118,7 +118,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('You did not fill in all the required fields!')),
+            content: Text('Provide a valid input for the required fields!')),
       );
     }
   }

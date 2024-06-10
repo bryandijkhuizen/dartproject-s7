@@ -4,7 +4,7 @@ enum StartingMethod {
 }
 
 class TournamentModel {
-  final String? id;
+  final int? id;
   final String name;
   final String location;
   final DateTime startTime;
