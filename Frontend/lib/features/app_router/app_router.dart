@@ -168,7 +168,10 @@ final router = GoRouter(
                         ],
                         builder: (context, state) {
                           final matchId = state.pathParameters['matchId']!;
-                          return StartMatch(matchId: matchId);
+                          return StartMatch(
+                            matchId: matchId,
+                            isDesktop: false,
+                          );
                         },
                       ),
                     ],
