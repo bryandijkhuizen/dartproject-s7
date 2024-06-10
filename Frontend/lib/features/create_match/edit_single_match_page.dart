@@ -4,8 +4,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:darts_application/components/input_fields/time_picker.dart';
 import 'package:darts_application/components/input_fields/date_picker.dart';
-import 'package:darts_application/features/create_match/single_match/player_selector.dart';
-import 'package:darts_application/features/create_match/single_match/confirmation_page.dart';
+import 'package:darts_application/features/create_match/player_selector.dart';
+import 'package:darts_application/features/create_match/confirmation_page.dart';
 import 'package:darts_application/models/match.dart';
 
 class EditSingleMatchPage extends StatefulWidget {
@@ -32,8 +32,8 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
   String playerOneName = "";
   String playerTwoName = "";
 
-  int legAmount = 0;
-  int setAmount = 0;
+  int legAmount = 1;
+  int setAmount = 1;
 
   @override
   void initState() {
@@ -51,8 +51,8 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
     playerTwo = widget.match['player_2_id'] ?? '';
     playerOneName = widget.match['player_1_last_name'] ?? '';
     playerTwoName = widget.match['player_2_last_name'] ?? '';
-    legAmount = widget.match['leg_target'] ?? 0;
-    setAmount = widget.match['set_target'] ?? 0;
+    legAmount = widget.match['leg_target'] ?? 1;
+    setAmount = widget.match['set_target'] ?? 1;
   }
 
   @override
@@ -245,7 +245,7 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
                   initialValue: legAmount.toString(),
                   onChanged: (value) {
                     setState(() {
-                      legAmount = int.tryParse(value) ?? 0;
+                      legAmount = int.tryParse(value) ?? 1;
                     });
                   },
                   decoration: const InputDecoration(
@@ -255,8 +255,8 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter leg amount';
+                    if (value == null || value.isEmpty || int.parse(value) < 1) {
+                      return 'Please enter a leg amount of at least 1';
                     }
                     return null;
                   },
@@ -279,7 +279,7 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
                   initialValue: setAmount.toString(),
                   onChanged: (value) {
                     setState(() {
-                      setAmount = int.tryParse(value) ?? 0;
+                      setAmount = int.tryParse(value) ?? 1;
                     });
                   },
                   decoration: const InputDecoration(
@@ -289,8 +289,8 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter set amount';
+                    if (value == null || value.isEmpty || int.parse(value) < 1) {
+                      return 'Please enter a set amount of at least 1';
                     }
                     return null;
                   },
