@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:darts_application/features/clubs/stores/club_registration_view_store.dart';
+import 'package:darts_application/models/tournament.dart';
 import 'package:flutter/material.dart';
 import 'package:darts_application/models/match.dart';
 import 'package:darts_application/models/player.dart';
@@ -20,7 +21,7 @@ abstract class _TournamentStore with Store {
   @observable
   bool initialized = false;
 
-  // TournamentModel tournament;
+  TournamentModel tournament;
   List<PlayerModel> players;
   late Map<int, List<MatchModel>> rounds;
   @observable
@@ -28,7 +29,7 @@ abstract class _TournamentStore with Store {
 
   _TournamentStore(
     this._supabase,
-    // this.tournament,
+    this.tournament,
     this.players,
     this.setTarget,
     this.legTarget,
@@ -38,7 +39,7 @@ abstract class _TournamentStore with Store {
   }
 
   Future<void> _setup() async {
-    await setTournamentPlayers(); //Set Players for testing
+    // await setTournamentPlayers(); //Set Players for testing
     rounds = createRounds(
       players,
       1,
@@ -285,8 +286,6 @@ abstract class _TournamentStore with Store {
 
   Future<SupabaseResultType> createTournament() async {
     SupabaseResultType resultType;
-    //TODO when intergrations is build this should be set to the tournament ID given bij wietses page
-    int tournament_id = 1;
     try {
       rounds.forEach(
         (roundNumber, matches) async {
@@ -294,7 +293,7 @@ abstract class _TournamentStore with Store {
           Map<String, dynamic> resultJson = await _supabase
               .rpc<Map<String, dynamic>>('create_tournament_round', params: {
             "match_data": matches,
-            'current_tournament_id': tournament_id,
+            'current_tournament_id': tournament.id,
             'current_round_number': roundNumber
           });
 

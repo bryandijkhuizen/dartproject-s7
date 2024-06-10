@@ -81,6 +81,8 @@ class TournamentBracketScreen extends StatelessWidget {
 
                             if (result.success) {
                               // ToDo return to home page
+                              Navigator.push('/');
+                              context.push('/matches/create_tournament');
                               print("het werkt ");
                             }
                           }
