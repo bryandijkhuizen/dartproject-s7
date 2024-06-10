@@ -14,9 +14,9 @@ class ClubMember {
   factory ClubMember.fromJson(Map<String, dynamic> json) {
     return ClubMember(
       userId: json['user_id'],
-      lastName: json['last_name'],
+      lastName: json['last_name'] ?? 'Unknown',
       clubId: json['club_id'],
-      clubName: json['club_name'],
+      clubName: json['club_name'] ?? 'Unknown',
     );
   }
 }
