@@ -1,4 +1,4 @@
-import 'package:darts_application/features/create_match/single_match/edit_single_match_page.dart';
+import 'package:darts_application/features/create_match/edit_single_match_page.dart';
 import 'package:darts_application/features/setup_match/start_match.dart';
 import 'package:darts_application/models/match.dart';
 import 'package:darts_application/models/permission_list.dart';
