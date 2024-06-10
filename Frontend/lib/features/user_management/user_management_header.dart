@@ -2,10 +2,11 @@ import 'package:darts_application/models/permission_list.dart';
 import 'package:darts_application/models/permissions.dart';
 import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class UserManagementHeader extends StatelessWidget {
+class UserManagementHeader extends StatefulWidget {
   UserManagementHeader(this.supabaseClient,
       {super.key, required this.onSearch}) {
     _searchController = TextEditingController();
@@ -13,8 +14,14 @@ class UserManagementHeader extends StatelessWidget {
   final void Function(String? searchedName, String? searchedRole) onSearch;
 
   final SupabaseClient supabaseClient;
-  String? selectedRole;
-  late TextEditingController _searchController;
+  late final TextEditingController _searchController;
+
+  @override
+  State<UserManagementHeader> createState() => _UserManagementHeaderState();
+}
+
+class _UserManagementHeaderState extends State<UserManagementHeader> {
+  TextEditingController dropdownController = TextEditingController();
 
   Future loadRoles(Permissions permission) {
     if (permission.systemPermissions
@@ -51,7 +58,7 @@ class UserManagementHeader extends StatelessWidget {
                     children: [
                       const Text("Name"),
                       TextField(
-                        controller: _searchController,
+                        controller: widget._searchController,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           hintText: 'Enter a search term',
@@ -87,9 +94,7 @@ class UserManagementHeader extends StatelessWidget {
                             children: [
                               const Text("Role"),
                               DropdownMenu(
-                                onSelected: (value) {
-                                  selectedRole = value;
-                                },
+                                controller: dropdownController,
                                 dropdownMenuEntries: dropdownMenuEntries,
                               ),
                             ],
@@ -104,9 +109,9 @@ class UserManagementHeader extends StatelessWidget {
                 child: FilledButton(
                   onPressed: () {
                     // Get the search term from the text field
-                    String searchedName = _searchController.text;
+                    String searchedName = widget._searchController.text;
                     // Trigger the callback with the search term
-                    onSearch(searchedName, selectedRole);
+                    widget.onSearch(searchedName, dropdownController.text);
                   },
                   child: const Text("Search"),
                 ),
