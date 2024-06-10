@@ -22,6 +22,7 @@ import 'package:darts_application/features/generate-tournament-bracket/views/tou
 import 'package:darts_application/helpers.dart';
 import 'package:darts_application/models/permission_list.dart';
 import 'package:darts_application/models/player.dart';
+import 'package:darts_application/models/tournament.dart';
 import 'package:darts_application/stores/tournament_store.dart';
 import 'package:darts_application/stores/user_store.dart';
 import 'package:darts_application/features/gameplay/views/match_view.dart';
@@ -195,25 +196,25 @@ final router = GoRouter(
                   GoRoute(
                     path: '/',
                     builder: (context, state) {
-                      List<PlayerModel> players = [
-                        PlayerModel.placeholderPlayer(),
-                        PlayerModel.placeholderPlayer()
-                      ];
+                      // List<PlayerModel> players = [
+                      //   PlayerModel.placeholderPlayer(),
+                      //   PlayerModel.placeholderPlayer()
+                      // ];
 
-                      return ElevatedButton(
-                          onPressed: () {
-                            context.push(
-                              '/matches/create_tournament',
-                              extra: {
-                                'players': players,
-                                'setTarget': 3,
-                                'legTarget': 5,
-                                'startingScore': 501,
-                              },
-                            );
-                          },
-                          child: const Text(
-                              'Go to tournament bracket view with some list'));
+                      // return ElevatedButton(
+                      //     onPressed: () {
+                      //       context.push(
+                      //         '/matches/create_tournament',
+                      //         extra: {
+                      //           'players': players,
+                      //           'setTarget': 3,
+                      //           'legTarget': 5,
+                      //           'startingScore': 501,
+                      //         },
+                      //       );
+                      //     },
+                      //     child: const Text(
+                      //         'Go to tournament bracket view with some list'));
                       // Ignore this for now
                       return helloComponent;
                     },
@@ -265,7 +266,7 @@ final router = GoRouter(
                           final data = state.extra! as Map<String, dynamic>;
 
                           if (!data.containsKey('players') ||
-                              // !data.containsKey('tournament') ||
+                              !data.containsKey('tournament') ||
                               !data.containsKey('setTarget') ||
                               !data.containsKey('legTarget') ||
                               !data.containsKey('startingScore')) {
@@ -275,7 +276,7 @@ final router = GoRouter(
                             );
                           }
 
-                          // final List<PlayerModel> tournament = data['tournament'];
+                          final TournamentModel tournament = data['tournament'];
                           final List<PlayerModel> players = data['players'];
                           final int setTarget = data['setTarget'];
                           final int legTarget = data['legTarget'];
@@ -291,7 +292,7 @@ final router = GoRouter(
                           return Provider(
                             create: (_) => TournamentStore(
                               Supabase.instance.client,
-                              // tournament,
+                              tournament,
                               players,
                               setTarget,
                               legTarget,
