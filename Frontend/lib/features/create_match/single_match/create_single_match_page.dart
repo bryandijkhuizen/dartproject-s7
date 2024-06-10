@@ -333,21 +333,24 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
             ],
           ),
         ),
-        Row(
-          children: [
-            Checkbox(
-              value: isFriendly,
-              onChanged: (value) {
-                setState(() {
-                  isFriendly = value!;
-                });
-              },
-            ),
-            const Text(
-              'Friendly match',
-              style: TextStyle(fontSize: 16),
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Checkbox(
+                value: isFriendly,
+                onChanged: (value) {
+                  setState(() {
+                    isFriendly = value!;
+                  });
+                },
+              ),
+              const Text(
+                'Friendly match',
+                style: TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
         ),
       ],
     );
