@@ -39,7 +39,6 @@ abstract class _TournamentStore with Store {
   }
 
   Future<void> _setup() async {
-    // await setTournamentPlayers(); //Set Players for testing
     rounds = createRounds(
       players,
       1,
@@ -47,33 +46,6 @@ abstract class _TournamentStore with Store {
     );
 
     initialized = true;
-  }
-
-  Future<void> setTournamentPlayers() async {
-    // For now use test data
-    final List<String> playerIds = [
-      "a58337bd-a24a-41d8-9154-58860a25fbf0",
-      "3d835c6e-5c6c-448a-9fee-23257fab77de",
-      "116c3801-3fd7-435a-8c30-bf70ccd3793e",
-      "4494eb42-d241-4c2e-9570-5ae26205d2f4",
-      "b8499eb2-d152-45c0-9ddd-7acc5d5c3cba",
-      "a7c1275a-83c8-4c80-a347-505b49e74163",
-      "278063b3-c29f-47ed-bf19-162b1b87891d",
-      "63a7429e-0f35-4280-b003-a52c5218e5f0",
-      "0df4520b-723a-455c-897d-26ca475201fe",
-      "6676453c-7c41-4371-bad6-1c5389d50bc5",
-      "779e8d67-d298-499b-8d48-b1d192eeb8d7",
-      "8b8d4da1-8db3-45b9-96cb-57afad1ffb88",
-      "2646b1ed-01dc-44c4-b149-2aede7673b04",
-      "ed02cf94-9405-4eac-bd13-5fc6155859d1",
-      "dc1ce331-d1f6-425d-a1c1-f5042570a9cc",
-      "6770730e-878a-400d-98df-255693c36fb9"
-    ];
-
-    players = await getPlayersByIds(playerIds);
-
-    players = players;
-    unselectedPlayers = List.from(players);
   }
 
   Future<Map<String, dynamic>> getPlayerById(String id) async {
