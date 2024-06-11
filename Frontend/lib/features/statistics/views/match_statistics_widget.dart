@@ -1,13 +1,15 @@
 import 'package:darts_application/features/statistics/components/match.header.dart';
+import 'package:darts_application/features/statistics/stores/statistics_store.dart';
+import 'package:darts_application/stores/user_store.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:darts_application/features/statistics/components/dropdown_selection.dart';
 import 'package:darts_application/features/statistics/components/turn_row.dart';
-import 'package:darts_application/features/statistics/controllers/statistics_data_controller.dart';
 import 'package:darts_application/models/match_statistics.dart';
 import 'package:darts_application/models/player_stats.dart';
 import 'package:darts_application/models/turn.dart';
 import 'package:darts_application/features/statistics/components/graphs/average_score_graph.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MatchStatisticsWidget extends StatefulWidget {
   final int matchId;
@@ -24,10 +26,14 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
   int currentSet = 0;
   int currentLeg = 0;
 
+  final StatisticsStore _statisticsStore = StatisticsStore(
+      Supabase.instance.client, UserStore(Supabase.instance.client));
+
   @override
   void initState() {
     super.initState();
-    _matchStatisticsFuture = fetchMatchStatistics(widget.matchId);
+    _matchStatisticsFuture =
+        _statisticsStore.fetchMatchStatistics(widget.matchId);
   }
 
   void _onSetChanged(int? newValue) {
@@ -107,16 +113,16 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
             .toList();
         final turnRows = _buildTurnRows(filteredTurns, matchStatistics);
 
-        List<FlSpot> player1SetAverages =
-            getSetAverages(matchStatistics, matchStatistics.match.player1Id);
-        List<FlSpot> player2SetAverages =
-            getSetAverages(matchStatistics, matchStatistics.match.player2Id);
+        List<FlSpot> player1SetAverages = _statisticsStore.getSetAverages(
+            matchStatistics, matchStatistics.match.player1Id);
+        List<FlSpot> player2SetAverages = _statisticsStore.getSetAverages(
+            matchStatistics, matchStatistics.match.player2Id);
 
-        List<FlSpot> player1LegAverages =
-            getLegAverages(matchStatistics, matchStatistics.match.player1Id);
+        List<FlSpot> player1LegAverages = _statisticsStore.getLegAverages(
+            matchStatistics, matchStatistics.match.player1Id);
 
-        List<FlSpot> player2LegAverages =
-            getLegAverages(matchStatistics, matchStatistics.match.player2Id);
+        List<FlSpot> player2LegAverages = _statisticsStore.getLegAverages(
+            matchStatistics, matchStatistics.match.player2Id);
 
         final bool isSetDataAvailable = player1SetAverages.length > 1;
 
