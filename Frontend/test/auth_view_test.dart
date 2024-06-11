@@ -2,19 +2,40 @@ import 'dart:async';
 
 import 'package:darts_application/features/auth/auth_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
 import 'mocks.mocks.dart';
 
 void main() {
+  const MethodChannel appLinksChannel =
+      MethodChannel('com.llfbandit.app_links/messages');
+
   late MockSupabaseClient mockSupabaseClient;
   late MockGoTrueClient mockSupabaseAuthClient;
   late MockClient mockHttpClient;
   late StreamController<AuthState> authStateStreamController;
 
   setUp(() {
+    // Setup plugins used by supabase
+    SharedPreferences.setMockInitialValues({});
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+      appLinksChannel,
+      (MethodCall methodCall) async {
+        switch (methodCall.method) {
+          case 'getInitialAppLink':
+            return null; // Return a mock initial app link if needed
+          default:
+            return null;
+        }
+      },
+    );
+
+    // Setup Supabase mock
     authStateStreamController = StreamController<AuthState>();
     mockHttpClient = MockClient();
 
@@ -30,14 +51,15 @@ void main() {
       );
     }
 
-    // Setup mock supabase client
     mockSupabaseClient = MockSupabaseClient();
-    // Setup Auth client
     mockSupabaseAuthClient = MockGoTrueClient();
+    // Return mockAuthClient when accessing mockSupabaseClient.auth
+    when(mockSupabaseClient.auth).thenReturn(mockSupabaseAuthClient);
+    // Return authStateControllers stream for onAuthStateChange
     when(mockSupabaseAuthClient.onAuthStateChange)
         .thenAnswer((_) => authStateStreamController.stream);
 
-    when(mockSupabaseClient.auth).thenReturn(mockSupabaseAuthClient);
+    // Replace actual Supabase client with the mock
     Supabase.instance.client = mockSupabaseClient;
   });
 
