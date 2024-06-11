@@ -155,21 +155,6 @@ ThemeData darkTheme = ThemeData(
       ),
     ),
   ),
-  timePickerTheme: TimePickerThemeData(
-    dialBackgroundColor: darkColorScheme.secondary,
-    dialHandColor: darkColorScheme.primary,
-    hourMinuteColor: darkColorScheme.secondary,
-    hourMinuteTextStyle: darkTextTheme.displayMedium,
-    hourMinuteTextColor: WidgetStateColor.resolveWith(
-      (states) {
-        if (states.contains(WidgetState.selected)) {
-          return darkColorScheme.primary;
-        }
-        return darkColorScheme.onSecondary;
-      },
-    ),
-  ),
-  tooltipTheme: const TooltipThemeData(preferBelow: false),
   useMaterial3: true,
 );
 
