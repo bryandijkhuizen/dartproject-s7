@@ -13,9 +13,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MatchStatisticsWidget extends StatefulWidget {
   final int matchId;
-  final bool isDesktop;
-  const MatchStatisticsWidget(
-      {super.key, required this.matchId, required this.isDesktop});
+  const MatchStatisticsWidget({super.key, required this.matchId});
 
   @override
   State<MatchStatisticsWidget> createState() => _MatchStatisticsWidgetState();
@@ -211,32 +209,6 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
                 const SizedBox(height: 24),
                 const Divider(),
                 Expanded(child: ListView(children: turnRows)),
-                if (widget.isDesktop) ...[
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Player Averages',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Expanded(
-                    child: AspectRatio(
-                      aspectRatio: 5,
-                      child: AverageScoreGraph(
-                        isShowingMainData: true,
-                        player1AverageScores: isSetDataAvailable
-                            ? player1SetAverages
-                            : player1LegAverages,
-                        player2AverageScores: isSetDataAvailable
-                            ? player2SetAverages
-                            : player2LegAverages,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
               ],
             ),
           ),
