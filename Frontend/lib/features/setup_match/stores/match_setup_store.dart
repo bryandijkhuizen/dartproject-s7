@@ -86,6 +86,6 @@ abstract class _MatchSetupStore with Store {
 
   @action
   void redirectToGameplay(matchId) {
-    router.push('/gameplay/$matchId');
+    router.push('/matches/$matchId/gameplay/');
   }
 }
