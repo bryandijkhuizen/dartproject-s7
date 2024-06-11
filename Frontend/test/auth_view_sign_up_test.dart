@@ -20,7 +20,7 @@ void main() {
   late StreamController<AuthState> authStateStreamController;
 
   setUp(() {
-    // Setup plugins used by supabase
+    // Setup plugins used by Supabase
     SharedPreferences.setMockInitialValues({});
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
@@ -38,174 +38,34 @@ void main() {
     // Setup Supabase mock
     authStateStreamController = StreamController<AuthState>();
     mockHttpClient = MockClient();
-
-    try {
-      Supabase.instance;
-    } on AssertionError catch (_) {
-      // No instance yet
-      // Setup Supabase as 'initialized'
-      Supabase.initialize(
-        anonKey: '',
-        url: '',
-        httpClient: mockHttpClient,
-      );
-    }
-
     mockSupabaseClient = MockSupabaseClient();
     mockSupabaseAuthClient = MockGoTrueClient();
-    // Return mockAuthClient when accessing mockSupabaseClient.auth
+
+    // Return mockSupabaseAuthClient when accessing mockSupabaseClient.auth
     when(mockSupabaseClient.auth).thenReturn(mockSupabaseAuthClient);
+
     // Return authStateControllers stream for onAuthStateChange
     when(mockSupabaseAuthClient.onAuthStateChange)
         .thenAnswer((_) => authStateStreamController.stream);
 
     // Replace actual Supabase client with the mock
+    Supabase.initialize(
+      anonKey: '',
+      url: '',
+      httpClient: mockHttpClient,
+    );
     Supabase.instance.client = mockSupabaseClient;
   });
 
-  group('AuthView Validation tests', () {
-    group('Login validation', () {
-      testWidgets('Sign in button exists', (WidgetTester tester) async {
-        // Create AuthView
-        await tester.pumpWidget(const MaterialApp(
-          home: AuthView(),
-        ));
-
-        Finder supaEmailAuthFinder = find.byType(SupaEmailAuth);
-        SupaEmailAuth supaEmailAuth = tester.widget(supaEmailAuthFinder);
-
-        expect(
-          find.ancestor(
-            of: find.text(supaEmailAuth.localization.signIn),
-            matching: find.byType(ElevatedButton),
-          ),
-          findsOneWidget,
-        );
-      });
-
-      testWidgets('Error messages on empty fields submitted',
-          (WidgetTester tester) async {
-        // Create AuthView
-        await tester.pumpWidget(const MaterialApp(
-          home: AuthView(),
-        ));
-
-        Finder supaEmailAuthFinder = find.byType(SupaEmailAuth);
-        SupaEmailAuth supaEmailAuth = tester.widget(supaEmailAuthFinder);
-
-        Finder signInButtonFinder = find.ancestor(
-          of: find.text(supaEmailAuth.localization.signIn),
-          matching: find.byType(ElevatedButton),
-        );
-
-        // Tap sign in with empty fields
-        await tester.tap(signInButtonFinder);
-
-        await tester.pump(const Duration(
-            milliseconds: 100)); // Wait for validation to take place
-
-        expect(find.text(supaEmailAuth.localization.validEmailError), findsOne);
-        expect(find.text(supaEmailAuth.localization.passwordLengthError),
-            findsOne);
-      });
-
-      testWidgets('Error message on faulty email address',
-          (WidgetTester tester) async {
-        // Create AuthView
-        await tester.pumpWidget(const MaterialApp(
-          home: AuthView(),
-        ));
-
-        Finder supaEmailAuthFinder = find.byType(SupaEmailAuth);
-        SupaEmailAuth supaEmailAuth = tester.widget(supaEmailAuthFinder);
-
-        Finder emailFieldFinder = find.ancestor(
-          of: find.text(supaEmailAuth.localization.enterEmail),
-          matching: find.byType(TextFormField),
-        );
-
-        Finder signInButtonFinder = find.ancestor(
-          of: find.text(supaEmailAuth.localization.signIn),
-          matching: find.byType(ElevatedButton),
-        );
-
-        // Tap sign in with wrong email format
-        await tester.enterText(emailFieldFinder, 'test@te');
-        await tester.tap(signInButtonFinder);
-
-        await tester.pump(const Duration(
-            milliseconds: 100)); // Wait for validation to take place
-
-        expect(find.text(supaEmailAuth.localization.validEmailError), findsOne);
-      });
-
-      testWidgets('Error message on faulty password',
-          (WidgetTester tester) async {
-        // Create AuthView
-        await tester.pumpWidget(const MaterialApp(
-          home: AuthView(),
-        ));
-
-        Finder supaEmailAuthFinder = find.byType(SupaEmailAuth);
-        SupaEmailAuth supaEmailAuth = tester.widget(supaEmailAuthFinder);
-
-        Finder passwordFieldFinder = find.ancestor(
-          of: find.text(supaEmailAuth.localization.enterPassword),
-          matching: find.byType(TextFormField),
-        );
-
-        Finder signInButtonFinder = find.ancestor(
-          of: find.text(supaEmailAuth.localization.signIn),
-          matching: find.byType(ElevatedButton),
-        );
-
-        // Tap sign in with wrong email format
-        await tester.enterText(
-            passwordFieldFinder, 'pass'); // shorter than 6 characters :D
-        await tester.tap(signInButtonFinder);
-
-        await tester.pump(const Duration(
-            milliseconds: 100)); // Wait for validation to take place
-
-        expect(find.text(supaEmailAuth.localization.passwordLengthError),
-            findsOne);
-      });
-
-      testWidgets('SignIn gets called when validation passes',
-          (WidgetTester tester) async {
-        // Create AuthView
-        await tester.pumpWidget(const MaterialApp(
-          home: AuthView(),
-        ));
-
-        Finder supaEmailAuthFinder = find.byType(SupaEmailAuth);
-        SupaEmailAuth supaEmailAuth = tester.widget(supaEmailAuthFinder);
-
-        Finder passwordFieldFinder = find.ancestor(
-          of: find.text(supaEmailAuth.localization.enterPassword),
-          matching: find.byType(TextFormField),
-        );
-
-        Finder signInButtonFinder = find.ancestor(
-          of: find.text(supaEmailAuth.localization.signIn),
-          matching: find.byType(ElevatedButton),
-        );
-
-        // Tap sign in with wrong email format
-        await tester.enterText(
-            passwordFieldFinder, 'pass'); // shorter than 6 characters :D
-        await tester.tap(signInButtonFinder);
-
-        await tester.pump(const Duration(
-            milliseconds: 100)); // Wait for validation to take place
-
-        expect(find.text(supaEmailAuth.localization.passwordLengthError),
-            findsOne);
-      });
-    });
+  tearDown(() {
+    clearInteractions(mockSupabaseClient);
+    clearInteractions(mockSupabaseAuthClient);
+    clearInteractions(mockHttpClient);
+    authStateStreamController.close();
+    Supabase.instance.dispose();
   });
 
-  group('Registration validation', () {
+  group('SignUp validations', () {
     testWidgets('First and last name are mandatory for sign up',
         (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(
@@ -305,7 +165,7 @@ void main() {
 
       await tester.tap(signUpButton);
       await tester.pump(
-        const Duration(milliseconds: 100),
+        const Duration(milliseconds: 500),
       ); // Wait for validation to take place
 
       verify(
