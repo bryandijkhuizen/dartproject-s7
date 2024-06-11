@@ -364,7 +364,8 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
-        PlayerSelector(onSelectionChanged: updateSelectedPlayer),
+        PlayerSelector(
+            onSelectionChanged: updateSelectedPlayer, isFriendly: isFriendly),
         const SizedBox(height: 20),
         Center(
           child: ElevatedButton(
