@@ -1,14 +1,16 @@
-import 'package:darts_application/features/app_router/app_router.dart';
+import 'package:darts_application/features/setup_match/stores/match_setup_store.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/match.dart';
 import 'dart:math';
+
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 class SelectStartingPlayerPageWidget extends StatefulWidget {
   final double buttonHeight;
   final double startMatchPosition;
   final Map<String, ButtonStyle> buttonStyles;
   final MatchModel matchDetails;
+  final MatchSetupStore matchSetupStore;
 
   const SelectStartingPlayerPageWidget({
     super.key,
@@ -16,14 +18,12 @@ class SelectStartingPlayerPageWidget extends StatefulWidget {
     required this.startMatchPosition,
     required this.buttonStyles,
     required this.matchDetails,
+    required this.matchSetupStore,
   });
 
   @override
-  // ignore: library_private_types_in_public_api
   _SelectStartingPlayerPageWidgetState createState() =>
       _SelectStartingPlayerPageWidgetState();
-
-  Future<void> updateStartingPlayer(String playerId, String matchId) async {}
 }
 
 class _SelectStartingPlayerPageWidgetState
@@ -32,13 +32,10 @@ class _SelectStartingPlayerPageWidgetState
   bool player2Selected = false;
   Random random = Random();
 
-  void redirectToGameplay(matchId) {
-    router.push('/matches/$matchId/gameplay');
-  }
-
-  Future<void> updateStartingPlayer(playerId, matchId) async {
-    await Supabase.instance.client.rpc('update_starting_player',
-        params: {'current_match_id': matchId, 'player_id': playerId});
+  @override
+  void initState() {
+    super.initState();
+    widget.matchSetupStore.fetchMatches();
   }
 
   @override
@@ -101,7 +98,8 @@ class _SelectStartingPlayerPageWidgetState
                     ? widget.matchDetails.player1LastName
                     : widget.matchDetails.player2LastName;
 
-                updateStartingPlayer(playerId, widget.matchDetails.id);
+                widget.matchSetupStore
+                    .updateStartingPlayer(playerId, widget.matchDetails.id);
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -110,7 +108,8 @@ class _SelectStartingPlayerPageWidgetState
                     ),
                   ),
                 );
-                redirectToGameplay(widget.matchDetails.id);
+                widget.matchSetupStore
+                    .redirectToGameplay(widget.matchDetails.id);
               },
               style: widget.buttonStyles['random'],
               child: const Text('Random'),
@@ -120,14 +119,14 @@ class _SelectStartingPlayerPageWidgetState
             SizedBox(
               height: widget.startMatchPosition - (3 * widget.buttonHeight),
             ),
-
             ElevatedButton(
               onPressed: () async {
                 final playerId = player1Selected
                     ? widget.matchDetails.player1Id
                     : widget.matchDetails.player2Id;
 
-                updateStartingPlayer(playerId, widget.matchDetails.id);
+                widget.matchSetupStore
+                    .updateStartingPlayer(playerId, widget.matchDetails.id);
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -137,7 +136,8 @@ class _SelectStartingPlayerPageWidgetState
                   ),
                 );
 
-                redirectToGameplay(widget.matchDetails.id);
+                widget.matchSetupStore
+                    .redirectToGameplay(widget.matchDetails.id);
               },
               style: widget.buttonStyles['notJoined'],
               child: const Text('Confirm'),

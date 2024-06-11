@@ -109,6 +109,7 @@ class _TournamentViewState extends State<TournamentView> {
                 MaterialPageRoute(
                   builder: (context) => StartMatch(
                     matchId: match.id.toString(),
+                    isDesktop: true,
                   ),
                 ),
               );
@@ -145,6 +146,7 @@ class _TournamentViewState extends State<TournamentView> {
                 MaterialPageRoute(
                   builder: (context) => StartMatch(
                     matchId: match.id.toString(),
+                    isDesktop: false,
                   ),
                 ),
               );

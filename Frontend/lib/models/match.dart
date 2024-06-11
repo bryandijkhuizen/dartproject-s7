@@ -11,6 +11,7 @@ class MatchModel {
   late String? startingPlayerId;
   late String player1LastName;
   late String player2LastName;
+  late bool? isFriendly;
 
   MatchModel({
     required this.id,
@@ -25,6 +26,7 @@ class MatchModel {
     this.startingPlayerId,
     required this.player1LastName,
     required this.player2LastName,
+    this.isFriendly = false,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -41,6 +43,7 @@ class MatchModel {
       startingPlayerId: json['starting_player_id'] ?? 'Unknown',
       player1LastName: json['player_1_last_name'] ?? 'Unknown',
       player2LastName: json['player_2_last_name'] ?? 'Unknown',
+      isFriendly: json['is_friendly'] ?? false,
     );
   }
 
@@ -54,7 +57,8 @@ class MatchModel {
       'leg_target': legTarget,
       'starting_score': startingScore,
       'winner_id': winnerId,
-      'starting_player_id': startingPlayerId
+      'starting_player_id': startingPlayerId,
+      'is_friendly': isFriendly,
     };
   }
 }
@@ -72,6 +76,7 @@ class Match {
   late String? startingPlayerId;
   late String player1LastName;
   late String player2LastName;
+  late bool? isFriendly;
 
   Match({
     required this.id,
@@ -86,6 +91,7 @@ class Match {
     this.startingPlayerId,
     required this.player1LastName,
     required this.player2LastName,
+    this.isFriendly = false,
   });
 
   factory Match.fromJson(Map<String, dynamic> json) {
@@ -102,6 +108,7 @@ class Match {
       startingPlayerId: json['starting_player_id'] ?? '',
       player1LastName: json['player_1_last_name'] ?? 'To be decided',
       player2LastName: json['player_2_last_name'] ?? 'To be decided',
+      isFriendly: json['is_friendly'] ?? false,
     );
   }
   // creates a excact json of the match table in supabase
@@ -117,8 +124,10 @@ class Match {
       'starting_score': startingScore,
       'winner_id': winnerId,
       'starting_player_id': startingPlayerId,
+      'is_friendly': isFriendly,
     };
   }
+
   // when inserting a match into the supabase database the names of the parameters may not be the same as collums
   // thats why in this function it returns them with p_ in front of them
   Map<String, dynamic> toInsertableJson() {
@@ -132,6 +141,7 @@ class Match {
       'p_starting_score': startingScore,
       'p_winner_id': winnerId,
       'p_starting_player_id': startingPlayerId,
+      'p_is_friendly': isFriendly,
     };
   }
 }
