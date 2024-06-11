@@ -78,7 +78,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
         );
         return;
       }
-      
+
       final String tournamentName = _nameController.text;
       final String tournamentLocation = _locationController.text;
       final StartingMethod tournamentStartingMethod =
@@ -109,6 +109,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
             startTime: tournamentDateTime,
             startingMethod: tournamentStartingMethod);
 
+        Navigator.pop(context);
         context.push('/matches/create_tournament', extra: {
           'tournament': tournament,
           'players': selectedPlayers,

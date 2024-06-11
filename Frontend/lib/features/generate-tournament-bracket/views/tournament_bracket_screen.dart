@@ -81,8 +81,7 @@ class TournamentBracketScreen extends StatelessWidget {
                             );
 
                             if (result.success) {
-                              // ToDo return to home page
-                              GoRouter.of(context).go('/');
+                              GoRouter.of(context).go('/matches');
                             }
                           }
                         },
