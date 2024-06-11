@@ -66,7 +66,7 @@ class MatchList extends StatelessWidget {
                         onPressed: () async {
                           if (await matchSetupStore.matchAlreadyStarted(
                               matches, matchId)) {
-                            router.push('/gameplay/$matchId');
+                            router.push('/matches/$matchId/gameplay');
                           } else {
                             router.push('/matches/$matchId');
                           }
