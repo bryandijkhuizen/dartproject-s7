@@ -110,19 +110,6 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
             .toList();
         final turnRows = _buildTurnRows(filteredTurns, matchStatistics);
 
-        List<FlSpot> player1SetAverages = _statisticsStore.getSetAverages(
-            matchStatistics, matchStatistics.match.player1Id);
-        List<FlSpot> player2SetAverages = _statisticsStore.getSetAverages(
-            matchStatistics, matchStatistics.match.player2Id);
-
-        List<FlSpot> player1LegAverages = _statisticsStore.getLegAverages(
-            matchStatistics, matchStatistics.match.player1Id);
-
-        List<FlSpot> player2LegAverages = _statisticsStore.getLegAverages(
-            matchStatistics, matchStatistics.match.player2Id);
-
-        final bool isSetDataAvailable = player1SetAverages.length > 1;
-
         return Scaffold(
           appBar: AppBar(title: const Text('Statistics')),
           body: Padding(

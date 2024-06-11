@@ -153,65 +153,6 @@ mixin _$StatisticsStore on _StatisticsStore, Store {
   }
 
   @override
-  List<FlSpot> convertAveragesToInts(List<FlSpot> averages) {
-    final _$actionInfo = _$_StatisticsStoreActionController.startAction(
-        name: '_StatisticsStore.convertAveragesToInts');
-    try {
-      return super.convertAveragesToInts(averages);
-    } finally {
-      _$_StatisticsStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  List<FlSpot> findLowestAverage(
-      dynamic player1SetAverages, dynamic player2SetAverages) {
-    final _$actionInfo = _$_StatisticsStoreActionController.startAction(
-        name: '_StatisticsStore.findLowestAverage');
-    try {
-      return super.findLowestAverage(player1SetAverages, player2SetAverages);
-    } finally {
-      _$_StatisticsStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  List<FlSpot> findHighestAverage(
-      dynamic player1SetAverages, dynamic player2SetAverages) {
-    final _$actionInfo = _$_StatisticsStoreActionController.startAction(
-        name: '_StatisticsStore.findHighestAverage');
-    try {
-      return super.findHighestAverage(player1SetAverages, player2SetAverages);
-    } finally {
-      _$_StatisticsStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  List<FlSpot> getSetAverages(
-      MatchStatisticsModel matchStatistics, String playerId) {
-    final _$actionInfo = _$_StatisticsStoreActionController.startAction(
-        name: '_StatisticsStore.getSetAverages');
-    try {
-      return super.getSetAverages(matchStatistics, playerId);
-    } finally {
-      _$_StatisticsStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  List<FlSpot> getLegAverages(
-      MatchStatisticsModel matchStatistics, String playerId) {
-    final _$actionInfo = _$_StatisticsStoreActionController.startAction(
-        name: '_StatisticsStore.getLegAverages');
-    try {
-      return super.getLegAverages(matchStatistics, playerId);
-    } finally {
-      _$_StatisticsStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   String toString() {
     return '''
 
