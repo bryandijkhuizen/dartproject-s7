@@ -74,7 +74,6 @@ void main() {
 
       Finder supaEmailAuthFinder = find.byType(SupaEmailAuth);
       SupaEmailAuth supaEmailAuth = tester.widget(supaEmailAuthFinder);
-
       Finder signInButtonFinder = find.ancestor(
         of: find.text(supaEmailAuth.localization.signIn),
         matching: find.byType(ElevatedButton),
@@ -82,9 +81,7 @@ void main() {
 
       // Tap sign in with empty fields
       await tester.tap(signInButtonFinder);
-
-      await tester.pump(const Duration(
-          milliseconds: 100)); // Wait for validation to take place
+      await tester.pumpAndSettle(); // Wait for validation to take place
 
       expect(find.text(supaEmailAuth.localization.validEmailError), findsOne);
       expect(
@@ -100,12 +97,10 @@ void main() {
 
       Finder supaEmailAuthFinder = find.byType(SupaEmailAuth);
       SupaEmailAuth supaEmailAuth = tester.widget(supaEmailAuthFinder);
-
       Finder emailFieldFinder = find.ancestor(
         of: find.text(supaEmailAuth.localization.enterEmail),
         matching: find.byType(TextFormField),
       );
-
       Finder signInButtonFinder = find.ancestor(
         of: find.text(supaEmailAuth.localization.signIn),
         matching: find.byType(ElevatedButton),
@@ -114,9 +109,7 @@ void main() {
       // Tap sign in with wrong email format
       await tester.enterText(emailFieldFinder, 'test@te');
       await tester.tap(signInButtonFinder);
-
-      await tester.pump(const Duration(
-          milliseconds: 100)); // Wait for validation to take place
+      await tester.pumpAndSettle(); // Wait for validation to take place
 
       expect(find.text(supaEmailAuth.localization.validEmailError), findsOne);
     });
@@ -130,12 +123,10 @@ void main() {
 
       Finder supaEmailAuthFinder = find.byType(SupaEmailAuth);
       SupaEmailAuth supaEmailAuth = tester.widget(supaEmailAuthFinder);
-
       Finder passwordFieldFinder = find.ancestor(
         of: find.text(supaEmailAuth.localization.enterPassword),
         matching: find.byType(TextFormField),
       );
-
       Finder signInButtonFinder = find.ancestor(
         of: find.text(supaEmailAuth.localization.signIn),
         matching: find.byType(ElevatedButton),
@@ -145,9 +136,7 @@ void main() {
       await tester.enterText(
           passwordFieldFinder, 'pass'); // shorter than 6 characters
       await tester.tap(signInButtonFinder);
-
-      await tester.pump(const Duration(
-          milliseconds: 100)); // Wait for validation to take place
+      await tester.pumpAndSettle(); // Wait for validation to take place
 
       expect(
           find.text(supaEmailAuth.localization.passwordLengthError), findsOne);
@@ -164,17 +153,14 @@ void main() {
 
       Finder supaEmailAuthFinder = find.byType(SupaEmailAuth);
       SupaEmailAuth supaEmailAuth = tester.widget(supaEmailAuthFinder);
-
       Finder emailFieldFinder = find.ancestor(
         of: find.text(supaEmailAuth.localization.enterEmail),
         matching: find.byType(TextFormField),
       );
-
       Finder passwordFieldFinder = find.ancestor(
         of: find.text(supaEmailAuth.localization.enterPassword),
         matching: find.byType(TextFormField),
       );
-
       Finder signInButtonFinder = find.ancestor(
         of: find.text(supaEmailAuth.localization.signIn),
         matching: find.byType(ElevatedButton),
@@ -185,8 +171,7 @@ void main() {
       await tester.enterText(passwordFieldFinder, password);
 
       await tester.tap(signInButtonFinder);
-      await tester.pump(const Duration(
-          milliseconds: 100)); // Wait for validation to take place
+      await tester.pumpAndSettle(); // Wait for validation to take place
 
       verify(
         mockSupabaseAuthClient.signInWithPassword(
