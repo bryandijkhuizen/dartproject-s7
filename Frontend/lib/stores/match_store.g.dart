@@ -391,12 +391,53 @@ mixin _$MatchStore on _MatchStore, Store {
     });
   }
 
+  late final _$extraThrowAfterUndoAtom =
+      Atom(name: '_MatchStore.extraThrowAfterUndo', context: context);
+
+  @override
+  bool get extraThrowAfterUndo {
+    _$extraThrowAfterUndoAtom.reportRead();
+    return super.extraThrowAfterUndo;
+  }
+
+  @override
+  set extraThrowAfterUndo(bool value) {
+    _$extraThrowAfterUndoAtom.reportWrite(value, super.extraThrowAfterUndo, () {
+      super.extraThrowAfterUndo = value;
+    });
+  }
+
+  late final _$doubleAttemptsNeededAtom =
+      Atom(name: '_MatchStore.doubleAttemptsNeeded', context: context);
+
+  @override
+  bool get doubleAttemptsNeeded {
+    _$doubleAttemptsNeededAtom.reportRead();
+    return super.doubleAttemptsNeeded;
+  }
+
+  @override
+  set doubleAttemptsNeeded(bool value) {
+    _$doubleAttemptsNeededAtom.reportWrite(value, super.doubleAttemptsNeeded,
+        () {
+      super.doubleAttemptsNeeded = value;
+    });
+  }
+
   late final _$_initAsyncAction =
       AsyncAction('_MatchStore._init', context: context);
 
   @override
   Future<void> _init() {
     return _$_initAsyncAction.run(() => super._init());
+  }
+
+  late final _$_startNewLegAsyncAction =
+      AsyncAction('_MatchStore._startNewLeg', context: context);
+
+  @override
+  Future<void> _startNewLeg() {
+    return _$_startNewLegAsyncAction.run(() => super._startNewLeg());
   }
 
   late final _$recordScoreAsyncAction =
@@ -465,7 +506,9 @@ temporaryScore: ${temporaryScore},
 player1Suggestion: ${player1Suggestion},
 player2Suggestion: ${player2Suggestion},
 showPlayer1Suggestion: ${showPlayer1Suggestion},
-showPlayer2Suggestion: ${showPlayer2Suggestion}
+showPlayer2Suggestion: ${showPlayer2Suggestion},
+extraThrowAfterUndo: ${extraThrowAfterUndo},
+doubleAttemptsNeeded: ${doubleAttemptsNeeded}
     ''';
   }
 }
