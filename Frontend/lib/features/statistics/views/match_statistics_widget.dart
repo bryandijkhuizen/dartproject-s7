@@ -8,7 +8,6 @@ import 'package:darts_application/features/statistics/components/turn_row.dart';
 import 'package:darts_application/models/match_statistics.dart';
 import 'package:darts_application/models/player_stats.dart';
 import 'package:darts_application/models/turn.dart';
-import 'package:darts_application/features/statistics/components/graphs/average_score_graph.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MatchStatisticsWidget extends StatefulWidget {
