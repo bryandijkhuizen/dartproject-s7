@@ -170,7 +170,7 @@ final router = GoRouter(
                           final matchId = state.pathParameters['matchId']!;
                           return StartMatch(
                             matchId: matchId,
-                            isDesktop: true,
+                            isDesktop: false,
                           );
                         },
                       ),
