@@ -137,7 +137,6 @@ final router = GoRouter(
                           final matchId = int.parse(matchIdString);
                           return MatchStatisticsWidget(
                             matchId: matchId,
-                            isDesktop: false,
                           );
                         },
                       ),
@@ -170,7 +169,7 @@ final router = GoRouter(
                           final matchId = state.pathParameters['matchId']!;
                           return StartMatch(
                             matchId: matchId,
-                            isDesktop: true,
+                            isDesktop: false,
                           );
                         },
                       ),
@@ -213,8 +212,7 @@ final router = GoRouter(
                           final matchIdString =
                               state.pathParameters['matchId']!;
                           final matchId = int.parse(matchIdString);
-                          return MatchStatisticsWidget(
-                              matchId: matchId, isDesktop: true);
+                          return MatchStatisticsWidget(matchId: matchId);
                         },
                       ),
                     ],
