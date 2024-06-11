@@ -27,6 +27,8 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
   bool is301Match = true;
   bool is501Match = false;
 
+  bool isFriendly = false;
+
   String? playerOne;
   String? playerTwo;
   String playerOneName = 'to be decided';
@@ -119,11 +121,10 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
           );
         }
       } catch (e) {
-        if(mounted){
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Something went wrong: $e')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Something went wrong: $e')),
+          );
         }
       }
     } else {
