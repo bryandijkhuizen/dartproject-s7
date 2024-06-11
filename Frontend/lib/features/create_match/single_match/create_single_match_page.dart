@@ -25,6 +25,8 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
   bool is301Match = true;
   bool is501Match = false;
 
+  bool isFriendly = false;
+
   String playerOne = "";
   String playerTwo = "";
   String playerOneName = "";
@@ -51,6 +53,12 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
     });
   }
 
+  void updateIsFriendly(bool value) {
+    setState(() {
+      isFriendly = value;
+    });
+  }
+
   void updateSelectedPlayer(String selectedOne, String selectedTwo,
       String selectedOneName, String selectedTwoName) {
     setState(() {
@@ -67,7 +75,7 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
       DateTime matchDateTime = DateTime(selectedDate.year, selectedDate.month,
           selectedDate.day, selectedTime.hour, selectedTime.minute);
 
-        var match = Match(
+      var match = Match(
         id: null,
         player1Id: playerOne,
         player2Id: playerTwo,
@@ -78,10 +86,12 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
         startingScore: is301Match ? 301 : 501,
         player1LastName: playerOneName,
         player2LastName: playerTwoName,
+        isFriendly: isFriendly,
       );
 
       try {
-        int matchId = await Supabase.instance.client.rpc('create_match' , params: match.toInsertableJson());
+        int matchId = await Supabase.instance.client
+            .rpc('create_match', params: match.toInsertableJson());
         match.id = matchId;
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -315,6 +325,25 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
               ),
               const Text(
                 '501',
+                style: TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Checkbox(
+                value: isFriendly,
+                onChanged: (value) {
+                  setState(() {
+                    isFriendly = value!;
+                  });
+                },
+              ),
+              const Text(
+                'Friendly match',
                 style: TextStyle(fontSize: 16),
               ),
             ],
