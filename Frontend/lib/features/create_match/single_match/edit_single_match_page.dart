@@ -109,6 +109,7 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
         startingScore: is301Match ? 301 : 501,
         player1LastName: playerOneName,
         player2LastName: playerTwoName,
+        isFriendly: isFriendly,
       );
 
       try {
