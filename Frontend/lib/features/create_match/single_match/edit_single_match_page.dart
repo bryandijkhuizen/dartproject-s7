@@ -76,6 +76,12 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
     });
   }
 
+  void updateIsFriendly(bool value) {
+    setState(() {
+      isFriendly = value;
+    });
+  }
+
   void updateSelectedPlayer(String selectedOne, String selectedTwo,
       String selectedOneName, String selectedTwoName) {
     setState(() {
