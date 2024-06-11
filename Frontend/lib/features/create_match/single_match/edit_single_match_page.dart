@@ -55,6 +55,7 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
     playerTwoName = widget.match['player_2_last_name'] ?? 'to be decided';
     legAmount = widget.match['leg_target'] ?? 0;
     setAmount = widget.match['set_target'] ?? 0;
+    isFriendly = widget.match['is_friendly'] ?? false;
   }
 
   @override
