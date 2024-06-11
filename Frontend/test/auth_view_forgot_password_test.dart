@@ -123,7 +123,12 @@ void main() {
       await tester.tap(sendPasswordResetButton);
       await tester.pumpAndSettle();
 
-      verify(mockSupabaseAuthClient.resetPasswordForEmail(email)).called(1);
+      verify(
+        mockSupabaseAuthClient.resetPasswordForEmail(
+          email,
+          redirectTo: supaEmailAuth.redirectTo,
+        ),
+      ).called(1);
     });
   });
 }

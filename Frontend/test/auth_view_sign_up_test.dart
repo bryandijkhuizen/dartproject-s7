@@ -58,9 +58,9 @@ void main() {
   });
 
   tearDown(() {
-    clearInteractions(mockSupabaseClient);
-    clearInteractions(mockSupabaseAuthClient);
-    clearInteractions(mockHttpClient);
+    reset(mockSupabaseClient);
+    reset(mockSupabaseAuthClient);
+    reset(mockHttpClient);
     authStateStreamController.close();
     Supabase.instance.dispose();
   });
@@ -176,6 +176,7 @@ void main() {
             'first_name': firstName,
             'last_name': lastName,
           },
+          emailRedirectTo: supaEmailAuth.redirectTo,
         ),
       ).called(1);
 
