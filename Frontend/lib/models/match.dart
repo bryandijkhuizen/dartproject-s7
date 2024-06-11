@@ -70,13 +70,13 @@ class Match {
   final int startingScore;
   final String? winnerId;
   late String? startingPlayerId;
-  late String player1LastName;
-  late String player2LastName;
+  late String? player1LastName;
+  late String? player2LastName;
 
   Match({
-    required this.id,
-    required this.player1Id,
-    required this.player2Id,
+    this.id,
+    this.player1Id,
+    this.player2Id,
     required this.date,
     this.location,
     required this.setTarget,
@@ -84,8 +84,8 @@ class Match {
     required this.startingScore,
     this.winnerId,
     this.startingPlayerId,
-    required this.player1LastName,
-    required this.player2LastName,
+    this.player1LastName,
+    this.player2LastName,
   });
 
   factory Match.fromJson(Map<String, dynamic> json) {
@@ -119,6 +119,7 @@ class Match {
       'starting_player_id': startingPlayerId,
     };
   }
+
   // when inserting a match into the supabase database the names of the parameters may not be the same as collums
   // thats why in this function it returns them with p_ in front of them
   Map<String, dynamic> toInsertableJson() {
