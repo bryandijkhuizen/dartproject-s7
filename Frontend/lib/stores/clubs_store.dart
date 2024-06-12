@@ -99,7 +99,6 @@ abstract class _ClubsStore with Store {
           )
           .toList();
     } catch (error) {
-      print('Error fetching user clubs: $error');
       // Handle error accordingly
     }
     loadingAssignedClubs = false;
