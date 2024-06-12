@@ -23,7 +23,7 @@ abstract class _TournamentStore with Store {
 
   TournamentModel tournament;
   List<PlayerModel> players;
-  late Map<int, List<MatchModel>> rounds;
+  late Map<int, List<Match>> rounds;
   @observable
   List<PlayerModel> unselectedPlayers;
 
@@ -76,14 +76,14 @@ abstract class _TournamentStore with Store {
     return playerModels;
   }
 
-  Map<int, List<MatchModel>> createRounds(
+  Map<int, List<Match>> createRounds(
     List<PlayerModel> players,
     int round, {
     bool fillInPlayers = false,
   }) {
-    Map<int, List<MatchModel>> rounds = {};
+    Map<int, List<Match>> rounds = {};
 
-    List<MatchModel> matches = addMatches(
+    List<Match> matches = addMatches(
       players,
       fillInPlayers: fillInPlayers,
     );
@@ -97,7 +97,7 @@ abstract class _TournamentStore with Store {
             .add(PlayerModel.placeholderPlayer(lastName: "Winner match $i"));
       }
 
-      Map<int, List<MatchModel>> nextRounds = createRounds(
+      Map<int, List<Match>> nextRounds = createRounds(
         nextRoundPlayers,
         ++round,
         fillInPlayers: true,
@@ -109,37 +109,43 @@ abstract class _TournamentStore with Store {
     return rounds;
   }
 
-  List<MatchModel> addMatches(
+  List<Match> addMatches(
     List<PlayerModel> players, {
     bool fillInPlayers = false,
   }) {
-    List<MatchModel> matches = [];
+    List<Match> matches = [];
     int amountOfPlayers = players.length;
     int amountOfMatches = (amountOfPlayers / 2).ceil();
 
     while (amountOfMatches >= 1) {
-      PlayerModel firstPlayer;
-      PlayerModel secondPlayer;
+      Match newMatch;
 
       if (fillInPlayers) {
-        firstPlayer = players.isNotEmpty
-            ? players.removeAt(0)
-            : PlayerModel.placeholderPlayer();
-        secondPlayer = players.isNotEmpty
-            ? players.removeAt(0)
-            : PlayerModel.placeholderPlayer();
-      } else {
-        firstPlayer = PlayerModel.placeholderPlayer();
-        secondPlayer = PlayerModel.placeholderPlayer();
-      }
+        PlayerModel? firstPlayer =
+            players.isNotEmpty ? players.removeAt(0) : null;
+        PlayerModel? secondPlayer =
+            players.isNotEmpty ? players.removeAt(0) : null;
 
-      MatchModel newMatch = addMatch(
-        firstPlayer,
-        secondPlayer,
-        tournament.startTime,
-        setTarget,
-        legTarget,
-      );
+        newMatch = addMatch(
+          tournament.startTime,
+          setTarget,
+          legTarget,
+          firstPlayer: firstPlayer,
+          secondPlayer: secondPlayer,
+          location: tournament.location,
+          player1LastName: firstPlayer?.lastName,
+          player2LastName: secondPlayer?.lastName,
+        );
+      } else {
+        newMatch = addMatch(
+          tournament.startTime,
+          setTarget,
+          legTarget,
+          location: tournament.location,
+          player1LastName: "",
+          player2LastName: "",
+        );
+      }
 
       matches.add(newMatch);
 
@@ -149,26 +155,35 @@ abstract class _TournamentStore with Store {
     return matches;
   }
 
-  MatchModel addMatch(
-    PlayerModel firstPlayer,
-    PlayerModel secondPlayer,
+  Match addMatch(
     DateTime date,
     int setTarget,
     int legTarget, {
-    String id = "",
+    int? id,
+    PlayerModel? firstPlayer,
+    PlayerModel? secondPlayer,
+    String? location,
+    String? player1LastName,
+    String? player2LastName,
   }) {
-    // String matchId = "";
-    final MatchModel newMatch = MatchModel(
-      id: id,
-      player1Id: firstPlayer.id,
-      player2Id: secondPlayer.id,
+    final Match newMatch = Match(
+      player1Id: firstPlayer?.id,
+      player2Id: secondPlayer?.id,
       date: date,
       setTarget: setTarget,
       legTarget: legTarget,
       startingScore: startingScore,
-      player1LastName: firstPlayer.lastName,
-      player2LastName: secondPlayer.lastName,
+      player1LastName: firstPlayer?.lastName ?? player1LastName,
+      player2LastName: secondPlayer?.lastName ?? player2LastName,
     );
+
+    if (id != null) {
+      newMatch.id = id;
+    }
+
+    if (location == null) {
+      newMatch.location = location;
+    }
 
     return newMatch;
   }
@@ -194,7 +209,7 @@ abstract class _TournamentStore with Store {
     bool isFirstPlayer,
   ) {
     try {
-      MatchModel match = rounds[roundNumber]![matchIndex];
+      Match match = rounds[roundNumber]![matchIndex];
       player = getPlayerFromPlayers(player.id);
 
       if (isFirstPlayer) {
@@ -229,7 +244,7 @@ abstract class _TournamentStore with Store {
   ) {
     // Update match with selected player
     try {
-      MatchModel match = rounds[roundNumber]![matchIndex];
+      Match match = rounds[roundNumber]![matchIndex];
 
       if (isFirstPlayer) {
         match.player1Id = player.id;
@@ -287,7 +302,7 @@ abstract class _TournamentStore with Store {
       );
     }
     return const SupabaseResultType(
-        success: true, message: 'Succesfully created tournament');
+        success: true, message: 'Successfully created tournament');
   }
 }
 

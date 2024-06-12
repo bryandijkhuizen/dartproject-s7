@@ -13,7 +13,7 @@ class RoundCard extends StatelessWidget {
   });
 
   final int roundNumber;
-  final List<MatchModel> matches;
+  final List<Match> matches;
   final bool canSelectPlayer;
 
   @override
