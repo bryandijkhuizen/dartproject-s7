@@ -1,7 +1,6 @@
 import 'package:darts_application/features/statistics/components/match.header.dart';
 import 'package:darts_application/features/statistics/stores/statistics_store.dart';
 import 'package:darts_application/stores/user_store.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:darts_application/features/statistics/components/dropdown_selection.dart';
 import 'package:darts_application/features/statistics/components/turn_row.dart';
