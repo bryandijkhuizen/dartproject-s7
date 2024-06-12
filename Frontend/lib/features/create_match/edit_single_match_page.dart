@@ -27,6 +27,8 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
   bool is301Match = true;
   bool is501Match = false;
 
+  bool isFriendly = false;
+
   String? playerOne;
   String? playerTwo;
   String playerOneName = 'to be decided';
@@ -53,6 +55,7 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
     playerTwoName = widget.match['player_2_last_name'] ?? 'to be decided';
     legAmount = widget.match['leg_target'] ?? 0;
     setAmount = widget.match['set_target'] ?? 0;
+    isFriendly = widget.match['is_friendly'] ?? false;
   }
 
   @override
@@ -70,6 +73,12 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
   void updateSelectedTime(TimeOfDay time) {
     setState(() {
       selectedTime = time;
+    });
+  }
+
+  void updateIsFriendly(bool value) {
+    setState(() {
+      isFriendly = value;
     });
   }
 
@@ -100,6 +109,7 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
         startingScore: is301Match ? 301 : 501,
         player1LastName: playerOneName,
         player2LastName: playerTwoName,
+        isFriendly: isFriendly,
       );
 
       try {
@@ -119,11 +129,10 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
           );
         }
       } catch (e) {
-        if(mounted){
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Something went wrong: $e')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Something went wrong: $e')),
+          );
         }
       }
     } else {
@@ -369,7 +378,8 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
-        PlayerSelector(onSelectionChanged: updateSelectedPlayer),
+        PlayerSelector(
+            onSelectionChanged: updateSelectedPlayer, isFriendly: isFriendly),
         const SizedBox(height: 20),
         Center(
           child: ElevatedButton(

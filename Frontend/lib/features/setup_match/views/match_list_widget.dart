@@ -2,11 +2,11 @@
 
 import 'package:darts_application/features/create_match/create_single_match_page.dart';
 import 'package:darts_application/features/setup_match/match_list.dart';
+import 'package:darts_application/features/setup_match/stores/match_setup_store.dart';
 import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/match.dart';
-import 'package:darts_application/models/player.dart';
 
 class MatchListWidget extends StatefulWidget {
   const MatchListWidget({super.key});
@@ -18,63 +18,19 @@ class MatchListWidget extends StatefulWidget {
 class _MatchListWidgetState extends State<MatchListWidget> {
   late Future<Map<String, List<MatchModel>>> _matchesFuture;
   late String currentUserId;
-  UserStore userStore = UserStore(Supabase.instance.client);
+  MatchSetupStore matchSetupStore = MatchSetupStore(
+      Supabase.instance.client, UserStore(Supabase.instance.client));
 
   @override
   void initState() {
     super.initState();
-    _matchesFuture = fetchMatches();
+    _matchesFuture = matchSetupStore.fetchMatches();
   }
 
   Future<void> _fetchMatches() async {
     setState(() {
-      _matchesFuture = fetchMatches();
+      _matchesFuture = matchSetupStore.fetchMatches();
     });
-  }
-
-  Future<Map<String, List<MatchModel>>> fetchMatches() async {
-    final matchResponsePending =
-        await Supabase.instance.client.rpc('get_pending_matches');
-    final matchResponseActive =
-        await Supabase.instance.client.rpc('get_active_matches');
-
-    matchResponsePending.removeWhere((match) =>
-        match['player_1_id'] != userStore.currentUser?.id &&
-        match['player_2_id'] != userStore.currentUser?.id);
-
-    matchResponseActive.removeWhere((match) =>
-        match['player_1_id'] != userStore.currentUser?.id &&
-        match['player_2_id'] != userStore.currentUser?.id);
-
-    matchResponsePending.removeWhere((match) => match['winner_id'] != null);
-    matchResponseActive.removeWhere((match) => match['winner_id'] != null);
-
-    final userResponse = await Supabase.instance.client.rpc('get_users');
-    List<PlayerModel> players = userResponse
-        .map<PlayerModel>((user) => PlayerModel.fromJson(user))
-        .toList();
-
-    List<MatchModel> mapMatches(List<dynamic> matchResponse) {
-      return matchResponse
-          .map<MatchModel>((match) => MatchModel.fromJson(match))
-          .map((match) {
-        match.player1LastName = players
-            .firstWhere((player) => player.id == match.player1Id)
-            .lastName;
-        match.player2LastName = players
-            .firstWhere((player) => player.id == match.player2Id)
-            .lastName;
-        return match;
-      }).toList();
-    }
-
-    final pendingMatches = mapMatches(matchResponsePending);
-    final activeMatches = mapMatches(matchResponseActive);
-
-    return {
-      'pending_matches': pendingMatches,
-      'active_matches': activeMatches,
-    };
   }
 
   @override
@@ -82,6 +38,12 @@ class _MatchListWidgetState extends State<MatchListWidget> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Matches', style: TextStyle(color: Colors.white)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _fetchMatches,
+          ),
+        ],
       ),
       body: Container(
         decoration: const BoxDecoration(
