@@ -48,7 +48,7 @@ void main() {
       ),
     ];
 
-    // create an empty match object
+    // create a match object
     MatchModel match = MatchModel(
       id: '1',
       player1Id: '1',
@@ -61,13 +61,21 @@ void main() {
       player2LastName: 'Smith',
     );
 
-    Map<int, List<Map<String, dynamic>>> legDataBySet = {};
+    // set up the leg data
+    Map<int, List<Map<String, dynamic>>> legDataBySet = {
+      1: [
+        {'id': 1, 'winner_id': '1'},
+      ],
+    };
+
+    // set up the set ids
+    List<int> setIds = [1];
 
     MatchStatisticsModel matchStatistics = MatchStatisticsModel(
       turns: turns,
       match: match,
       legDataBySet: legDataBySet,
-      setIds: [],
+      setIds: setIds,
     );
 
     test('Calculate average score', () {
