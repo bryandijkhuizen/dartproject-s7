@@ -11,7 +11,7 @@ class Numpad extends StatelessWidget {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
-        bool isDisabled = matchStore.currentPlayerId != matchStore.matchModel.player1Id;
+        bool isDisabled = matchStore.matchEnded || (matchStore.currentPlayerId != matchStore.matchModel.player1Id && matchStore.currentPlayerId != matchStore.matchModel.player2Id);
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child: GridView.count(
