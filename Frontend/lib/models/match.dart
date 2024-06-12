@@ -104,7 +104,8 @@ class Match {
       player2LastName: json['player_2_last_name'] ?? 'To be decided',
     );
   }
-  // creates a excact json of the match table in supabase
+
+  // creates a exact json of the match table in supabase
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -120,7 +121,7 @@ class Match {
     };
   }
 
-  // when inserting a match into the supabase database the names of the parameters may not be the same as collums
+  // when inserting a match into the supabase database the names of the parameters may not be the same as columns
   // thats why in this function it returns them with p_ in front of them
   Map<String, dynamic> toInsertableJson() {
     return {
