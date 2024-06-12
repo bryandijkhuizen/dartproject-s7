@@ -120,6 +120,18 @@ ThemeData darkTheme = ThemeData(
       ),
     ),
   ),
+  filledButtonTheme: FilledButtonThemeData(
+    style: ButtonStyle(
+      foregroundColor: WidgetStateProperty.resolveWith(
+        (states) {
+          if (states.contains(WidgetState.focused)) {
+            return darkColorScheme.secondary;
+          }
+          return darkColorScheme.onPrimary;
+        },
+      ),
+    ),
+  ),
   inputDecorationTheme: InputDecorationTheme(
     floatingLabelBehavior: FloatingLabelBehavior.never,
     labelStyle: const TextStyle(
@@ -151,7 +163,14 @@ ThemeData darkTheme = ThemeData(
   textTheme: darkTextTheme,
   textButtonTheme: TextButtonThemeData(
     style: ButtonStyle(
-      foregroundColor: WidgetStatePropertyAll(darkColorScheme.onPrimary),
+      foregroundColor: WidgetStateProperty.resolveWith(
+        (states) {
+          if (states.contains(WidgetState.focused)) {
+            return darkColorScheme.secondary;
+          }
+          return darkColorScheme.onPrimary;
+        },
+      ),
       padding: const WidgetStatePropertyAll(
         EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       ),

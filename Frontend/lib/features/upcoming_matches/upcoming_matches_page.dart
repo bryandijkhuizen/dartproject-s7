@@ -34,14 +34,13 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
         .select()
         .gte('date', DateTime.now().toIso8601String())
         .order('date', ascending: true);
-    var filteredMatches = response.where((match) => match['player_1_id'] != null).toList();
+    var filteredMatches =
+        response.where((match) => match['player_1_id'] != null).toList();
     return List<Map<String, dynamic>>.from(filteredMatches);
   }
 
   Future<List<Map<String, dynamic>>> fetchUpcomingTournaments() async {
-    final response = await Supabase.instance.client
-        .from('tournament')
-        .select();
+    final response = await Supabase.instance.client.from('tournament').select();
 
     return List<Map<String, dynamic>>.from(response);
   }
@@ -58,16 +57,22 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Upcoming Events'),
-        actions: <Widget>[ IconButton(onPressed: (){setState(() {
-          
-        });}, icon: const Icon(Icons.refresh)),
+        actions: <Widget>[
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  upcomingMatches = fetchUpcomingMatches();
+                  upcomingTournaments = fetchUpcomingTournaments();
+                  players = fetchPlayers();
+                });
+              },
+              icon: const Icon(Icons.refresh)),
           TextButton(
             onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => const CreateSingleMatchPage())),
-            child: const Text('Create Match',
-                style: TextStyle(color: Colors.white)),
+            child: const Text('Create Match'),
           ),
           // TextButton(
           //   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTournamentPage())),
@@ -155,13 +160,15 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
                             '${tournament['name']} on ${DateFormat('EEEE, MMM d, y - HH:mm').format(tournamentDate)}'),
                         subtitle: Text(
                             'Location: ${tournament['location']} - Club: ${tournament['club_id']}'),
-                            trailing: ElevatedButton(
-                          child: Text("View"),
+                        trailing: TextButton(
+                          child: const Text("View"),
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    TournamentView(tournamentId: tournament['id'], clubId: tournament['club_id'],),
+                                builder: (context) => TournamentView(
+                                  tournamentId: tournament['id'],
+                                  clubId: tournament['club_id'],
+                                ),
                               ),
                             );
                           },

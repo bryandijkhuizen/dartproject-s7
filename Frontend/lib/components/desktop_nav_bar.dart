@@ -105,27 +105,29 @@ class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
             height: 60,
             width: 60,
           ),
-          Expanded(
-            child: Observer(
-              builder: (context) {
-                UserStore userStore = context.read();
-                List<NavigationItem> navigationItems =
-                    getNavigationItems(userStore.permissions);
-                return ListView.separated(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext _, int index) {
-                    return navigationItems[index];
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    if (navigationItems[index].enabled) {
-                      return const NavigationDivider();
-                    }
-                    return Container();
-                  },
-                  itemCount: navigationItems.length,
-                );
-              },
+          FocusTraversalGroup(
+            child: Expanded(
+              child: Observer(
+                builder: (context) {
+                  UserStore userStore = context.read();
+                  List<NavigationItem> navigationItems =
+                      getNavigationItems(userStore.permissions);
+                  return ListView.separated(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (BuildContext _, int index) {
+                      return navigationItems[index];
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      if (navigationItems[index].enabled) {
+                        return const NavigationDivider();
+                      }
+                      return Container();
+                    },
+                    itemCount: navigationItems.length,
+                  );
+                },
+              ),
             ),
           ),
           const Text(
