@@ -22,6 +22,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP FUNCTION IF EXISTS record_turn;
+
 CREATE OR REPLACE FUNCTION record_turn(
     p_player_id uuid,
     p_new_leg_id bigint,
