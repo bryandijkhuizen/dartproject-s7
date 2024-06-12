@@ -1,3 +1,4 @@
+import 'package:darts_application/theme.dart';
 import 'package:flutter/material.dart';
 
 class NavigationItem extends StatelessWidget {
@@ -17,9 +18,22 @@ class NavigationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     if (enabled) {
       return TextButton(
-        onPressed: (){ callback?.call();},
+        onPressed: () {
+          callback?.call();
+        },
+        style: ButtonStyle(
+            backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
+            foregroundColor: WidgetStateProperty.resolveWith(
+              (states) {
+                if (states.contains(WidgetState.focused)) {
+                  return theme.colorScheme.secondary;
+                }
+                return theme.colorScheme.onPrimary;
+              },
+            )),
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 12,

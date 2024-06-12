@@ -1,11 +1,9 @@
 import 'package:darts_application/features/tournament_managent/tournament_view.dart';
-import 'package:darts_application/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
 import 'package:darts_application/features/create_match/single_match/edit_single_match_page.dart';
-// import 'package:darts_application/features/create_match/tournament/create_tournament_page.dart';
 import 'package:darts_application/models/player.dart';
 
 class UpcomingMatchesPage extends StatefulWidget {
@@ -115,7 +113,7 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
                         subtitle: Text(
                             'Location: ${match['location']} - ${player1.lastName} vs ${player2.lastName}'),
                         trailing: IconButton(
-                          color: darkColorScheme.onSecondary,
+                          // color: darkColorScheme.onSecondary,
                           icon: const Icon(Icons.edit),
                           onPressed: () {
                             Navigator.of(context).push(
