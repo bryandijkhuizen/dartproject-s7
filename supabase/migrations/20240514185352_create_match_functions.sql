@@ -47,6 +47,20 @@ END;
 $$
 LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION get_completed_match_by_id(match_id INT)
+RETURNS SETOF "match" AS
+$$
+BEGIN
+    RETURN QUERY
+    SELECT *
+    FROM "match"
+    WHERE id = match_id
+    AND winner_id IS NOT NULL;
+END;
+$$
+LANGUAGE plpgsql;
+
+
 CREATE OR REPLACE FUNCTION get_pending_matches()
 RETURNS SETOF "match" AS
 $$
@@ -98,6 +112,31 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_legs_by_set_id(current_set_id INT)
+RETURNS SETOF "leg" AS
+$$
+BEGIN
+    RETURN QUERY
+    SELECT *
+    FROM "leg"
+    WHERE set_id = current_set_id;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_turns_by_leg_id(current_leg_id INT)
+RETURNS SETOF "turn" AS
+$$
+BEGIN
+    RETURN QUERY
+    SELECT *
+    FROM "turn"
+    WHERE leg_id = current_leg_id;
+END;
+$$
+LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE FUNCTION update_starting_player(current_match_id INT, player_id UUID)
 RETURNS SETOF "match" AS

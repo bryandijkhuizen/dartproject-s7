@@ -70,13 +70,12 @@ class MatchList extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () async {
                   if (await matchAlreadyStarted(matchId)) {
-                    router.push('/gameplay/$matchId');
+                    router.push('/matches/$matchId/gameplay');
                   } else {
                     router.push('/matches/$matchId');
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFCD0612),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
                     vertical: 8,
