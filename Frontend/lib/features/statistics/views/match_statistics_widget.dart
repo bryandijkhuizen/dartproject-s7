@@ -1,19 +1,17 @@
 import 'package:darts_application/features/statistics/components/match.header.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:darts_application/features/statistics/stores/statistics_store.dart';
+import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
 import 'package:darts_application/features/statistics/components/dropdown_selection.dart';
 import 'package:darts_application/features/statistics/components/turn_row.dart';
-import 'package:darts_application/features/statistics/controllers/statistics_data_controller.dart';
 import 'package:darts_application/models/match_statistics.dart';
 import 'package:darts_application/models/player_stats.dart';
 import 'package:darts_application/models/turn.dart';
-import 'package:darts_application/features/statistics/components/graphs/average_score_graph.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MatchStatisticsWidget extends StatefulWidget {
   final int matchId;
-  final bool isDesktop;
-  const MatchStatisticsWidget(
-      {super.key, required this.matchId, required this.isDesktop});
+  const MatchStatisticsWidget({super.key, required this.matchId});
 
   @override
   State<MatchStatisticsWidget> createState() => _MatchStatisticsWidgetState();
@@ -24,10 +22,14 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
   int currentSet = 0;
   int currentLeg = 0;
 
+  final StatisticsStore _statisticsStore = StatisticsStore(
+      Supabase.instance.client, UserStore(Supabase.instance.client));
+
   @override
   void initState() {
     super.initState();
-    _matchStatisticsFuture = fetchMatchStatistics(widget.matchId);
+    _matchStatisticsFuture =
+        _statisticsStore.fetchMatchStatistics(widget.matchId);
   }
 
   void _onSetChanged(int? newValue) {
@@ -106,19 +108,6 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
             .where((turn) => turn.legId == currentLegId)
             .toList();
         final turnRows = _buildTurnRows(filteredTurns, matchStatistics);
-
-        List<FlSpot> player1SetAverages =
-            getSetAverages(matchStatistics, matchStatistics.match.player1Id);
-        List<FlSpot> player2SetAverages =
-            getSetAverages(matchStatistics, matchStatistics.match.player2Id);
-
-        List<FlSpot> player1LegAverages =
-            getLegAverages(matchStatistics, matchStatistics.match.player1Id);
-
-        List<FlSpot> player2LegAverages =
-            getLegAverages(matchStatistics, matchStatistics.match.player2Id);
-
-        final bool isSetDataAvailable = player1SetAverages.length > 1;
 
         return Scaffold(
           appBar: AppBar(title: const Text('Statistics')),
@@ -205,32 +194,6 @@ class _MatchStatisticsWidgetState extends State<MatchStatisticsWidget> {
                 const SizedBox(height: 24),
                 const Divider(),
                 Expanded(child: ListView(children: turnRows)),
-                if (widget.isDesktop) ...[
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Player Averages',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Expanded(
-                    child: AspectRatio(
-                      aspectRatio: 5,
-                      child: AverageScoreGraph(
-                        isShowingMainData: true,
-                        player1AverageScores: isSetDataAvailable
-                            ? player1SetAverages
-                            : player1LegAverages,
-                        player2AverageScores: isSetDataAvailable
-                            ? player2SetAverages
-                            : player2LegAverages,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
               ],
             ),
           ),
