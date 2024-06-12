@@ -15,20 +15,26 @@ class MatchStatisticsModel {
   });
 
   double calculateAverageScore(String playerId) {
-    // get all sets and calculate the average for each set
-    List<double> setAverages =
-        setIds.map((setId) => calculateSetAverage(playerId, setId)).toList();
+    // get all sets
+    List<int> setIds = legDataBySet.keys.toList();
 
-    // filter out the 0.0 averages
-    setAverages = setAverages.where((average) => average > 0.0).toList();
+    int totalScore = 0;
+    int totalDarts = 0;
 
-    // if there are no averages, return 0.0
-    if (setAverages.isEmpty) {
-      return 0.0;
+    // get all the legs for each set
+    for (final setId in setIds) {
+      List<Map<String, dynamic>> legs = legDataBySet[setId]!;
+
+      // go through each leg and calculate the amount of darts and score using the getScoresAndDarts function
+      for (final leg in legs) {
+        List scoresAndDarts = getScoresAndDarts(playerId, leg['id']);
+
+        totalScore += scoresAndDarts[0] as int;
+        totalDarts += scoresAndDarts[1] as int;
+      }
     }
 
-    // calculate the average of the averages
-    double average = setAverages.reduce((a, b) => a + b) / setAverages.length;
+    double average = totalScore / totalDarts * 3;
 
     return double.parse(average.toStringAsFixed(2));
   }
@@ -40,11 +46,6 @@ class MatchStatisticsModel {
         .toList()
       ..sort((a, b) => a.id.compareTo(b.id));
 
-    // If there are fewer than 3 turns, calculate the average for the available turns
-    if (playerTurns.isEmpty) {
-      return 0.0;
-    }
-
     int totalScore = 0;
     int totalDarts = 0;
 
@@ -52,10 +53,6 @@ class MatchStatisticsModel {
     for (int i = 0; i < playerTurns.length && i < 3; i++) {
       totalScore += playerTurns[i].score;
       totalDarts += 3;
-    }
-
-    if (totalDarts == 0) {
-      return 0.0;
     }
 
     double average = totalScore / totalDarts * 3;
@@ -113,58 +110,33 @@ class MatchStatisticsModel {
     // get all legs for the given set
     List<Map<String, dynamic>> legs = legDataBySet[setId]!;
 
-    // get all leg averages for the given player
-    List<double> legAverages =
-        legs.map((leg) => calculateLegAverage(playerId, leg['id'])).toList();
-
-    // filter out the 0.0 averages
-    legAverages = legAverages.where((average) => average > 0.0).toList();
-
-    // if there are no averages, return 0.0
-    if (legAverages.isEmpty) {
+    if (legs.isEmpty) {
       return 0.0;
     }
 
-    double average = legAverages.reduce((a, b) => a + b) / legAverages.length;
+    int totalScore = 0;
+    int totalDarts = 0;
+
+    // go through each leg and calculate the amount of darts and score using the getScoresAndDarts function
+    for (final leg in legs) {
+      List scoresAndDarts = getScoresAndDarts(playerId, leg['id']);
+
+      totalScore += scoresAndDarts[0] as int;
+      totalDarts += scoresAndDarts[1] as int;
+    }
+
+    double average = totalScore / totalDarts * 3;
 
     return double.parse(average.toStringAsFixed(2));
   }
 
   double calculateLegAverage(String playerId, int legId) {
-    // get all turns in the leg by the player
-    List<TurnModel> playerTurns = turns
-        .where((turn) => turn.playerId == playerId && turn.legId == legId)
-        .toList();
+    List scoresAndDarts = getScoresAndDarts(playerId, legId);
 
-    int amountOfDarts = 0;
-    int totalScore = 0;
+    int totalScore = scoresAndDarts[0];
+    int totalDarts = scoresAndDarts[1];
 
-    // if there is no double hit in any of the turns
-    if (playerTurns.every((turn) => turn.doubleHit == false)) {
-      amountOfDarts = playerTurns.length * 3;
-      totalScore = playerTurns.fold(0, (sum, turn) => sum + turn.score);
-    } else {
-      // count the amount of turns
-      int turns = playerTurns.length;
-
-      // get the turn in which the double was hit
-      TurnModel? checkoutTurn =
-          playerTurns.firstWhere((turn) => turn.doubleHit == true);
-
-      // get the dartsForCheckout value
-      int dartsForCheckout = checkoutTurn.dartsForCheckout ?? 0;
-
-      // calculate the amount of darts
-      amountOfDarts = turns * 3;
-
-      totalScore = match.startingScore;
-    }
-
-    if (amountOfDarts == 0) {
-      return 0.0;
-    }
-
-    double average = totalScore / amountOfDarts * 3;
+    double average = totalScore / totalDarts * 3;
 
     return double.parse(average.toStringAsFixed(2));
   }
@@ -191,4 +163,37 @@ class MatchStatisticsModel {
     }
     return setsWon;
   }
+
+  List getScoresAndDarts(String playerId, int legId) {
+    List<TurnModel> playerTurns = turns
+        .where((turn) => turn.playerId == playerId && turn.legId == legId)
+        .toList();
+
+    int totalScore = 0;
+    int totalDarts = 0;
+
+    if (playerTurns.every((turn) => turn.doubleHit == false)) {
+      totalDarts = playerTurns.length * 3;
+      totalScore = playerTurns.fold(0, (sum, turn) => sum + turn.score);
+    } else {
+      // count the amount of turns
+      int turns = playerTurns.length;
+
+      // get the turn in which the double was hit
+      TurnModel? checkoutTurn =
+          playerTurns.firstWhere((turn) => turn.doubleHit == true);
+
+      // get the dartsForCheckout value
+      int dartsForCheckout = checkoutTurn.dartsForCheckout ?? 0;
+
+      // calculate the amount of darts
+      totalDarts = turns * 3 - 3 + dartsForCheckout;
+
+      totalScore = match.startingScore;
+    }
+
+    return [totalScore, totalDarts];
+  }
 }
+
+// TODO, UNIVERSAL GET AMOUNT OF DARTS AND SCORE FUNCTION TO USE IN ALL FUNCTIONS
