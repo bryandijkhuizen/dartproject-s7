@@ -20,11 +20,21 @@ class _MatchListWidgetState extends State<MatchListWidget> {
   late String currentUserId;
   MatchSetupStore matchSetupStore = MatchSetupStore(
       Supabase.instance.client, UserStore(Supabase.instance.client));
+  void advance() async {
+    try {
+      await Supabase.instance.client.rpc('advance_tournament_match', params: {
+        'p_match_id': 1,
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _matchesFuture = matchSetupStore.fetchMatches();
+    advance();
   }
 
   Future<void> _fetchMatches() async {
