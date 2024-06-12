@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:darts_application/features/clubs/stores/club_registration_view_store.dart';
 import 'package:darts_application/models/tournament.dart';
-import 'package:flutter/material.dart';
 import 'package:darts_application/models/match.dart';
 import 'package:darts_application/models/player.dart';
 import 'package:mobx/mobx.dart';
@@ -56,9 +55,13 @@ abstract class _TournamentStore with Store {
   }
 
   Future<List<PlayerModel>> getPlayersByIds(List<String> playerIds) async {
-    // ToDo add try catch
-    final response = await _supabase
-        .rpc("get_users_by_uuids", params: {"uuid_list": playerIds});
+    final dynamic response;
+    try {
+      response = await _supabase
+          .rpc("get_users_by_uuids", params: {"uuid_list": playerIds});
+    } catch (error) {
+      throw Exception("An error occurred: $error");
+    }
 
     if (response.isEmpty) {
       throw Exception(
@@ -70,8 +73,6 @@ abstract class _TournamentStore with Store {
     List<PlayerModel> playerModels = userData.map((userMap) {
       return PlayerModel.fromJson(userMap);
     }).toList();
-
-    // initialized = true;
 
     return playerModels;
   }
