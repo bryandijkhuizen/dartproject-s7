@@ -1,5 +1,6 @@
 import 'package:darts_application/constants.dart';
 import 'package:darts_application/features/app_router/app_router.dart';
+import 'package:darts_application/features/statistics/stores/statistics_store.dart';
 import 'package:darts_application/services/match_service.dart';
 import 'package:darts_application/services/post_service.dart';
 import 'package:darts_application/stores/clubs_store.dart';
@@ -58,6 +59,12 @@ class MyApp extends StatelessWidget {
           providers: [
             Provider<ClubsStore>(
               create: (_) => ClubsStore(
+                Supabase.instance.client,
+                context.read<UserStore>(),
+              ),
+            ),
+            Provider<StatisticsStore>(
+              create: (_) => StatisticsStore(
                 Supabase.instance.client,
                 context.read<UserStore>(),
               ),

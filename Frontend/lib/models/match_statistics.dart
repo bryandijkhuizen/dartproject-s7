@@ -15,23 +15,26 @@ class MatchStatisticsModel {
   });
 
   double calculateAverageScore(String playerId) {
-    List<TurnModel> playerTurns =
-        turns.where((turn) => turn.playerId == playerId).toList();
+    // get all sets
+    List<int> setIds = legDataBySet.keys.toList();
 
-    int amountOfDartsUsed = 0;
+    int totalScore = 0;
+    int totalDarts = 0;
 
-    // for every turn add 3 darts to the amount of darts used
-    for (final turn in playerTurns) {
-      amountOfDartsUsed += 3;
-    }
+    // get all the legs for each set
+    for (final setId in setIds) {
+      List<Map<String, dynamic>> legs = legDataBySet[setId]!;
 
-    for (final turn in playerTurns) {
-      if (turn.doubleHit != null && turn.doubleHit!) {
-        amountOfDartsUsed -= 3 - turn.dartsForCheckout!;
+      // go through each leg and calculate the amount of darts and score using the getScoresAndDarts function
+      for (final leg in legs) {
+        List scoresAndDarts = getScoresAndDarts(playerId, leg['id']);
+
+        totalScore += scoresAndDarts[0] as int;
+        totalDarts += scoresAndDarts[1] as int;
       }
     }
 
-    double average = match.startingScore / amountOfDartsUsed * 3;
+    double average = totalScore / totalDarts * 3;
 
     return double.parse(average.toStringAsFixed(2));
   }
@@ -43,11 +46,6 @@ class MatchStatisticsModel {
         .toList()
       ..sort((a, b) => a.id.compareTo(b.id));
 
-    // If there are fewer than 3 turns, calculate the average for the available turns
-    if (playerTurns.isEmpty) {
-      return 0.0;
-    }
-
     int totalScore = 0;
     int totalDarts = 0;
 
@@ -55,10 +53,6 @@ class MatchStatisticsModel {
     for (int i = 0; i < playerTurns.length && i < 3; i++) {
       totalScore += playerTurns[i].score;
       totalDarts += 3;
-    }
-
-    if (totalDarts == 0) {
-      return 0.0;
     }
 
     double average = totalScore / totalDarts * 3;
@@ -113,80 +107,38 @@ class MatchStatisticsModel {
   }
 
   double calculateSetAverage(String playerId, int setId) {
-    List<TurnModel> setTurns = turns
-        .where((turn) => turn.playerId == playerId)
-        .where((turn) => legDataBySet[setId]!
-            .map((leg) => leg['id'])
-            .toList()
-            .contains(turn.legId))
-        .toList();
+    // get all legs for the given set
+    List<Map<String, dynamic>> legs = legDataBySet[setId]!;
 
-    if (setTurns.isEmpty) {
+    if (legs.isEmpty) {
       return 0.0;
     }
 
     int totalScore = 0;
     int totalDarts = 0;
 
-    int turnsUntilCheckout = setTurns.indexWhere(
-        (turn) => turn.dartsForCheckout != null && turn.dartsForCheckout! > 0);
+    // go through each leg and calculate the amount of darts and score using the getScoresAndDarts function
+    for (final leg in legs) {
+      List scoresAndDarts = getScoresAndDarts(playerId, leg['id']);
 
-    if (turnsUntilCheckout != -1) {
-      int amountOfDarts = turnsUntilCheckout * 3;
-      amountOfDarts += setTurns[turnsUntilCheckout].dartsForCheckout!;
-
-      double average = match.startingScore / amountOfDarts * 3;
-      return double.parse(average.toStringAsFixed(2));
-    } else {
-      for (final turn in setTurns) {
-        totalScore += turn.score;
-        totalDarts += 3;
-      }
-
-      if (totalDarts == 0) {
-        return 0.0;
-      }
-
-      double average = totalScore / totalDarts * 3;
-      return double.parse(average.toStringAsFixed(2));
+      totalScore += scoresAndDarts[0] as int;
+      totalDarts += scoresAndDarts[1] as int;
     }
+
+    double average = totalScore / totalDarts * 3;
+
+    return double.parse(average.toStringAsFixed(2));
   }
 
   double calculateLegAverage(String playerId, int legId) {
-    List<TurnModel> legTurns = turns
-        .where((turn) => turn.playerId == playerId)
-        .where((turn) => turn.legId == legId)
-        .toList();
+    List scoresAndDarts = getScoresAndDarts(playerId, legId);
 
-    if (legTurns.isEmpty) {
-      return 0.0;
-    }
+    int totalScore = scoresAndDarts[0];
+    int totalDarts = scoresAndDarts[1];
 
-    int totalScore = 0;
-    int totalDarts = 0;
+    double average = totalScore / totalDarts * 3;
 
-    int turnsUntilCheckout = legTurns.indexWhere(
-        (turn) => turn.dartsForCheckout != null && turn.dartsForCheckout! > 0);
-
-    if (turnsUntilCheckout != -1) {
-      int amountOfDarts = turnsUntilCheckout * 3;
-      amountOfDarts += legTurns[turnsUntilCheckout].dartsForCheckout!;
-
-      double average = match.startingScore / amountOfDarts * 3;
-      return double.parse(average.toStringAsFixed(2));
-    } else {
-      for (final turn in legTurns) {
-        totalScore += turn.score;
-        totalDarts += 3;
-      }
-
-      if (totalDarts == 0) {
-        return 0.0;
-      }
-
-      double average = totalScore / totalDarts * 3;
-      return double.parse(average.toStringAsFixed(2));
-    }
+    return double.parse(average.toStringAsFixed(2));
   }
 
   int calculateLegsWon(int setId, String playerId) {
@@ -211,4 +163,37 @@ class MatchStatisticsModel {
     }
     return setsWon;
   }
+
+  List getScoresAndDarts(String playerId, int legId) {
+    List<TurnModel> playerTurns = turns
+        .where((turn) => turn.playerId == playerId && turn.legId == legId)
+        .toList();
+
+    int totalScore = 0;
+    int totalDarts = 0;
+
+    if (playerTurns.every((turn) => turn.doubleHit == false)) {
+      totalDarts = playerTurns.length * 3;
+      totalScore = playerTurns.fold(0, (sum, turn) => sum + turn.score);
+    } else {
+      // count the amount of turns
+      int turns = playerTurns.length;
+
+      // get the turn in which the double was hit
+      TurnModel? checkoutTurn =
+          playerTurns.firstWhere((turn) => turn.doubleHit == true);
+
+      // get the dartsForCheckout value
+      int dartsForCheckout = checkoutTurn.dartsForCheckout ?? 0;
+
+      // calculate the amount of darts
+      totalDarts = turns * 3 - 3 + dartsForCheckout;
+
+      totalScore = match.startingScore;
+    }
+
+    return [totalScore, totalDarts];
+  }
 }
+
+// TODO, UNIVERSAL GET AMOUNT OF DARTS AND SCORE FUNCTION TO USE IN ALL FUNCTIONS

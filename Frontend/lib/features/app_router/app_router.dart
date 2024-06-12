@@ -6,6 +6,7 @@ import 'package:darts_application/features/clubs/views/club_overview.dart';
 import 'package:darts_application/features/clubs/views/club_registration_view.dart';
 import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
 import 'package:darts_application/features/create_match/single_match/edit_single_match_page.dart';
+import 'package:darts_application/features/club_management/views/club_management.dart';
 import 'package:darts_application/features/avatar_picker/views/avatar_picker_view.dart';
 import 'package:darts_application/features/home/views/home_view.dart';
 import 'package:darts_application/features/settings/views/settings_email_view.dart';
@@ -154,7 +155,6 @@ final router = GoRouter(
                           final matchId = int.parse(matchIdString);
                           return MatchStatisticsWidget(
                             matchId: matchId,
-                            isDesktop: false,
                           );
                         },
                       ),
@@ -185,7 +185,10 @@ final router = GoRouter(
                         ],
                         builder: (context, state) {
                           final matchId = state.pathParameters['matchId']!;
-                          return StartMatch(matchId: matchId);
+                          return StartMatch(
+                            matchId: matchId,
+                            isDesktop: false,
+                          );
                         },
                       ),
                     ],
@@ -226,8 +229,7 @@ final router = GoRouter(
                           final matchIdString =
                               state.pathParameters['matchId']!;
                           final matchId = int.parse(matchIdString);
-                          return MatchStatisticsWidget(
-                              matchId: matchId, isDesktop: true);
+                          return MatchStatisticsWidget(matchId: matchId);
                         },
                       ),
                     ],
@@ -310,7 +312,8 @@ final router = GoRouter(
                   GoRoute(
                     path: '/club-management',
                     builder: (context, state) {
-                      return helloComponent;
+                      // Ignore this for now
+                      return ClubManagement();
                     },
                   ),
                 ],
