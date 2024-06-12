@@ -11,9 +11,13 @@ class Numpad extends StatelessWidget {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
-        bool isDisabled = matchStore.matchEnded || (matchStore.currentPlayerId != matchStore.matchModel.player1Id && matchStore.currentPlayerId != matchStore.matchModel.player2Id);
+        bool isDisabled = matchStore.matchEnded || matchStore.currentPlayerId != matchStore.matchModel.startingPlayerId;
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          decoration: BoxDecoration(
+            color: isDisabled ? Colors.grey.withOpacity(0.5) : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: GridView.count(
             crossAxisCount: 3,
             childAspectRatio: 2.2,
@@ -39,7 +43,7 @@ class Numpad extends StatelessWidget {
         matchStore.updateTemporaryScore(matchStore.temporaryScore + number.toString());
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFCD0612),
+        backgroundColor: isDisabled ? Colors.grey : const Color(0xFFCD0612),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -63,7 +67,7 @@ class Numpad extends StatelessWidget {
         }
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF921B22),
+        backgroundColor: isDisabled ? Colors.grey : const Color(0xFF921B22),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
