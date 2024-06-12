@@ -1,0 +1,1 @@
+alter table "public"."user_club" add column "approved" boolean not null default false;

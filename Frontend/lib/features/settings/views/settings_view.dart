@@ -44,6 +44,7 @@ class SettingsViewState extends State<SettingsView> {
                       style: theme.textTheme.titleMedium,
                     ),
                     Card(
+                      elevation: 0,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                           vertical: 16.0,
@@ -51,6 +52,12 @@ class SettingsViewState extends State<SettingsView> {
                         child: Observer(
                           builder: (_) => Column(
                             children: [
+                              SettingsItem(
+                                  callback: () {
+                                    context.push('/settings/avatar');
+                                  },
+                                  title: 'Avatar',
+                                  value: 'Change your avatar'),
                               SettingsItem(
                                 callback: () {
                                   context.push('/settings/name');
@@ -83,15 +90,17 @@ class SettingsViewState extends State<SettingsView> {
                     ),
                     const SettingsClubCard(),
                     const SizedBox(
-                      height: 24,
+                      height: 8,
                     ),
                     ElevatedButton(
                       onPressed: () {
                         context.push('/clubs');
                       },
-                      style: ButtonStyle(
-                        backgroundColor:
-                            WidgetStatePropertyAll(theme.colorScheme.surface),
+                      style: const ButtonStyle(
+                        elevation: WidgetStatePropertyAll(0),
+                        backgroundColor: WidgetStatePropertyAll(
+                          Color(0xFF444444),
+                        ),
                       ),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -101,15 +110,18 @@ class SettingsViewState extends State<SettingsView> {
                         ],
                       ),
                     ),
+                    const SizedBox(
+                      height: 24,
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          Supabase.instance.client.auth.signOut();
+                        },
+                        child: const Text('Sign out'))
                   ],
                 ),
               ),
             ),
-            ElevatedButton(
-                onPressed: () {
-                  Supabase.instance.client.auth.signOut();
-                },
-                child: const Text('Sign out'))
           ],
         ),
       ),
