@@ -46,19 +46,19 @@ class TournamentBracketScreen extends StatelessWidget {
                     style: titleMediumWhite,
                   ),
                   const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      ElevatedButton(
-                        child: const Text("Fill in random"),
-                        onPressed: () => {},
-                      ),
-                      const Spacer(),
-                      ElevatedButton(
-                        child: const Text("Clear"),
-                        onPressed: () => {},
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     ElevatedButton(
+                  //       child: const Text("Fill in random"),
+                  //       onPressed: () => {},
+                  //     ),
+                  //     const Spacer(),
+                  //     ElevatedButton(
+                  //       child: const Text("Clear"),
+                  //       onPressed: () => {},
+                  //     ),
+                  //   ],
+                  // ),
                   const SizedBox(height: 20),
                   const TournamentBrackets(),
                   const SizedBox(height: 20),

@@ -108,10 +108,10 @@ class _MatchupCardState extends State<MatchupCard>
               ),
             ),
             const SizedBox(width: 4),
-            ElevatedButton(
-              child: const Text("Edit"),
-              onPressed: () => {},
-            ),
+            // ElevatedButton(
+            //   child: const Text("Edit"),
+            //   onPressed: () => {},
+            // ),
             const SizedBox(width: 8),
           ],
         ),
