@@ -63,11 +63,6 @@ class MatchCard extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () =>
                           controller.navigateToStatistics(match.id),
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
                       child: const Text('View stats'),
                     ),
                   ],
