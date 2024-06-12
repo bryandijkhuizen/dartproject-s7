@@ -103,7 +103,7 @@ class _PlayerCardState extends State<PlayerCard>
     updateDropdownMenuEntries(context);
 
     return Observer(builder: (context) {
-      print(store.unselectedPlayers.length);
+      // print(store.unselectedPlayers.length);
       return DropdownMenu(
         width: 230,
         dropdownMenuEntries: dropdownMenuEntries,

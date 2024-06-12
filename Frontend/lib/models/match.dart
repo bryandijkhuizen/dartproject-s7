@@ -60,15 +60,15 @@ class MatchModel {
 }
 
 class Match {
-  int? id;
-  final String? player1Id;
-  final String? player2Id;
+  late int? id;
+  late String? player1Id;
+  late String? player2Id;
   final DateTime date;
-  final String? location;
+  late String? location;
   final int setTarget;
   final int legTarget;
   final int startingScore;
-  final String? winnerId;
+  late String? winnerId;
   late String? startingPlayerId;
   late String? player1LastName;
   late String? player2LastName;

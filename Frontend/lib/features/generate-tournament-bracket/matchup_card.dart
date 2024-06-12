@@ -36,13 +36,13 @@ class _MatchupCardState extends State<MatchupCard>
     String secondPlayerName = "",
   }) async {
     TournamentStore store = context.read<TournamentStore>();
-    MatchModel match = store.rounds[widget.roundNumber]![widget.matchIndex];
+    Match match = store.rounds[widget.roundNumber]![widget.matchIndex];
 
     // Get first player
-    if (match.player1Id.isNotEmpty && widget.canSelectPlayer) {
+    if (match.player1Id != null && widget.canSelectPlayer) {
       try {
         Map<String, dynamic> firstPlayerResponse =
-            await store.getPlayerById(match.player1Id);
+            await store.getPlayerById(match.player1Id!);
         firstPlayer = PlayerModel.fromJson(firstPlayerResponse);
       } catch (e) {
         throw Exception("The player with id ${match.player1Id} was not found");
@@ -52,10 +52,10 @@ class _MatchupCardState extends State<MatchupCard>
     }
 
     // Get second player
-    if (match.player2Id.isNotEmpty && widget.canSelectPlayer) {
+    if (match.player2Id != null && widget.canSelectPlayer) {
       try {
         Map<String, dynamic> secondPlayerResponse =
-            await store.getPlayerById(match.player2Id);
+            await store.getPlayerById(match.player2Id!);
         secondPlayer = PlayerModel.fromJson(secondPlayerResponse);
       } catch (e) {
         throw Exception("The player with id ${match.player2Id} was not found");
@@ -69,18 +69,18 @@ class _MatchupCardState extends State<MatchupCard>
   Widget build(BuildContext context) {
     super.build(context);
     TournamentStore store = context.read<TournamentStore>();
-    MatchModel match = store.rounds[widget.roundNumber]![widget.matchIndex];
+    Match match = store.rounds[widget.roundNumber]![widget.matchIndex];
 
-    if (match.player1LastName.isNotEmpty) {
+    if (match.player1LastName != null) {
       print("First player is:  ${match.player1LastName}");
     } else {
       print("No first player");
     }
     checkForPlayers(
       firstPlayerName:
-          (match.player1LastName.isNotEmpty ? match.player1LastName : ""),
+          (match.player1LastName != null ? match.player1LastName! : ""),
       secondPlayerName:
-          (match.player2LastName.isNotEmpty ? match.player2LastName : ""),
+          (match.player2LastName != null ? match.player2LastName! : ""),
     ); // Add that if this.player1LastName is set, it should be added.
 
     var theme = Theme.of(context);
