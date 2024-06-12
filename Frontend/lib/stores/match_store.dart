@@ -1,10 +1,12 @@
 import 'package:mobx/mobx.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/match.dart';
+// ignore: implementation_imports
 import 'package:backend/src/finish_calculator.dart';
 
 part 'match_store.g.dart';
 
+// ignore: library_private_types_in_public_api
 class MatchStore = _MatchStore with _$MatchStore;
 
 abstract class _MatchStore with Store {
@@ -23,14 +25,11 @@ abstract class _MatchStore with Store {
   bool isCreatingLeg = false;
 
   @observable
-  ObservableList<Map<String, dynamic>> lastFiveScoresPlayer1 =
-      ObservableList<Map<String, dynamic>>();
+  ObservableList<Map<String, dynamic>> lastFiveScoresPlayer1 = ObservableList<Map<String, dynamic>>();
   @observable
-  ObservableList<Map<String, dynamic>> lastFiveScoresPlayer2 =
-      ObservableList<Map<String, dynamic>>();
+  ObservableList<Map<String, dynamic>> lastFiveScoresPlayer2 = ObservableList<Map<String, dynamic>>();
   @observable
-  ObservableList<Map<String, dynamic>> currentLegScores =
-      ObservableList<Map<String, dynamic>>();
+  ObservableList<Map<String, dynamic>> currentLegScores = ObservableList<Map<String, dynamic>>();
 
   @observable
   int currentLegId = -1;
@@ -88,23 +87,18 @@ abstract class _MatchStore with Store {
     isLoading = true;
     loadingMessage = 'Initializing match details...';
     try {
-      var response = await _supabaseClient
-          .from('match')
-          .select('*')
-          .eq('id', matchId)
-          .single();
+      var response = await _supabaseClient.from('match').select('*').eq('id', matchId).single();
       matchModel = MatchModel.fromJson(response);
 
       await _fetchPlayerDetails();
       await _checkForActiveSetOrCreateNew();
       await _calculateWins();
 
-      subscribeToScores();
+      _subscribeToRealtimeUpdates();
 
       setupComplete = true;
     } catch (error) {
       errorMessage = 'Initialization failed: $error';
-      print('Error during initialization: $error');
     } finally {
       isLoading = false;
     }
@@ -112,17 +106,9 @@ abstract class _MatchStore with Store {
 
   Future<void> _fetchPlayerDetails() async {
     try {
-      var player1Response = await _supabaseClient
-          .from('user')
-          .select('last_name')
-          .eq('id', matchModel.player1Id)
-          .single();
+      var player1Response = await _supabaseClient.from('user').select('last_name').eq('id', matchModel.player1Id).single();
       matchModel.player1LastName = player1Response['last_name'] ?? 'Unknown';
-      var player2Response = await _supabaseClient
-          .from('user')
-          .select('last_name')
-          .eq('id', matchModel.player2Id)
-          .single();
+      var player2Response = await _supabaseClient.from('user').select('last_name').eq('id', matchModel.player2Id).single();
       matchModel.player2LastName = player2Response['last_name'] ?? 'Unknown';
 
       currentScorePlayer1 = matchModel.startingScore;
@@ -130,14 +116,12 @@ abstract class _MatchStore with Store {
       currentPlayerId = matchModel.startingPlayerId;
     } catch (error) {
       errorMessage = 'Failed to fetch player details: $error';
-      print('Error fetching player details: $error');
     }
   }
 
   Future<void> _checkForActiveSetOrCreateNew() async {
     try {
-      var response = await _supabaseClient
-          .rpc('get_active_set', params: {'p_match_id': matchModel.id});
+      var response = await _supabaseClient.rpc('get_active_set', params: {'p_match_id': matchModel.id});
       if (response.isEmpty) {
         await _startNewSet();
       } else {
@@ -151,14 +135,12 @@ abstract class _MatchStore with Store {
       }
     } catch (error) {
       errorMessage = 'Failed to check for active set: $error';
-      print('Error checking for active set: $error');
     }
   }
 
   Future<void> _checkForActiveLegOrCreateNew() async {
     try {
-      var response = await _supabaseClient
-          .rpc('get_active_leg', params: {'p_set_id': currentSetId});
+      var response = await _supabaseClient.rpc('get_active_leg', params: {'p_set_id': currentSetId});
       if (response.isEmpty) {
         await _startNewLeg();
       } else {
@@ -172,7 +154,6 @@ abstract class _MatchStore with Store {
       }
     } catch (error) {
       errorMessage = 'Failed to check for active leg: $error';
-      print('Error checking for active leg: $error');
     }
   }
 
@@ -183,21 +164,17 @@ abstract class _MatchStore with Store {
     isLoading = true;
     loadingMessage = 'Starting new set...';
     try {
-      var response = await _supabaseClient
-          .rpc('create_set', params: {'p_match_id': matchModel.id});
+      var response = await _supabaseClient.rpc('create_set', params: {'p_match_id': matchModel.id});
       currentSetId = response[0]['set_id'];
       legWins.clear();
       if (!isFirstLeg) {
         _switchStartingPlayer();
       }
-      isFirstLeg =
-          false; // Update this to indicate that the first leg has been played
-      currentPlayerId =
-          matchModel.startingPlayerId; // Ensure this is set correctly
+      isFirstLeg = false; // Update this to indicate that the first leg has been played
+      currentPlayerId = matchModel.startingPlayerId; // Ensure this is set correctly
       await _startNewLeg();
     } catch (error) {
       errorMessage = 'Failed to start a new set: $error';
-      print('Error starting new set: $error');
     } finally {
       isLoading = false;
       isCreatingSet = false;
@@ -212,8 +189,7 @@ abstract class _MatchStore with Store {
     isLoading = true;
     loadingMessage = 'Starting new leg...';
     try {
-      var response = await _supabaseClient
-          .rpc('create_leg', params: {'p_set_id': currentSetId});
+      var response = await _supabaseClient.rpc('create_leg', params: {'p_set_id': currentSetId});
       currentLegId = response[0]['leg_id'];
 
       currentPlayerId = matchModel.startingPlayerId;
@@ -224,12 +200,9 @@ abstract class _MatchStore with Store {
       lastFiveScoresPlayer1.clear();
       lastFiveScoresPlayer2.clear();
 
-      doubleAttemptsNeeded = true; // Set flag to show popup
-
       _updateThrowSuggestions();
     } catch (error) {
       errorMessage = 'Failed to start a new leg: $error';
-      print('Error starting new leg: $error');
     } finally {
       isLoading = false;
       isCreatingLeg = false;
@@ -238,23 +211,17 @@ abstract class _MatchStore with Store {
 
   Future<void> _calculateWins() async {
     try {
-      var legWinsResponse = await _supabaseClient
-          .rpc('get_leg_wins', params: {'p_set_id': currentSetId});
-      legWins = _aggregateWins(
-          List<Map<String, dynamic>>.from(legWinsResponse), 'leg_winner_id');
+      var legWinsResponse = await _supabaseClient.rpc('get_leg_wins', params: {'p_set_id': currentSetId});
+      legWins = _aggregateWins(List<Map<String, dynamic>>.from(legWinsResponse), 'leg_winner_id');
 
-      var setWinsResponse = await _supabaseClient
-          .rpc('get_set_wins', params: {'p_match_id': matchId});
-      setWins = _aggregateWins(
-          List<Map<String, dynamic>>.from(setWinsResponse), 'set_winner_id');
+      var setWinsResponse = await _supabaseClient.rpc('get_set_wins', params: {'p_match_id': matchId});
+      setWins = _aggregateWins(List<Map<String, dynamic>>.from(setWinsResponse), 'set_winner_id');
     } catch (error) {
       errorMessage = 'Error calculating wins: $error';
-      print('Error calculating wins: $error');
     }
   }
 
-  Map<String, int> _aggregateWins(
-      List<Map<String, dynamic>> winsResponse, String winnerKey) {
+  Map<String, int> _aggregateWins(List<Map<String, dynamic>> winsResponse, String winnerKey) {
     Map<String, int> wins = {};
     for (var win in winsResponse) {
       var winnerId = win[winnerKey]?.toString();
@@ -267,8 +234,7 @@ abstract class _MatchStore with Store {
 
   Future<void> _restoreLatestScores() async {
     try {
-      var turnResponse = await _supabaseClient
-          .rpc('get_latest_scores', params: {'p_leg_id': currentLegId});
+      var turnResponse = await _supabaseClient.rpc('get_latest_scores', params: {'p_leg_id': currentLegId});
       if (turnResponse.isNotEmpty) {
         currentScorePlayer1 = turnResponse.first['current_score'];
         currentScorePlayer2 = turnResponse.first['current_score2'];
@@ -282,52 +248,56 @@ abstract class _MatchStore with Store {
             'isDeadThrow': turn['score'] == 0,
           };
           if (turn['player_id'] == matchModel.player1Id) {
-            lastFiveScoresPlayer1
-                .add(scoreEntry); // Use add() instead of insert(0, ...)
+            lastFiveScoresPlayer1.add(scoreEntry); // Use add() instead of insert(0, ...)
           } else {
-            lastFiveScoresPlayer2
-                .add(scoreEntry); // Use add() instead of insert(0, ...)
+            lastFiveScoresPlayer2.add(scoreEntry); // Use add() instead of insert(0, ...)
           }
         }
 
-        lastFiveScoresPlayer1 =
-            ObservableList.of(lastFiveScoresPlayer1.take(5));
-        lastFiveScoresPlayer2 =
-            ObservableList.of(lastFiveScoresPlayer2.take(5));
+        lastFiveScoresPlayer1 = ObservableList.of(lastFiveScoresPlayer1.take(5));
+        lastFiveScoresPlayer2 = ObservableList.of(lastFiveScoresPlayer2.take(5));
 
-        currentPlayerId =
-            turnResponse.first['player_id'] == matchModel.player1Id
-                ? matchModel.player2Id
-                : matchModel.player1Id;
+        currentPlayerId = turnResponse.first['player_id'] == matchModel.player1Id ? matchModel.player2Id : matchModel.player1Id;
 
         _updateThrowSuggestions();
-
-        // Check if double attempts are needed
-        if (turnResponse.first['double_attempts'] == null) {
-          doubleAttemptsNeeded = true;
-        }
       }
     } catch (error) {
       errorMessage = 'Failed to restore scores: $error';
-      print('Error restoring scores: $error');
     }
   }
 
   @action
-  Future<void> recordScore(int score) async {
+  Future<void> recordScore(int score, {int? dartsForCheckout, int? doubleAttempts}) async {
     if (score < 0 || score > 180) {
       errorMessage = 'Invalid score: $score';
       return;
     }
+
     try {
-      final response = await _supabaseClient.rpc('record_turn', params: {
+      bool doubleHit = false;
+      int currentScore = currentPlayerId == matchModel.player1Id ? currentScorePlayer1 : currentScorePlayer2;
+
+      // Only check for double hit and show the dialog if the current score is <= 50
+      if (currentScore <= 50 && currentScore - score == 0) {
+        if (dartsForCheckout == null || doubleAttempts == null) {
+          doubleAttemptsNeeded = true;
+          return;
+        }
+        doubleHit = true;
+      }
+
+      Map<String, dynamic> params = {
         'p_player_id': currentPlayerId,
         'p_new_leg_id': currentLegId,
         'p_score': score,
-      });
+        'p_darts_for_checkout': dartsForCheckout,
+        'p_double_attempts': doubleAttempts,
+        'p_double_hit': doubleHit
+      };
 
-      final legWinnerId =
-          response.isNotEmpty ? response[0]['leg_winner_id'] : null;
+      final response = await _supabaseClient.rpc('record_turn', params: params);
+
+      final legWinnerId = response.isNotEmpty ? response[0]['leg_winner_id'] : null;
       final newScore = response[0]['new_score'];
       final newScore2 = response[0]['new_score2'];
       final isDeadThrow = response[0]['is_dead_throw'] as bool;
@@ -344,9 +314,7 @@ abstract class _MatchStore with Store {
         if (extraThrowAfterUndo) {
           extraThrowAfterUndo = false;
         } else {
-          currentPlayerId = currentPlayerId == matchModel.player1Id
-              ? matchModel.player2Id
-              : matchModel.player1Id;
+          currentPlayerId = currentPlayerId == matchModel.player1Id ? matchModel.player2Id : matchModel.player1Id;
         }
         _updateThrowSuggestions();
       }
@@ -354,48 +322,51 @@ abstract class _MatchStore with Store {
       updateTemporaryScore('');
     } catch (error) {
       errorMessage = 'Failed to record score: $error';
-      print('Error recording score: $error');
     }
   }
 
   @action
   void updateTemporaryScore(String score) {
     temporaryScore = score;
+
+    // Update suggestions based on the current score
     if (currentPlayerId == matchModel.player1Id) {
-      showPlayer1Suggestion = score.isEmpty;
+      showPlayer1Suggestion = true; // Always show suggestions for player 1
+      final remainingScore = currentScorePlayer1 - (int.tryParse(temporaryScore) ?? 0);
+      final player1SuggestionList = _finishCalculator.getThrowSuggestion(remainingScore, 3);
+      player1Suggestion = player1SuggestionList?.join(', ') ?? '';
     } else {
-      showPlayer2Suggestion = score.isEmpty;
+      showPlayer2Suggestion = true; // Always show suggestions for player 2
+      final remainingScore = currentScorePlayer2 - (int.tryParse(temporaryScore) ?? 0);
+      final player2SuggestionList = _finishCalculator.getThrowSuggestion(remainingScore, 3);
+      player2Suggestion = player2SuggestionList?.join(', ') ?? '';
     }
   }
 
   @action
   void _updateThrowSuggestions() {
-    final player1SuggestionList =
-        _finishCalculator.getThrowSuggestion(currentScorePlayer1, 3);
-    final player2SuggestionList =
-        _finishCalculator.getThrowSuggestion(currentScorePlayer2, 3);
+    final player1SuggestionList = _finishCalculator.getThrowSuggestion(currentScorePlayer1, 3);
+    final player2SuggestionList = _finishCalculator.getThrowSuggestion(currentScorePlayer2, 3);
 
     player1Suggestion = player1SuggestionList?.join(', ') ?? '';
     player2Suggestion = player2SuggestionList?.join(', ') ?? '';
 
-    showPlayer1Suggestion = player1Suggestion.isNotEmpty;
-    showPlayer2Suggestion = player2Suggestion.isNotEmpty;
+    // Always show suggestions
+    showPlayer1Suggestion = true;
+    showPlayer2Suggestion = true;
   }
 
-  void _updateScores(
-      dynamic newScore, dynamic newScore2, int score, bool isDeadThrow) {
+  void _updateScores(dynamic newScore, dynamic newScore2, int score, bool isDeadThrow) {
     final scoreEntry = {'score': score, 'isDeadThrow': isDeadThrow};
     if (currentPlayerId == matchModel.player1Id) {
       currentScorePlayer1 = newScore is int ? newScore : int.parse(newScore);
-      lastFiveScoresPlayer1
-          .add(scoreEntry); // Use add() instead of insert(0, ...)
+      lastFiveScoresPlayer1.add(scoreEntry); // Use add() instead of insert(0, ...)
       if (lastFiveScoresPlayer1.length > 5) {
         lastFiveScoresPlayer1.removeAt(0);
       }
     } else {
       currentScorePlayer2 = newScore2 is int ? newScore2 : int.parse(newScore2);
-      lastFiveScoresPlayer2
-          .add(scoreEntry); // Use add() instead of insert(0, ...)
+      lastFiveScoresPlayer2.add(scoreEntry); // Use add() instead of insert(0, ...)
       if (lastFiveScoresPlayer2.length > 5) {
         lastFiveScoresPlayer2.removeAt(0);
       }
@@ -404,25 +375,20 @@ abstract class _MatchStore with Store {
 
   Future<void> _updateLegWinner(String legWinnerId) async {
     try {
-      await _supabaseClient
-          .from('leg')
-          .update({'winner_id': legWinnerId}).eq('id', currentLegId);
+      await _supabaseClient.from('leg').update({'winner_id': legWinnerId}).eq('id', currentLegId);
     } catch (error) {
       errorMessage = 'Failed to update leg winner: $error';
-      print('Error updating leg winner: $error');
     }
   }
 
   @action
   Future<void> undoLastScore() async {
     try {
-      final response = await _supabaseClient
-          .rpc('undo_last_score', params: {'p_leg_id': currentLegId});
+      final response = await _supabaseClient.rpc('undo_last_score', params: {'p_leg_id': currentLegId});
 
       if (response != null && response.isNotEmpty) {
         final updatedCurrentScore = response[0]['updated_current_score'] as int;
-        final updatedCurrentScore2 =
-            response[0]['updated_current_score2'] as int;
+        final updatedCurrentScore2 = response[0]['updated_current_score2'] as int;
 
         if (currentPlayerId == matchModel.player1Id) {
           currentScorePlayer1 = updatedCurrentScore;
@@ -439,19 +405,7 @@ abstract class _MatchStore with Store {
       }
     } catch (error) {
       errorMessage = 'Failed to undo last score: $error';
-      print('Error undoing last score: $error');
     }
-  }
-
-  void _undoScore(int lastScore) {
-    if (currentPlayerId == matchModel.player1Id) {
-      currentScorePlayer1 += lastScore;
-      lastFiveScoresPlayer1.removeLast();
-    } else {
-      currentScorePlayer2 += lastScore;
-      lastFiveScoresPlayer2.removeLast();
-    }
-    _updateThrowSuggestions();
   }
 
   Future<void> _endCurrentLeg(String legWinnerId) async {
@@ -467,7 +421,6 @@ abstract class _MatchStore with Store {
       }
     } catch (error) {
       errorMessage = 'Failed to end current leg: $error';
-      print('Error ending current leg: $error');
     }
   }
 
@@ -491,64 +444,68 @@ abstract class _MatchStore with Store {
       }
     } catch (error) {
       errorMessage = 'Failed to check set winner: $error';
-      print('Error checking set winner: $error');
     }
   }
 
   Future<void> _updateSetWinner(String setWinnerId) async {
     try {
-      await _supabaseClient
-          .from('set')
-          .update({'winner_id': setWinnerId}).eq('id', currentSetId);
+      await _supabaseClient.from('set').update({'winner_id': setWinnerId}).eq('id', currentSetId);
     } catch (error) {
       errorMessage = 'Failed to update set winner: $error';
-      print('Error updating set winner: $error');
     }
   }
 
   Future<void> _updateMatchWinner(String matchWinnerId) async {
     try {
-      await _supabaseClient
-          .from('match')
-          .update({'winner_id': matchWinnerId}).eq('id', matchModel.id);
+      await _supabaseClient.from('match').update({'winner_id': matchWinnerId}).eq('id', matchModel.id);
     } catch (error) {
       errorMessage = 'Failed to update match winner: $error';
-      print('Error updating match winner: $error');
     }
   }
 
   void _endMatch(String matchWinnerId) {
     matchEnded = true;
     this.matchWinnerId = matchWinnerId;
-    loadingMessage =
-        "Match has ended. Winner: Player ${matchWinnerId == matchModel.player1Id ? 1 : 2}";
+    loadingMessage = "Match has ended. Winner: Player ${matchWinnerId == matchModel.player1Id ? 1 : 2}";
   }
 
   void _switchStartingPlayer() {
-    matchModel.startingPlayerId =
-        matchModel.startingPlayerId == matchModel.player1Id
-            ? matchModel.player2Id
-            : matchModel.player1Id;
+    matchModel.startingPlayerId = matchModel.startingPlayerId == matchModel.player1Id ? matchModel.player2Id : matchModel.player1Id;
 
     // Update the starting player ID in the match table in the database
-    _supabaseClient.from('match').update({
-      'starting_player_id': matchModel.startingPlayerId,
-    }).eq('id', matchModel.id);
+    _supabaseClient.from('match').update({'starting_player_id': matchModel.startingPlayerId}).eq('id', matchModel.id);
   }
 
-  void subscribeToScores() {
-    _supabaseClient
-        .from('turn')
-        .stream(primaryKey: ['id'])
-        .eq('leg_id', currentLegId)
-        .order('id', ascending: true)
-        .listen((data) {
-          currentLegScores = ObservableList.of(data);
-          _restoreLatestScores();
-        })
-        .onError((error) {
-          errorMessage = 'Failed to subscribe to scores: $error';
-          print('Error subscribing to scores: $error');
-        });
+  void _subscribeToRealtimeUpdates() {
+    _supabaseClient.from('turn').stream(primaryKey: ['id']).eq('leg_id', currentLegId).order('id', ascending: true).listen((data) {
+      currentLegScores = ObservableList.of(data);
+      _restoreLatestScores();
+    }).onError((error) {
+      errorMessage = 'Failed to subscribe to scores: $error';
+    });
+
+    // Additional subscriptions for other data updates
+    _supabaseClient.from('leg').stream(primaryKey: ['id']).eq('set_id', currentSetId).listen((data) {
+      _restoreLatestScores();
+    }).onError((error) {
+      errorMessage = 'Failed to subscribe to leg updates: $error';
+    });
+
+    _supabaseClient.from('set').stream(primaryKey: ['id']).eq('match_id', matchId).listen((data) {
+      _calculateWins();
+    }).onError((error) {
+      errorMessage = 'Failed to subscribe to set updates: $error';
+    });
+
+    _supabaseClient.from('match').stream(primaryKey: ['id']).eq('id', matchId).listen((data) {
+      if (data.isNotEmpty) {
+        matchModel = MatchModel.fromJson(data.first);
+        if (matchModel.winnerId != null) {
+          _endMatch(matchModel.winnerId!);
+        }
+      }
+    }).onError((error) {
+      errorMessage = 'Failed to subscribe to match updates: $error';
+    });
   }
 }

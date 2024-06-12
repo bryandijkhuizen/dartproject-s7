@@ -444,8 +444,10 @@ mixin _$MatchStore on _MatchStore, Store {
       AsyncAction('_MatchStore.recordScore', context: context);
 
   @override
-  Future<void> recordScore(int score) {
-    return _$recordScoreAsyncAction.run(() => super.recordScore(score));
+  Future<void> recordScore(int score,
+      {int? dartsForCheckout, int? doubleAttempts}) {
+    return _$recordScoreAsyncAction.run(() => super.recordScore(score,
+        dartsForCheckout: dartsForCheckout, doubleAttempts: doubleAttempts));
   }
 
   late final _$undoLastScoreAsyncAction =
