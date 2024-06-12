@@ -57,29 +57,6 @@ abstract class _TournamentStore with Store {
     }
   }
 
-  Future<List<PlayerModel>> getPlayersByIds(List<String> playerIds) async {
-    final dynamic response;
-    try {
-      response = await _supabase
-          .rpc("get_users_by_uuids", params: {"uuid_list": playerIds});
-    } catch (error) {
-      throw Exception("An error occurred: $error");
-    }
-
-    if (response.isEmpty) {
-      throw Exception(
-          'Error fetching data: ${response.length} amount of user\'s found');
-    }
-
-    final List<dynamic> userData = response;
-
-    List<PlayerModel> playerModels = userData.map((userMap) {
-      return PlayerModel.fromJson(userMap);
-    }).toList();
-
-    return playerModels;
-  }
-
   Map<int, List<Match>> createRounds(
     List<PlayerModel> players,
     int round, {
@@ -94,6 +71,7 @@ abstract class _TournamentStore with Store {
 
     rounds = {round: matches};
 
+    // Create next round
     if (matches.length > 1) {
       List<PlayerModel> nextRoundPlayers = [];
       for (var i = 1; i <= matches.length; i++) {
@@ -118,8 +96,7 @@ abstract class _TournamentStore with Store {
     bool fillInPlayers = false,
   }) {
     List<Match> matches = [];
-    int amountOfPlayers = players.length;
-    int amountOfMatches = (amountOfPlayers / 2).ceil();
+    int amountOfMatches = (players.length / 2).ceil();
 
     while (amountOfMatches >= 1) {
       Match newMatch;
@@ -132,8 +109,6 @@ abstract class _TournamentStore with Store {
 
         newMatch = addMatch(
           tournament.startTime,
-          setTarget,
-          legTarget,
           firstPlayer: firstPlayer,
           secondPlayer: secondPlayer,
           location: tournament.location,
@@ -143,8 +118,6 @@ abstract class _TournamentStore with Store {
       } else {
         newMatch = addMatch(
           tournament.startTime,
-          setTarget,
-          legTarget,
           location: tournament.location,
           player1LastName: "",
           player2LastName: "",
@@ -160,12 +133,13 @@ abstract class _TournamentStore with Store {
   }
 
   Match addMatch(
-    DateTime date,
-    int setTarget,
-    int legTarget, {
+    DateTime date, {
     int? id,
     PlayerModel? firstPlayer,
     PlayerModel? secondPlayer,
+    int? setTarget,
+    int? legTarget,
+    int? startingScore,
     String? location,
     String? player1LastName,
     String? player2LastName,
@@ -174,20 +148,15 @@ abstract class _TournamentStore with Store {
       player1Id: firstPlayer?.id,
       player2Id: secondPlayer?.id,
       date: date,
-      setTarget: setTarget,
-      legTarget: legTarget,
-      startingScore: startingScore,
+      setTarget: setTarget ?? this.setTarget,
+      legTarget: legTarget ?? this.legTarget,
+      startingScore: startingScore ?? this.startingScore,
       player1LastName: firstPlayer?.lastName ?? player1LastName,
       player2LastName: secondPlayer?.lastName ?? player2LastName,
     );
 
-    if (id != null) {
-      newMatch.id = id;
-    }
-
-    if (location == null) {
-      newMatch.location = location;
-    }
+    if (id != null) newMatch.id = id;
+    if (location != null) newMatch.location = location;
 
     return newMatch;
   }
@@ -196,8 +165,6 @@ abstract class _TournamentStore with Store {
     if (playerId == "") throw Exception("No playerId is given.");
     if (players.isEmpty) throw Exception("There are no players in Tournament");
 
-    // Get current player
-    // ToDo Make it so that it does not pull the player out of the list
     PlayerModel? player =
         players.firstWhereOrNull((player) => player.id == playerId);
 
@@ -227,16 +194,15 @@ abstract class _TournamentStore with Store {
       // Add player to unselectedPlayers
       unselectedPlayers.add(player);
 
-      print('Match with ID ${match.id} updated successfully.');
+      print(
+          'Player in match $matchIndex in round $roundNumber unselected successfully.');
+    } on RangeError {
+      print(
+          'Error: Index out of bounds. Please check the range of matchIndex.');
+    } on NoSuchMethodError {
+      print('Error: The item at matchIndex is null or not found.');
     } catch (error) {
-      if (error is RangeError) {
-        print(
-            'Error: Index out of bounds. Please check the range of matchIndex.');
-      } else if (error is NoSuchMethodError) {
-        print('Error: The item at matchIndex is null or not found.');
-      } else {
-        print('There was an error: $error');
-      }
+      print('There was an error: $error');
     }
   }
 
@@ -246,7 +212,6 @@ abstract class _TournamentStore with Store {
     int matchIndex,
     bool isFirstPlayer,
   ) {
-    // Update match with selected player
     try {
       Match match = rounds[roundNumber]![matchIndex];
 
@@ -257,16 +222,16 @@ abstract class _TournamentStore with Store {
         match.player2Id = player.id;
         match.player2LastName = player.lastName;
       }
-      print('Match with ID ${match.id} updated successfully.');
+
+      print(
+          'Player in match $matchIndex in round $roundNumber selected successfully.');
+    } on RangeError {
+      print(
+          'Error: Index out of bounds. Please check the range of matchIndex.');
+    } on NoSuchMethodError {
+      print('Error: The item at matchIndex is null or not found.');
     } catch (error) {
-      if (error is RangeError) {
-        print(
-            'Error: Index out of bounds. Please check the range of matchIndex.');
-      } else if (error is NoSuchMethodError) {
-        print('Error: The item at matchIndex is null or not found.');
-      } else {
-        print('There was an error: $error');
-      }
+      print('There was an error: $error');
     }
 
     // Remove player from unselectedPlayers
@@ -276,17 +241,18 @@ abstract class _TournamentStore with Store {
   }
 
   Future<SupabaseResultType> createTournament() async {
-    SupabaseResultType resultType;
     try {
       rounds.forEach(
         (roundNumber, matches) async {
-          var json = jsonEncode(matches);
-          Map<String, dynamic> resultJson = await _supabase
-              .rpc<Map<String, dynamic>>('create_tournament_round', params: {
-            "match_data": matches,
-            'current_tournament_id': tournament.id,
-            'current_round_number': roundNumber
-          });
+          Map<String, dynamic> resultJson =
+              await _supabase.rpc<Map<String, dynamic>>(
+            'create_tournament_round',
+            params: {
+              "match_data": matches,
+              'current_tournament_id': tournament.id,
+              'current_round_number': roundNumber
+            },
+          );
 
           SupabaseResultType result = SupabaseResultType.fromJson(resultJson);
           if (!result.success) {
@@ -306,7 +272,9 @@ abstract class _TournamentStore with Store {
       );
     }
     return const SupabaseResultType(
-        success: true, message: 'Successfully created tournament');
+      success: true,
+      message: 'Successfully created tournament',
+    );
   }
 }
 

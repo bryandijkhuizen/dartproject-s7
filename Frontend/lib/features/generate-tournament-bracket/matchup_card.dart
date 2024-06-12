@@ -7,14 +7,12 @@ import 'package:provider/provider.dart';
 import 'player_card.dart';
 
 class MatchupCard extends StatefulWidget {
-  // final MatchModel match;
   final int roundNumber;
   final int matchIndex;
   final bool canSelectPlayer;
 
   const MatchupCard({
     super.key,
-    // required this.match,
     required this.roundNumber,
     required this.matchIndex,
     required this.canSelectPlayer,
@@ -71,17 +69,12 @@ class _MatchupCardState extends State<MatchupCard>
     TournamentStore store = context.read<TournamentStore>();
     Match match = store.rounds[widget.roundNumber]![widget.matchIndex];
 
-    if (match.player1LastName != null) {
-      print("First player is:  ${match.player1LastName}");
-    } else {
-      print("No first player");
-    }
     checkForPlayers(
       firstPlayerName:
-          (match.player1LastName != null ? match.player1LastName! : ""),
+          (match.player1LastName != "" ? match.player1LastName! : ""),
       secondPlayerName:
-          (match.player2LastName != null ? match.player2LastName! : ""),
-    ); // Add that if this.player1LastName is set, it should be added.
+          (match.player2LastName != "" ? match.player2LastName! : ""),
+    );
 
     var theme = Theme.of(context);
     return Padding(

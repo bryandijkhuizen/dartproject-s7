@@ -1,12 +1,8 @@
 import 'package:darts_application/features/generate-tournament-bracket/round_card.dart';
-import 'package:darts_application/models/match.dart';
-import 'package:darts_application/models/player.dart';
 import 'package:darts_application/stores/tournament_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
-
-import 'matchup_card.dart';
 
 class TournamentBrackets extends StatelessWidget {
   const TournamentBrackets({super.key});
