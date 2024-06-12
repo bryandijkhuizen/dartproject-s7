@@ -35,7 +35,7 @@ class _TournamentViewState extends State<TournamentView> {
     UserStore userStore = context.read();
     Permissions permissions = userStore.permissions;
     return Scaffold(
-      appBar: AppBar(title: const Text('Tournament name')),
+      appBar: AppBar(title: const Text('Tournament')),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Center(
@@ -76,8 +76,12 @@ class _TournamentViewState extends State<TournamentView> {
                             ),
                           );
                         }
+                        if(pageList.isEmpty){
+                          return Text("No matches found");
+                        }
                         return Column(children: pageList);
                       }
+                      
                     }
                     return const CircularProgressIndicator();
                   },
