@@ -1,3 +1,5 @@
+import 'package:darts_application/features/setup_match/stores/match_setup_store.dart';
+import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/features/setup_match/select_starting_player.dart';
@@ -6,7 +8,9 @@ import 'package:darts_application/models/player.dart';
 
 class StartMatch extends StatefulWidget {
   final String matchId;
-  const StartMatch({super.key, required this.matchId});
+  final bool isDesktop;
+
+  const StartMatch({super.key, required this.matchId, required this.isDesktop});
 
   @override
   State<StartMatch> createState() => _StartMatchState();
@@ -17,6 +21,8 @@ class _StartMatchState extends State<StartMatch> {
   bool player1Joined = false;
   bool player2Joined = false;
   bool markerJoined = false;
+  MatchSetupStore matchSetupStore = MatchSetupStore(
+      Supabase.instance.client, UserStore(Supabase.instance.client));
   MatchModel matchDetails = MatchModel(
     id: '',
     player1Id: '',
@@ -70,7 +76,9 @@ class _StartMatchState extends State<StartMatch> {
   }
 
   bool allPlayersJoined() {
-    return player1Joined && player2Joined && markerJoined;
+    return player1Joined &&
+        player2Joined &&
+        (widget.isDesktop ? markerJoined : true);
   }
 
   var buttonStyles = {
@@ -81,7 +89,7 @@ class _StartMatchState extends State<StartMatch> {
         borderRadius: BorderRadius.circular(10),
       ),
     ),
-    'random': ElevatedButton.styleFrom(
+    'notJoined': ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFF2C4789),
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
@@ -111,6 +119,7 @@ class _StartMatchState extends State<StartMatch> {
             startMatchPosition: startMatchPosition,
             buttonStyles: buttonStyles,
             matchDetails: matchDetails,
+            matchSetupStore: matchSetupStore,
           ),
         ],
       ),
@@ -163,20 +172,22 @@ class _StartMatchState extends State<StartMatch> {
                   ? 'Joined as ${matchDetails.player2LastName}'
                   : 'Join as ${matchDetails.player2LastName}'),
             ),
-            SizedBox(height: buttonHeight * 0.15), // Space between buttons
-            ElevatedButton(
-              style: buttonStyles[markerJoined ? 'joined' : 'notJoined'],
-              onPressed: () {
-                setState(() {
-                  markerJoined = true;
-                });
-              },
-              child: const Text('Join as Marker'),
-            ),
+            if (widget.isDesktop) ...[
+              SizedBox(height: buttonHeight * 0.15), // Space between buttons
+              ElevatedButton(
+                style: buttonStyles[markerJoined ? 'joined' : 'notJoined'],
+                onPressed: () {
+                  setState(() {
+                    markerJoined = true;
+                  });
+                },
+                child: const Text('Join as Marker'),
+              ),
+            ],
             SizedBox(
                 height: startMatchPosition -
-                    (3 *
-                        buttonHeight)), // Space to push buttons to 3/4 of the page
+                    ((widget.isDesktop ? 3 : 2) *
+                        buttonHeight)), // Adjust space accordingly
             if (allPlayersJoined())
               ElevatedButton(
                 style: buttonStyles['notJoined'],
