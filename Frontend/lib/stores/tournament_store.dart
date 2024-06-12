@@ -48,10 +48,13 @@ abstract class _TournamentStore with Store {
   }
 
   Future<Map<String, dynamic>> getPlayerById(String id) async {
-    Map<String, dynamic> response =
-        await _supabase.from('user').select('*').eq('id', id).single();
-
-    return response;
+    try {
+      Map<String, dynamic> response =
+          await _supabase.from('user').select('*').eq('id', id).single();
+      return response;
+    } catch (error) {
+      throw Exception("An error occurred $error");
+    }
   }
 
   Future<List<PlayerModel>> getPlayersByIds(List<String> playerIds) async {
