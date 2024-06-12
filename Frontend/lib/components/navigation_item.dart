@@ -18,24 +18,19 @@ class NavigationItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (enabled) {
-      return InkWell(
-        onTap: () {
-          callback?.call();
-        },
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-            ),
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white,
-                fontFamily: 'Poppins',
-                decoration: active ? TextDecoration.underline : null,
-                decorationColor: Colors.white,
-              ),
+      return TextButton(
+        onPressed: (){ callback?.call();},
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 12,
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 18,
+              fontFamily: 'Poppins',
+              decoration: active ? TextDecoration.underline : null,
+              decorationColor: Colors.white,
             ),
           ),
         ),
