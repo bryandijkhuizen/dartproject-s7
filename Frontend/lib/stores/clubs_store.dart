@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:darts_application/models/club.dart';
 import 'package:darts_application/stores/user_store.dart';
 import 'package:mobx/mobx.dart';
@@ -99,7 +101,6 @@ abstract class _ClubsStore with Store {
           )
           .toList();
     } catch (error) {
-      print('Error fetching user clubs: $error');
       // Handle error accordingly
     }
     loadingAssignedClubs = false;

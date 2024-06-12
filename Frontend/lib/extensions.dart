@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:form_validator/form_validator.dart';
 
 extension SnackbarExtension on BuildContext {
+  // ignore: non_constant_identifier_names
   void ShowSnackbar(SnackBar snackbar) {
     ScaffoldMessenger.of(this).showSnackBar(snackbar);
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:darts_application/stores/match_store.dart';
+import 'package:darts_application/features/gameplay/score_suggestion.dart';
 
 class ScoreInput extends StatelessWidget {
   final MatchStore matchStore;
@@ -18,26 +19,22 @@ class ScoreInput extends StatelessWidget {
           children: [
             Observer(
               builder: (_) {
-                return Container( // Placeholder for AnimatedAngledBox
-                  alignment: Alignment.center,
-                  color: Colors.blue,
-                  child: Text(
-                    matchStore.showPlayer1Suggestion ? matchStore.player1Suggestion : '',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                );
+                return matchStore.showPlayer1Suggestion
+                    ? AnimatedAngledBox(
+                        isPlayer1: true,
+                        matchStore: matchStore,
+                      )
+                    : const SizedBox.shrink();
               },
             ),
             Observer(
               builder: (_) {
-                return Container( // Placeholder for AnimatedAngledBox
-                  alignment: Alignment.center,
-                  color: Colors.red,
-                  child: Text(
-                    matchStore.showPlayer2Suggestion ? matchStore.player2Suggestion : '',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                );
+                return matchStore.showPlayer2Suggestion
+                    ? AnimatedAngledBox(
+                        isPlayer1: false,
+                        matchStore: matchStore,
+                      )
+                    : const SizedBox.shrink();
               },
             ),
           ],
@@ -123,19 +120,43 @@ class ScoreInput extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Enter Checkout Details'),
+          backgroundColor: Colors.grey[850],
+          title: const Text(
+            'Enter Checkout Details',
+            style: TextStyle(color: Colors.white),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: dartsController,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: 'Darts for Checkout'),
+                decoration: InputDecoration(
+                  labelText: 'Darts for Checkout',
+                  labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white.withOpacity(0.8)),
+                  ),
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                ),
+                style: const TextStyle(color: Colors.white),
               ),
               TextField(
                 controller: attemptsController,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: 'Double Attempts'),
+                decoration: InputDecoration(
+                  labelText: 'Double Attempts',
+                  labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white.withOpacity(0.8)),
+                  ),
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                ),
+                style: const TextStyle(color: Colors.white),
               ),
             ],
           ),
@@ -144,7 +165,7 @@ class ScoreInput extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel', style: TextStyle(color: Colors.white)),
             ),
             TextButton(
               onPressed: () {
@@ -154,7 +175,7 @@ class ScoreInput extends StatelessWidget {
                 matchStore.updateTemporaryScore(''); // Reset temporary score after submitting
                 Navigator.of(context).pop();
               },
-              child: Text('Submit'),
+              child: const Text('Submit', style: TextStyle(color: Colors.white)),
             ),
           ],
         );

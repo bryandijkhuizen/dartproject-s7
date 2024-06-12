@@ -450,24 +450,6 @@ mixin _$MatchStore on _MatchStore, Store {
         dartsForCheckout: dartsForCheckout, doubleAttempts: doubleAttempts));
   }
 
-  late final _$_promptForDartsForCheckoutAsyncAction =
-      AsyncAction('_MatchStore._promptForDartsForCheckout', context: context);
-
-  @override
-  Future<int> _promptForDartsForCheckout() {
-    return _$_promptForDartsForCheckoutAsyncAction
-        .run(() => super._promptForDartsForCheckout());
-  }
-
-  late final _$_promptForDoubleAttemptsAsyncAction =
-      AsyncAction('_MatchStore._promptForDoubleAttempts', context: context);
-
-  @override
-  Future<int> _promptForDoubleAttempts() {
-    return _$_promptForDoubleAttemptsAsyncAction
-        .run(() => super._promptForDoubleAttempts());
-  }
-
   late final _$undoLastScoreAsyncAction =
       AsyncAction('_MatchStore.undoLastScore', context: context);
 
