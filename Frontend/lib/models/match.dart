@@ -7,7 +7,7 @@ class MatchModel {
   final int setTarget;
   final int legTarget;
   final int startingScore;
-  final String? winnerId;
+  String? winnerId;
   late String? startingPlayerId;
   late String player1LastName;
   late String player2LastName;

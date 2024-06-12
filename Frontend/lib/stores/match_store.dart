@@ -192,6 +192,7 @@ abstract class _MatchStore with Store {
       var response = await _supabaseClient.rpc('create_leg', params: {'p_set_id': currentSetId});
       currentLegId = response[0]['leg_id'];
 
+      // Ensure both devices have the same starting player
       currentPlayerId = matchModel.startingPlayerId;
 
       currentScorePlayer1 = matchModel.startingScore;
@@ -201,6 +202,9 @@ abstract class _MatchStore with Store {
       lastFiveScoresPlayer2.clear();
 
       _updateThrowSuggestions();
+
+      // Notify the other device about the new leg
+      await _supabaseClient.from('match').update({'starting_player_id': matchModel.startingPlayerId}).eq('id', matchModel.id);
     } catch (error) {
       errorMessage = 'Failed to start a new leg: $error';
     } finally {
@@ -430,6 +434,10 @@ abstract class _MatchStore with Store {
 
     currentScorePlayer1 = matchModel.startingScore;
     currentScorePlayer2 = matchModel.startingScore;
+
+    lastFiveScoresPlayer1.clear();
+    lastFiveScoresPlayer2.clear();
+    _updateThrowSuggestions();
   }
 
   Future<void> _checkSetWinner(String setWinnerId) async {
@@ -458,6 +466,8 @@ abstract class _MatchStore with Store {
   Future<void> _updateMatchWinner(String matchWinnerId) async {
     try {
       await _supabaseClient.from('match').update({'winner_id': matchWinnerId}).eq('id', matchModel.id);
+      matchModel.winnerId = matchWinnerId; // Update local match model
+      matchEnded = true;
     } catch (error) {
       errorMessage = 'Failed to update match winner: $error';
     }
@@ -493,6 +503,7 @@ abstract class _MatchStore with Store {
 
     _supabaseClient.from('set').stream(primaryKey: ['id']).eq('match_id', matchId).listen((data) {
       _calculateWins();
+      _checkForActiveSetOrCreateNew();
     }).onError((error) {
       errorMessage = 'Failed to subscribe to set updates: $error';
     });
