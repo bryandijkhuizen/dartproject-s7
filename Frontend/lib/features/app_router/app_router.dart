@@ -28,9 +28,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:darts_application/features/setup_match/start_match.dart';
-import 'package:darts_application/features/club_page/views/club_details_view.dart';
-import 'package:darts_application/features/club_page/views/create_post_view.dart';
-import 'package:darts_application/features/club_page/views/edit_post_view.dart';
 
 Widget helloComponent = const Center(
   child: Text('Hello!'),
@@ -80,26 +77,6 @@ final clubsBranch = StatefulShellBranch(
         GoRoute(
           path: 'register',
           builder: (context, state) => const ClubRegistrationView(),
-        ),
-        GoRoute(
-          path: ':id',
-          builder: (context, state) {
-            final clubId = state.pathParameters['id']!;
-            return ClubDetailsView(clubId: clubId);
-          },
-          routes: <RouteBase>[
-            GoRoute(
-              path: 'create-post',
-              builder: (context, state) => const CreatePostView(),
-            ),
-            GoRoute(
-              path: 'edit-post/:postId',
-              builder: (context, state) {
-                final postId = state.pathParameters['postId']!;
-                return EditPostView(postId: postId);
-              },
-            ),
-          ],
         ),
       ],
     ),
