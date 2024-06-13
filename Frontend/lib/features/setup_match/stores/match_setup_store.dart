@@ -29,6 +29,9 @@ abstract class _MatchSetupStore with Store {
         match['player_1_id'] != _userStore.currentUser?.id &&
         match['player_2_id'] != _userStore.currentUser?.id);
 
+    matchResponsePending.removeWhere((match) => match['player_1_id'] == null);
+    matchResponsePending.removeWhere((match) => match['player_2_id'] == null);
+
     matchResponsePending.removeWhere((match) => match['winner_id'] != null);
     matchResponseActive.removeWhere((match) => match['winner_id'] != null);
 
