@@ -538,7 +538,7 @@ abstract class _MatchStore with Store {
     }
   }
 
-  void advanceTournamentMatch(matchWinnerId) async {
+  void advanceTournamentMatch(String matchWinnerId) async {
     await Supabase.instance.client
         .rpc('advance_tournament_match', params: {'p_match_id': matchWinnerId});
   }
@@ -548,7 +548,6 @@ abstract class _MatchStore with Store {
     this.matchWinnerId = matchWinnerId;
     loadingMessage =
         "Match has ended. Winner: Player ${matchWinnerId == matchModel.player1Id ? 1 : 2}";
-    advanceTournamentMatch(matchWinnerId);
   }
 
   void _switchStartingPlayer() {
