@@ -5,8 +5,7 @@ class Tournament {
 
   Tournament({required this.rounds});
 
-  Tournament.fromJson(List<dynamic> dataMap)
-      : rounds = sortRounds(dataMap);
+  Tournament.fromJson(List<dynamic> dataMap) : rounds = sortRounds(dataMap);
 
   static List<TournamentRound> sortRounds(List<dynamic> dataMap) {
     List<TournamentRound> allRounds = [];
@@ -46,5 +45,3 @@ class TournamentRound {
     matches.add(Match.fromJson(datamap));
   }
 }
-
-

@@ -4,36 +4,59 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:darts_application/components/input_fields/time_picker.dart';
 import 'package:darts_application/components/input_fields/date_picker.dart';
-import 'package:darts_application/features/create_match/single_match/player_selector.dart';
-import 'package:darts_application/features/create_match/single_match/confirmation_page.dart';
+import 'package:darts_application/features/create_match/player_selector.dart';
+import 'package:darts_application/features/create_match/confirmation_page.dart';
 import 'package:darts_application/models/match.dart';
 
-class CreateSingleMatchPage extends StatefulWidget {
-  const CreateSingleMatchPage({super.key});
+class EditSingleMatchPage extends StatefulWidget {
+  final Map<String, dynamic> match;
+
+  const EditSingleMatchPage({super.key, required this.match});
 
   @override
-  State<CreateSingleMatchPage> createState() => _CreateSingleMatchPageState();
+  State<EditSingleMatchPage> createState() => _EditSingleMatchPageState();
 }
 
-class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
+class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _locationController = TextEditingController();
 
-  late DateTime selectedDate = DateTime.now();
-  late TimeOfDay selectedTime = TimeOfDay.now();
+  late DateTime selectedDate;
+  late TimeOfDay selectedTime;
 
   bool is301Match = true;
   bool is501Match = false;
 
   bool isFriendly = false;
 
-  String playerOne = "";
-  String playerTwo = "";
-  String playerOneName = "";
-  String playerTwoName = "";
+  String? playerOne;
+  String? playerTwo;
+  String playerOneName = 'to be decided';
+  String playerTwoName = 'to be decided';
 
-  int legAmount = 0;
-  int setAmount = 0;
+  int legAmount = 1;
+  int setAmount = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeFields();
+  }
+
+  void _initializeFields() {
+    _locationController.text = widget.match['location'] ?? '';
+    selectedDate = DateTime.parse(widget.match['date']);
+    selectedTime = TimeOfDay.fromDateTime(selectedDate);
+    is301Match = widget.match['starting_score'] == 301;
+    is501Match = widget.match['starting_score'] == 501;
+    playerOne = widget.match['player_1_id'];
+    playerTwo = widget.match['player_2_id'];
+    playerOneName = widget.match['player_1_last_name'] ?? 'to be decided';
+    playerTwoName = widget.match['player_2_last_name'] ?? 'to be decided';
+    legAmount = widget.match['leg_target'] ?? 0;
+    setAmount = widget.match['set_target'] ?? 0;
+    isFriendly = widget.match['is_friendly'] ?? false;
+  }
 
   @override
   void dispose() {
@@ -69,52 +92,48 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
     });
   }
 
-  int adjustTarget(int value) {
-    if (value % 2 == 0) {
-      throw Exception("The target amount cannot be an even number.");
-    }
-    return (value / 2).ceil();
-  }
-
   Future<void> submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
       String location = _locationController.text;
       DateTime matchDateTime = DateTime(selectedDate.year, selectedDate.month,
           selectedDate.day, selectedTime.hour, selectedTime.minute);
 
+      final match = Match(
+        id: widget.match['id'],
+        player1Id: playerOne,
+        player2Id: playerTwo,
+        date: matchDateTime,
+        location: location,
+        setTarget: setAmount,
+        legTarget: legAmount,
+        startingScore: is301Match ? 301 : 501,
+        player1LastName: playerOneName,
+        player2LastName: playerTwoName,
+        isFriendly: isFriendly,
+      );
+
       try {
-        setAmount = adjustTarget(setAmount);
-        legAmount = adjustTarget(legAmount);
+        await Supabase.instance.client
+            .from('match')
+            .update(match.toJson())
+            .eq('id', match.id as Object);
+        if (mounted) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ConfirmationPage(match: match),
+            ),
+          );
 
-        var match = Match(
-          id: null,
-          player1Id: playerOne,
-          player2Id: playerTwo,
-          date: matchDateTime,
-          location: location,
-          setTarget: setAmount,
-          legTarget: legAmount,
-          startingScore: is301Match ? 301 : 501,
-          player1LastName: playerOneName,
-          player2LastName: playerTwoName,
-          isFriendly: isFriendly,
-        );
-
-        int matchId = await Supabase.instance.client
-            .rpc('create_match', params: match.toInsertableJson());
-        match.id = matchId;
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ConfirmationPage(match: match),
-          ),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Match created!')),
-        );
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Match updated!')),
+          );
+        }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Something went wrong: $e')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Something went wrong: $e')),
+          );
+        }
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -127,10 +146,10 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Match')),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
+      appBar: AppBar(title: const Text('Edit Match')),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
           child: Form(
             key: _formKey,
             child: LayoutBuilder(
@@ -205,7 +224,8 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
-        DatePicker(onDateSelected: updateSelectedDate),
+        DatePicker(
+            onDateSelected: updateSelectedDate, initialDate: selectedDate),
         const Padding(
           padding: EdgeInsets.all(8.0),
           child: Text(
@@ -213,7 +233,8 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
-        TimePicker(onTimeSelected: updateSelectedTime),
+        TimePicker(
+            onTimeSelected: updateSelectedTime, initialTime: selectedTime),
       ],
     );
   }
@@ -235,9 +256,10 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
             children: [
               Expanded(
                 child: TextFormField(
+                  initialValue: legAmount.toString(),
                   onChanged: (value) {
                     setState(() {
-                      legAmount = int.tryParse(value) ?? 0;
+                      legAmount = int.tryParse(value) ?? 1;
                     });
                   },
                   decoration: const InputDecoration(
@@ -247,12 +269,8 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter leg amount';
-                    }
-                    int intValue = int.tryParse(value) ?? 0;
-                    if (intValue % 2 == 0) {
-                      return 'Leg amount cannot be even';
+                    if (value == null || value.isEmpty || int.parse(value) < 1) {
+                      return 'Please enter a leg amount of at least 1';
                     }
                     return null;
                   },
@@ -272,9 +290,10 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
             children: [
               Expanded(
                 child: TextFormField(
+                  initialValue: setAmount.toString(),
                   onChanged: (value) {
                     setState(() {
-                      setAmount = int.tryParse(value) ?? 0;
+                      setAmount = int.tryParse(value) ?? 1;
                     });
                   },
                   decoration: const InputDecoration(
@@ -284,12 +303,8 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter set amount';
-                    }
-                    int intValue = int.tryParse(value) ?? 0;
-                    if (intValue % 2 == 0) {
-                      return 'Set amount cannot be even';
+                    if (value == null || value.isEmpty || int.parse(value) < 1) {
+                      return 'Please enter a set amount of at least 1';
                     }
                     return null;
                   },
@@ -348,25 +363,6 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Checkbox(
-                value: isFriendly,
-                onChanged: (value) {
-                  setState(() {
-                    isFriendly = value!;
-                  });
-                },
-              ),
-              const Text(
-                'Friendly match',
-                style: TextStyle(fontSize: 16),
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }
@@ -375,15 +371,6 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text(
-            'Select players',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-        ),
-        PlayerSelector(
-            onSelectionChanged: updateSelectedPlayer, isFriendly: isFriendly),
         const SizedBox(height: 20),
         Center(
           child: ElevatedButton(
@@ -397,7 +384,7 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
             ),
             onPressed: submitForm,
             child: const Text(
-              'Create match',
+              'Update match',
               style: TextStyle(fontSize: 20),
               overflow: TextOverflow.ellipsis,
             ),
