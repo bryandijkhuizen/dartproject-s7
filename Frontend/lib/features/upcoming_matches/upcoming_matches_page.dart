@@ -72,12 +72,11 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => const CreateSingleMatchPage())),
-            child: const Text('Create Match',
-                style: TextStyle(color: Colors.white)),
+            child: const Text('Create Match'),
           ),
           TextButton(
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTournamentPage())),
-            child: const Text('Create Tournament', style: TextStyle(color: Colors.white)),
+            child: const Text('Create Tournament'),
           ),
         ],
       ),
