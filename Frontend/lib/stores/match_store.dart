@@ -543,13 +543,14 @@ abstract class _MatchStore with Store {
     if (await Supabase.instance.client
             .rpc('is_tournament_match', params: {'match_id': matchId}) ==
         false) {
-      errorMessage = 'Match is not a tournament match';
-      router.go('/');
+      router.push('/');
     } else {
       try {
         await Supabase.instance.client
             .rpc('advance_tournament_match', params: {'p_match_id': matchId});
-        router.go('/');
+        router.push('/', extra: {
+          'clearStack': true
+        }); // Navigate and signal to clear the stack
       } catch (e) {
         errorMessage = 'Failed to advance tournament match: $e';
       }
