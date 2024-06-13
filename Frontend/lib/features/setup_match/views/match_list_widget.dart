@@ -24,11 +24,17 @@ class _MatchListWidgetState extends State<MatchListWidget> {
   bool isLoading = true;
   String? errorMessage;
 
+  void advanceMatch() async {
+    await Supabase.instance.client
+        .rpc('advance_tournament_match', params: {'p_match_id': '1'});
+  }
+
   @override
   void initState() {
     super.initState();
     _fetchMatches();
     searchController.addListener(_filterMatches);
+    advanceMatch();
   }
 
   Future<void> _fetchMatches() async {
