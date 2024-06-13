@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
   final double height;
@@ -105,33 +106,33 @@ class DesktopNavBar extends StatelessWidget implements PreferredSizeWidget {
             height: 60,
             width: 60,
           ),
-          Expanded(
-            child: Observer(
-              builder: (context) {
-                UserStore userStore = context.read();
-                List<NavigationItem> navigationItems =
-                    getNavigationItems(userStore.permissions);
-                return ListView.separated(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext _, int index) {
-                    return navigationItems[index];
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    if (navigationItems[index].enabled) {
-                      return const NavigationDivider();
-                    }
-                    return Container();
-                  },
-                  itemCount: navigationItems.length,
-                );
-              },
+          FocusTraversalGroup(
+            child: Expanded(
+              child: Observer(
+                builder: (context) {
+                  UserStore userStore = context.read();
+                  List<NavigationItem> navigationItems =
+                      getNavigationItems(userStore.permissions);
+                  return ListView.separated(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (BuildContext _, int index) {
+                      return navigationItems[index];
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      if (navigationItems[index].enabled) {
+                        return const NavigationDivider();
+                      }
+                      return Container();
+                    },
+                    itemCount: navigationItems.length,
+                  );
+                },
+              ),
             ),
           ),
-          const Text(
-            'Login/logout component here',
-            style: TextStyle(color: Colors.white),
-          )
+          TextButton(onPressed: Supabase.instance.client.auth.signOut, child: Text('Log out')),
+          
         ],
       ),
     );

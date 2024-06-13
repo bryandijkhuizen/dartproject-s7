@@ -1,5 +1,5 @@
 import 'package:backend/Models/club_admin_assign_model.dart';
-import 'package:darts_application/features/app_router/app_router_extentions.dart';
+import 'package:darts_application/features/app_router/app_router_extensions.dart';
 import 'package:darts_application/models/permission_list.dart';
 import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';

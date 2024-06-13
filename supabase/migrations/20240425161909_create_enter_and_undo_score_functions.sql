@@ -22,8 +22,20 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION record_turn(p_player_id uuid, p_new_leg_id bigint, p_score bigint)
-RETURNS TABLE(new_score bigint, new_score2 bigint, leg_winner_id uuid, is_dead_throw boolean) AS $$
+CREATE OR REPLACE FUNCTION record_turn(
+    p_player_id uuid,
+    p_new_leg_id bigint,
+    p_score bigint,
+    p_darts_for_checkout int,
+    p_double_attempts int,
+    p_double_hit boolean
+)
+RETURNS TABLE(
+    new_score bigint,
+    new_score2 bigint,
+    leg_winner_id uuid,
+    is_dead_throw boolean
+) AS $$
 DECLARE
     current_score bigint;
     current_score2 bigint;
@@ -78,8 +90,14 @@ BEGIN
     END IF;
 
     -- Insert the new turn
-    INSERT INTO turn (player_id, leg_id, score, current_score, current_score2, is_dead_throw) 
-    VALUES (p_player_id, p_new_leg_id, p_score, new_score, new_score2, is_dead_throw);
+    INSERT INTO turn (
+        player_id, leg_id, score, current_score, current_score2, is_dead_throw,
+        darts_for_checkout, double_attempts, double_hit
+    ) 
+    VALUES (
+        p_player_id, p_new_leg_id, p_score, new_score, new_score2, is_dead_throw,
+        p_darts_for_checkout, p_double_attempts, p_double_hit
+    );
 
     -- Check if the leg has been won
     IF new_score = 0 OR new_score2 = 0 THEN
@@ -92,7 +110,6 @@ BEGIN
     RETURN QUERY SELECT new_score, new_score2, leg_winner_id, is_dead_throw;
 END;
 $$ LANGUAGE plpgsql;
-
 
 
 

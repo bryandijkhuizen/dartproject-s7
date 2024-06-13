@@ -76,19 +76,23 @@ class Scoreboard extends StatelessWidget {
               ),
             ],
           ),
-          Text(
-            alignment == Alignment.centerLeft
-                ? matchStore.currentScorePlayer1.toString()
-                : matchStore.currentScorePlayer2.toString(),
-            style: TextStyle(
-              color: alignment == Alignment.centerLeft && isCurrentPlayer
-                  ? Colors.yellow
-                  : alignment == Alignment.centerRight && isCurrentPlayer
+          Observer(
+            builder: (_) {
+              return Text(
+                alignment == Alignment.centerLeft
+                    ? matchStore.currentScorePlayer1.toString()
+                    : matchStore.currentScorePlayer2.toString(),
+                style: TextStyle(
+                  color: alignment == Alignment.centerLeft && isCurrentPlayer
                       ? Colors.yellow
-                      : Colors.white,
-              fontSize: fontSize * 1.1,
-              fontWeight: FontWeight.bold,
-            ),
+                      : alignment == Alignment.centerRight && isCurrentPlayer
+                          ? Colors.yellow
+                          : Colors.white,
+                  fontSize: fontSize * 1.1,
+                  fontWeight: FontWeight.bold,
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -99,18 +103,26 @@ class Scoreboard extends StatelessWidget {
     double fontSizeScore = MediaQuery.of(context).size.width / 16;
     return Column(
       children: [
-        Text(
-          '${matchStore.legWins[matchStore.matchModel.player1Id] ?? 0} - ${matchStore.legWins[matchStore.matchModel.player2Id] ?? 0}',
-          style: TextStyle(
-              color: Colors.white,
-              fontSize: fontSizeScore,
-              fontWeight: FontWeight.bold),
+        Observer(
+          builder: (_) {
+            return Text(
+              '${matchStore.legWins[matchStore.matchModel.player1Id] ?? 0} - ${matchStore.legWins[matchStore.matchModel.player2Id] ?? 0}',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: fontSizeScore,
+                  fontWeight: FontWeight.bold),
+            );
+          },
         ),
         if (matchStore.matchModel.setTarget != 1)
-          Text(
-            '${matchStore.setWins[matchStore.matchModel.player1Id] ?? 0} - ${matchStore.setWins[matchStore.matchModel.player2Id] ?? 0}',
-            style:
-                TextStyle(color: Colors.white70, fontSize: fontSizeScore * 0.85),
+          Observer(
+            builder: (_) {
+              return Text(
+                '${matchStore.setWins[matchStore.matchModel.player1Id] ?? 0} - ${matchStore.setWins[matchStore.matchModel.player2Id] ?? 0}',
+                style: TextStyle(
+                    color: Colors.white70, fontSize: fontSizeScore * 0.85),
+              );
+            },
           ),
       ],
     );
@@ -166,30 +178,34 @@ class Scoreboard extends StatelessWidget {
   Widget latestScoresColumn(
       BuildContext context, MatchStore matchStore, bool isPlayer1) {
     double fontSize = MediaQuery.of(context).size.width / 24;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(5, (index) {
+    return Observer(
+      builder: (_) {
         final scores = isPlayer1
             ? matchStore.lastFiveScoresPlayer1
             : matchStore.lastFiveScoresPlayer2;
-        final scoreEntry =
-            index < scores.length ? scores[index] : {};
-        final isDeadThrow = scoreEntry['isDeadThrow'] ?? false;
-        final score = scoreEntry['score'] ?? '';
-        return Container(
-          height: 40,
-          alignment: Alignment.center,
-          child: Text(
-            score.toString(),
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: isDeadThrow ? Colors.red : Colors.white,
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(5, (index) {
+            final scoreEntry =
+                index < scores.length ? scores[index] : {};
+            final isDeadThrow = scoreEntry['isDeadThrow'] ?? false;
+            final score = scoreEntry['score'] ?? '';
+            return Container(
+              height: 40,
+              alignment: Alignment.center,
+              child: Text(
+                score.toString(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: isDeadThrow ? Colors.red : Colors.white,
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            );
+          }),
         );
-      }),
+      },
     );
   }
 }
