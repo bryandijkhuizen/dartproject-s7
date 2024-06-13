@@ -106,9 +106,7 @@ ThemeData darkTheme = ThemeData(
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: WidgetStateProperty.all<Color>(
-        darkColorScheme.primary,
-      ),
+      backgroundColor: WidgetStateProperty.resolveWith(getFocusBackgroundColor),
       foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
       shape: WidgetStateProperty.all<OutlinedBorder>(
         RoundedRectangleBorder(
@@ -118,6 +116,21 @@ ThemeData darkTheme = ThemeData(
       padding: const WidgetStatePropertyAll(
         EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       ),
+    ),
+  ),
+  filledButtonTheme: FilledButtonThemeData(
+    style: ButtonStyle(
+      backgroundColor: WidgetStateProperty.resolveWith(getFocusBackgroundColor),
+      foregroundColor: WidgetStatePropertyAll(darkColorScheme.onSecondary),
+    ),
+  ),
+  iconButtonTheme: IconButtonThemeData(
+    style: ButtonStyle(
+      iconColor: WidgetStatePropertyAll(darkColorScheme.onPrimary),
+      foregroundColor: WidgetStatePropertyAll(darkColorScheme.onSecondary),
+      backgroundColor:
+          WidgetStateProperty.resolveWith(getTextButtonFocusBackgroundColor),
+          
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
@@ -134,6 +147,7 @@ ThemeData darkTheme = ThemeData(
     filled: true,
     fillColor: darkColorScheme.surface,
   ),
+  listTileTheme: ListTileThemeData(iconColor: darkColorScheme.onPrimary,),
   navigationBarTheme: NavigationBarThemeData(
     backgroundColor: darkColorScheme.primary,
     height: 56,
@@ -151,7 +165,9 @@ ThemeData darkTheme = ThemeData(
   textTheme: darkTextTheme,
   textButtonTheme: TextButtonThemeData(
     style: ButtonStyle(
-      foregroundColor: WidgetStatePropertyAll(darkColorScheme.onPrimary),
+      backgroundColor:
+          WidgetStateProperty.resolveWith(getTextButtonFocusBackgroundColor),
+      foregroundColor: WidgetStateProperty.all(darkColorScheme.onPrimary),
       padding: const WidgetStatePropertyAll(
         EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       ),
@@ -176,6 +192,20 @@ ThemeData darkTheme = ThemeData(
 );
 
 ThemeData lightTheme = ThemeData();
+
+Color getFocusBackgroundColor(Set<WidgetState> states) {
+  if (states.contains(WidgetState.focused)) {
+    return darkColorScheme.secondary;
+  }
+  return darkColorScheme.primary;
+}
+
+Color? getTextButtonFocusBackgroundColor(Set<WidgetState> states) {
+  if (states.contains(WidgetState.focused)) {
+    return darkColorScheme.secondary;
+  }
+  return null;
+}
 
 IconThemeData? getNavigationIconThemeMaterialState(Set<WidgetState> states) {
   // Return fallback with custom color no matter what states are active for now
