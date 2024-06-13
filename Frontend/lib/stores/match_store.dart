@@ -1,3 +1,4 @@
+import 'package:darts_application/features/app_router/app_router.dart';
 import 'package:mobx/mobx.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/match.dart';
@@ -538,12 +539,20 @@ abstract class _MatchStore with Store {
     }
   }
 
-  void advanceTournamentMatch(String matchWinnerId) async {
-    try {
-      await Supabase.instance.client.rpc('advance_tournament_match',
-          params: {'p_match_id': matchWinnerId});
-    } catch (e) {
-      errorMessage = 'Failed to advance tournament match: $e';
+  void advanceTournamentMatch(String matchId) async {
+    if (await Supabase.instance.client
+            .rpc('is_tournament_match', params: {'match_id': matchId}) ==
+        false) {
+      errorMessage = 'Match is not a tournament match';
+      router.go('/');
+    } else {
+      try {
+        await Supabase.instance.client
+            .rpc('advance_tournament_match', params: {'p_match_id': matchId});
+        router.go('/');
+      } catch (e) {
+        errorMessage = 'Failed to advance tournament match: $e';
+      }
     }
   }
 
