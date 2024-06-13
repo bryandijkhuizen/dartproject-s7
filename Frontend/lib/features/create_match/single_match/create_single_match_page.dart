@@ -69,27 +69,37 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
     });
   }
 
+  int adjustTarget(int value) {
+    if (value % 2 == 0) {
+      throw Exception("The target amount cannot be an even number.");
+    }
+    return (value / 2).ceil();
+  }
+
   Future<void> submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
       String location = _locationController.text;
       DateTime matchDateTime = DateTime(selectedDate.year, selectedDate.month,
           selectedDate.day, selectedTime.hour, selectedTime.minute);
 
-      var match = Match(
-        id: null,
-        player1Id: playerOne,
-        player2Id: playerTwo,
-        date: matchDateTime,
-        location: location,
-        setTarget: setAmount,
-        legTarget: legAmount,
-        startingScore: is301Match ? 301 : 501,
-        player1LastName: playerOneName,
-        player2LastName: playerTwoName,
-        isFriendly: isFriendly,
-      );
-
       try {
+        setAmount = adjustTarget(setAmount);
+        legAmount = adjustTarget(legAmount);
+
+        var match = Match(
+          id: null,
+          player1Id: playerOne,
+          player2Id: playerTwo,
+          date: matchDateTime,
+          location: location,
+          setTarget: setAmount,
+          legTarget: legAmount,
+          startingScore: is301Match ? 301 : 501,
+          player1LastName: playerOneName,
+          player2LastName: playerTwoName,
+          isFriendly: isFriendly,
+        );
+
         int matchId = await Supabase.instance.client
             .rpc('create_match', params: match.toInsertableJson());
         match.id = matchId;
@@ -240,6 +250,10 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter leg amount';
                     }
+                    int intValue = int.tryParse(value) ?? 0;
+                    if (intValue % 2 == 0) {
+                      return 'Leg amount cannot be even';
+                    }
                     return null;
                   },
                 ),
@@ -272,6 +286,10 @@ class _CreateSingleMatchPageState extends State<CreateSingleMatchPage> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter set amount';
+                    }
+                    int intValue = int.tryParse(value) ?? 0;
+                    if (intValue % 2 == 0) {
+                      return 'Set amount cannot be even';
                     }
                     return null;
                   },
