@@ -240,7 +240,18 @@ abstract class _TournamentStore with Store {
     );
   }
 
+  bool checkIfFirstRoundIsFull(){
+    List<Match> matches = rounds[1]!;
+    for (var match in matches) {
+      if(match.player1Id == null || match.player2Id == null){
+        return false;
+      }
+    }
+    return true;
+  }
+
   Future<SupabaseResultType> createTournament() async {
+    if(!checkIfFirstRoundIsFull()){return const SupabaseResultType(success: false, message: "Fill in all players");}
     try {
       rounds.forEach(
         (roundNumber, matches) async {
