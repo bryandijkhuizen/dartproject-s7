@@ -130,7 +130,7 @@ class MatchView extends StatelessWidget {
           ElevatedButton(
             onPressed: () => {
               matchStore.advanceTournamentMatch(matchStore.matchModel.id),
-              router.push('/'),
+              router.go('/'),
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text(
