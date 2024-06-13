@@ -65,18 +65,9 @@ BEGIN
         -- Notify about the player advancement
         RAISE NOTICE 'Winner advanced to existing match ID % in round %', v_existing_match_id, v_next_round_number;
 
-    -- If no match exists, create a new match
+    -- If no match exists, throw exception because it was the final match assuming that in a tournament there is always a next match
     ELSE
-        INSERT INTO public.match (player_1_id, date, set_target, leg_target, starting_score, location)
-        VALUES (v_winner_id, NOW(), 1, 1, 501, 'To be determined')
-        RETURNING id INTO v_new_match_id;
-
-        -- Insert into tournament_match table
-        INSERT INTO public.tournament_match (tournament_id, match_id, round_number)
-        VALUES (v_tournament_id, v_new_match_id, v_next_round_number);
-
-        -- Notify about the new match creation
-        RAISE NOTICE 'Winner advanced to new match ID % in round %', v_new_match_id, v_next_round_number;
+        RAISE EXCEPTION 'No match found for round % in tournament ID %', v_next_round_number, v_tournament_id;
     END IF;
 
 END;

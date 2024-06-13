@@ -539,8 +539,12 @@ abstract class _MatchStore with Store {
   }
 
   void advanceTournamentMatch(String matchWinnerId) async {
-    await Supabase.instance.client
-        .rpc('advance_tournament_match', params: {'p_match_id': matchWinnerId});
+    try {
+      await Supabase.instance.client.rpc('advance_tournament_match',
+          params: {'p_match_id': matchWinnerId});
+    } catch (e) {
+      errorMessage = 'Failed to advance tournament match: $e';
+    }
   }
 
   void _endMatch(String matchWinnerId) {
