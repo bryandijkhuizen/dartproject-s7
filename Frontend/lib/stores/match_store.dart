@@ -1,7 +1,6 @@
 import 'package:mobx/mobx.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/match.dart';
-// ignore: implementation_imports
 import 'package:backend/src/finish_calculator.dart';
 
 part 'match_store.g.dart';
@@ -438,6 +437,9 @@ abstract class _MatchStore with Store {
     lastFiveScoresPlayer1.clear();
     lastFiveScoresPlayer2.clear();
     _updateThrowSuggestions();
+
+    // Notify the other device about the new leg
+    await _supabaseClient.from('match').update({'starting_player_id': matchModel.startingPlayerId}).eq('id', matchModel.id);
   }
 
   Future<void> _checkSetWinner(String setWinnerId) async {
@@ -482,7 +484,6 @@ abstract class _MatchStore with Store {
   void _switchStartingPlayer() {
     matchModel.startingPlayerId = matchModel.startingPlayerId == matchModel.player1Id ? matchModel.player2Id : matchModel.player1Id;
 
-    // Update the starting player ID in the match table in the database
     _supabaseClient.from('match').update({'starting_player_id': matchModel.startingPlayerId}).eq('id', matchModel.id);
   }
 
@@ -494,9 +495,7 @@ abstract class _MatchStore with Store {
       errorMessage = 'Failed to subscribe to scores: $error';
     });
 
-    // Additional subscriptions for other data updates
     _supabaseClient.from('leg').stream(primaryKey: ['id']).eq('set_id', currentSetId).listen((data) {
-      _restoreLatestScores();
     }).onError((error) {
       errorMessage = 'Failed to subscribe to leg updates: $error';
     });
@@ -513,6 +512,8 @@ abstract class _MatchStore with Store {
         matchModel = MatchModel.fromJson(data.first);
         if (matchModel.winnerId != null) {
           _endMatch(matchModel.winnerId!);
+        } else {
+          _restoreLatestScores();
         }
       }
     }).onError((error) {

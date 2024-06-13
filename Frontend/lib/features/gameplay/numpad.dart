@@ -11,7 +11,8 @@ class Numpad extends StatelessWidget {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
-        bool isDisabled = matchStore.matchEnded || matchStore.currentPlayerId != matchStore.matchModel.startingPlayerId;
+        bool isDisabled = matchStore.matchEnded;
+
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           decoration: BoxDecoration(
