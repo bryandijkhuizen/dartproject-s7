@@ -31,7 +31,10 @@ class SettingsClubItem extends StatelessWidget {
           ),
           Text(club.name, style: theme.textTheme.bodyMedium),
           Expanded(child: Container()),
-          const Icon(Icons.chevron_right),
+          Icon(
+            Icons.chevron_right,
+            color: theme.colorScheme.onPrimary,
+          ),
         ],
       ),
     );

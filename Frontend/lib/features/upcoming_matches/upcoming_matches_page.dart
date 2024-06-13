@@ -1,5 +1,4 @@
 import 'package:darts_application/features/tournament_managent/tournament_view.dart';
-import 'package:darts_application/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
@@ -61,7 +60,11 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
         actions: <Widget>[
           IconButton(
               onPressed: () {
-                setState(() {});
+                setState(() {
+                  upcomingMatches = fetchUpcomingMatches();
+                  upcomingTournaments = fetchUpcomingTournaments();
+                  players = fetchPlayers();
+                });
               },
               icon: const Icon(Icons.refresh)),
           TextButton(
@@ -73,12 +76,8 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
                 style: TextStyle(color: Colors.white)),
           ),
           TextButton(
-            onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => CreateTournamentPage())),
-            child: const Text('Create Tournament',
-                style: TextStyle(color: Colors.white)),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTournamentPage())),
+            child: const Text('Create Tournament', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -117,7 +116,6 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
                         subtitle: Text(
                             'Location: ${match['location']} - ${player1.lastName} vs ${player2.lastName}'),
                         trailing: IconButton(
-                          color: darkColorScheme.onSecondary,
                           icon: const Icon(Icons.edit),
                           onPressed: () {
                             Navigator.of(context).push(
@@ -162,8 +160,8 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
                             '${tournament['name']} on ${DateFormat('EEEE, MMM d, y - HH:mm').format(tournamentDate)}'),
                         subtitle: Text(
                             'Location: ${tournament['location']} - Club: ${tournament['club_id']}'),
-                        trailing: ElevatedButton(
-                          child: Text("View"),
+                        trailing: TextButton(
+                          child: const Text("View"),
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
