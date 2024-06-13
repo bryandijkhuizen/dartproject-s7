@@ -8,6 +8,8 @@ DECLARE
     v_match_pair_number BIGINT;
     v_existing_match_id BIGINT;
     v_new_match_id BIGINT;
+    v_player_1_id UUID;
+    v_player_2_id UUID;
 BEGIN
     -- Check if the match is a tournament match
     SELECT tm.tournament_id, tm.round_number, m.winner_id
@@ -38,25 +40,26 @@ BEGIN
                             AND m.winner_id IS NOT NULL) + 1;
 
     -- Check if a match already exists for the next round in the tournament
-    SELECT tm.match_id
-    INTO v_existing_match_id
+    SELECT tm.match_id, m.player_1_id, m.player_2_id
+    INTO v_existing_match_id, v_player_1_id, v_player_2_id
     FROM public.tournament_match tm
     JOIN public.match m ON tm.match_id = m.id
     WHERE tm.tournament_id = v_tournament_id
     AND tm.round_number = v_next_round_number
-    AND ((m.player_1_id IS NULL OR m.player_2_id IS NULL))
     LIMIT 1;
 
     -- If a match exists, update the existing match
     IF FOUND THEN
-        IF (SELECT player_1_id FROM public.match WHERE id = v_existing_match_id) IS NULL THEN
+        IF v_player_1_id IS NULL OR v_player_1_id = v_winner_id THEN
             UPDATE public.match
             SET player_1_id = v_winner_id
             WHERE id = v_existing_match_id;
-        ELSE
+        ELSIF v_player_2_id IS NULL OR v_player_2_id = v_winner_id THEN
             UPDATE public.match
             SET player_2_id = v_winner_id
             WHERE id = v_existing_match_id;
+        ELSE
+            RAISE EXCEPTION 'Both player slots in match ID % are occupied', v_existing_match_id;
         END IF;
         
         -- Notify about the player advancement
