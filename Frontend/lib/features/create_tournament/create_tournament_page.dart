@@ -79,12 +79,10 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
         return;
       }
 
-
       if (selectedPlayers.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content:
-                  Text('The amount of selected players cannot be zero.')),
+              content: Text('The amount of selected players cannot be zero.')),
         );
         return;
       }
@@ -92,8 +90,17 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
       if (selectedPlayers.length % 2 == 1) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content:
-                  Text('The amount of selected players should be an equal amount.')),
+              content: Text(
+                  'The amount of selected players should be an equal amount.')),
+        );
+        return;
+      }
+
+      if ((selectedPlayers.length & (selectedPlayers.length - 1)) != 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                  'The amount of selected players should a power of 2 (2, 4, 8, etc).')),
         );
         return;
       }
