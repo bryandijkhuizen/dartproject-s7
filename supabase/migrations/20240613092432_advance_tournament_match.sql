@@ -67,7 +67,7 @@ BEGIN
 
     -- If no match exists, throw exception because it was the final match assuming that in a tournament there is always a next match
     ELSE
-        RAISE EXCEPTION 'No match found for round % in tournament ID %', v_next_round_number, v_tournament_id;
+        RAISE EXCEPTION 'No match found for round % in tournament ID %, this was the final', v_next_round_number, v_tournament_id;
     END IF;
 
 END;
