@@ -79,6 +79,25 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
         return;
       }
 
+
+      if (selectedPlayers.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content:
+                  Text('The amount of selected players cannot be zero.')),
+        );
+        return;
+      }
+
+      if (selectedPlayers.length % 2 == 1) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content:
+                  Text('The amount of selected players should be an equal amount.')),
+        );
+        return;
+      }
+
       final String tournamentName = _nameController.text;
       final String tournamentLocation = _locationController.text;
       final StartingMethod tournamentStartingMethod =
