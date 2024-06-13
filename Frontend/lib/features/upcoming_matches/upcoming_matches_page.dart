@@ -35,7 +35,7 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
         .gte('date', DateTime.now().toIso8601String())
         .order('date', ascending: true);
     var filteredMatches =
-        response.where((match) => match['player_1_id'] != null).toList();
+        response.where((match) => match['player_1_id'] != null).where((match) => match['player_2_id'] != null).toList();
     return List<Map<String, dynamic>>.from(filteredMatches);
   }
 

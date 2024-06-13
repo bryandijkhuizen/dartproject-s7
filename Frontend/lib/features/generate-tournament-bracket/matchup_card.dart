@@ -71,9 +71,9 @@ class _MatchupCardState extends State<MatchupCard>
 
     checkForPlayers(
       firstPlayerName:
-          (match.player1LastName != "" ? match.player1LastName! : ""),
+          (match.player1LastName != null ? match.player1LastName! : ""),
       secondPlayerName:
-          (match.player2LastName != "" ? match.player2LastName! : ""),
+          (match.player2LastName != null ? match.player2LastName! : ""),
     );
 
     var theme = Theme.of(context);
