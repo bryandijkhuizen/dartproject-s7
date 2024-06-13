@@ -84,7 +84,8 @@ class ScoreInput extends StatelessWidget {
       child: Observer(
         builder: (_) => Text(
           matchStore.temporaryScore.toString(),
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+          style: const TextStyle(
+              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
     );
@@ -94,11 +95,17 @@ class ScoreInput extends StatelessWidget {
     return ElevatedButton(
       onPressed: () {
         int score = int.parse(matchStore.temporaryScore);
-        if (score < 50) {
+        int currentScore =
+            matchStore.currentPlayerId == matchStore.matchModel.player1Id
+                ? matchStore.currentScorePlayer1
+                : matchStore.currentScorePlayer2;
+
+        if (currentScore <= 50) {
           _showCheckoutDialog(context, score);
         } else {
           matchStore.recordScore(score);
-          matchStore.updateTemporaryScore(''); // Reset temporary score after submitting
+          matchStore.updateTemporaryScore(
+              ''); // Reset temporary score after submitting
         }
       },
       style: ElevatedButton.styleFrom(
@@ -135,7 +142,8 @@ class ScoreInput extends StatelessWidget {
                   labelText: 'Darts for Checkout',
                   labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
                   enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white.withOpacity(0.8)),
+                    borderSide:
+                        BorderSide(color: Colors.white.withOpacity(0.8)),
                   ),
                   focusedBorder: const UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.white),
@@ -150,7 +158,8 @@ class ScoreInput extends StatelessWidget {
                   labelText: 'Double Attempts',
                   labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
                   enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white.withOpacity(0.8)),
+                    borderSide:
+                        BorderSide(color: Colors.white.withOpacity(0.8)),
                   ),
                   focusedBorder: const UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.white),
@@ -165,17 +174,22 @@ class ScoreInput extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+              child:
+                  const Text('Cancel', style: TextStyle(color: Colors.white)),
             ),
             TextButton(
               onPressed: () {
                 int dartsForCheckout = int.parse(dartsController.text);
                 int doubleAttempts = int.parse(attemptsController.text);
-                matchStore.recordScore(score, dartsForCheckout: dartsForCheckout, doubleAttempts: doubleAttempts);
-                matchStore.updateTemporaryScore(''); // Reset temporary score after submitting
+                matchStore.recordScore(score,
+                    dartsForCheckout: dartsForCheckout,
+                    doubleAttempts: doubleAttempts);
+                matchStore.updateTemporaryScore(
+                    ''); // Reset temporary score after submitting
                 Navigator.of(context).pop();
               },
-              child: const Text('Submit', style: TextStyle(color: Colors.white)),
+              child:
+                  const Text('Submit', style: TextStyle(color: Colors.white)),
             ),
           ],
         );
