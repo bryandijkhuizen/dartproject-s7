@@ -371,15 +371,6 @@ class _EditSingleMatchPageState extends State<EditSingleMatchPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text(
-            'Select players',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-        ),
-        PlayerSelector(
-            onSelectionChanged: updateSelectedPlayer, isFriendly: isFriendly),
         const SizedBox(height: 20),
         Center(
           child: ElevatedButton(
