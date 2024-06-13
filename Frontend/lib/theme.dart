@@ -130,7 +130,6 @@ ThemeData darkTheme = ThemeData(
       foregroundColor: WidgetStatePropertyAll(darkColorScheme.onSecondary),
       backgroundColor:
           WidgetStateProperty.resolveWith(getTextButtonFocusBackgroundColor),
-          
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
@@ -147,7 +146,9 @@ ThemeData darkTheme = ThemeData(
     filled: true,
     fillColor: darkColorScheme.surface,
   ),
-  listTileTheme: ListTileThemeData(iconColor: darkColorScheme.onPrimary,),
+  listTileTheme: ListTileThemeData(
+    iconColor: darkColorScheme.onPrimary,
+  ),
   navigationBarTheme: NavigationBarThemeData(
     backgroundColor: darkColorScheme.primary,
     height: 56,

@@ -9,22 +9,9 @@ const double textButtonPadding = 12;
 const double iconSize = 32;
 const double iconSpacing = 12;
 
-class SettingsClubCard extends StatefulWidget {
-  const SettingsClubCard({super.key});
-
-  @override
-  State<SettingsClubCard> createState() => _SettingsClubCardState();
-}
-
-class _SettingsClubCardState extends State<SettingsClubCard> {
-  late final ClubsStore clubsStore;
-
-  @override
-  void initState() {
-    super.initState();
-    clubsStore = context.read<ClubsStore>();
-    clubsStore.fetchUserClubs();
-  }
+class ClubCard extends StatelessWidget {
+  final bool titleEnabled;
+  const ClubCard({super.key, this.titleEnabled = true});
 
   Widget getLoadingIndicator() => const Center(
         child: CircularProgressIndicator(),
@@ -58,29 +45,31 @@ class _SettingsClubCardState extends State<SettingsClubCard> {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
+    ClubsStore clubsStore = context.read<ClubsStore>();
     return Observer(
       builder: (_) {
         return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Assigned clubs',
-                style: theme.textTheme.titleMedium,
-              ),
-              IconButton(
-                onPressed: () {
-                  if (!clubsStore.loadingAssignedClubs) {
-                    clubsStore.fetchUserClubs();
-                  }
-                },
-                icon: Icon(
-                  Icons.refresh,
-                  color: theme.colorScheme.onPrimary,
+          if (titleEnabled)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Assigned clubs',
+                  style: theme.textTheme.titleMedium,
                 ),
-              ),
-            ],
-          ),
+                IconButton(
+                  onPressed: () {
+                    if (!clubsStore.loadingAssignedClubs) {
+                      clubsStore.fetchUserClubs();
+                    }
+                  },
+                  icon: Icon(
+                    Icons.refresh,
+                    color: theme.colorScheme.onPrimary,
+                  ),
+                ),
+              ],
+            ),
           Card(
             elevation: 0,
             child: Padding(

@@ -1,5 +1,5 @@
 import 'package:darts_application/components/generic_screen.dart';
-import 'package:darts_application/features/settings/settings_club_card.dart';
+import 'package:darts_application/components/club_card.dart';
 import 'package:darts_application/features/settings/settings_header.dart';
 import 'package:darts_application/features/settings/settings_item.dart';
 import 'package:darts_application/stores/user_store.dart';
@@ -88,7 +88,7 @@ class SettingsViewState extends State<SettingsView> {
                     const SizedBox(
                       height: 12,
                     ),
-                    const SettingsClubCard(),
+                    const ClubCard(),
                     const SizedBox(
                       height: 8,
                     ),
