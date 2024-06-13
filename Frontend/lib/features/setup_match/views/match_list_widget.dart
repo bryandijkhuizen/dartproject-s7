@@ -1,6 +1,4 @@
-// ignore_for_file: unused_element
-
-import 'package:darts_application/features/create_match/create_single_match_page.dart';
+import 'package:darts_application/features/create_match/single_match/create_single_match_page.dart';
 import 'package:darts_application/features/setup_match/match_list.dart';
 import 'package:darts_application/features/setup_match/stores/match_setup_store.dart';
 import 'package:darts_application/stores/user_store.dart';
@@ -16,21 +14,58 @@ class MatchListWidget extends StatefulWidget {
 }
 
 class _MatchListWidgetState extends State<MatchListWidget> {
-  late Future<Map<String, List<MatchModel>>> _matchesFuture;
-  late String currentUserId;
   MatchSetupStore matchSetupStore = MatchSetupStore(
       Supabase.instance.client, UserStore(Supabase.instance.client));
+
+  TextEditingController searchController = TextEditingController();
+  List<MatchModel> allMatches = [];
+  List<MatchModel> filteredMatches = [];
+  bool showAll = false;
+  bool isLoading = true;
+  String? errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _matchesFuture = matchSetupStore.fetchMatches();
+    _fetchMatches();
+    searchController.addListener(_filterMatches);
   }
 
   Future<void> _fetchMatches() async {
-    setState(() {
-      _matchesFuture = matchSetupStore.fetchMatches();
-    });
+    try {
+      final matches = await matchSetupStore.fetchMatches();
+      setState(() {
+        allMatches = [
+          ...matches['pending_matches']!,
+          ...matches['active_matches']!
+        ];
+        _filterMatches(); // Ensure filteredMatches is set initially
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        errorMessage = 'Error fetching matches: $e';
+      });
+    }
+  }
+
+  void _filterMatches() {
+    String query = searchController.text.toLowerCase();
+    if (query.isEmpty) {
+      setState(() {
+        filteredMatches = allMatches.take(5).toList();
+        showAll = false;
+      });
+    } else {
+      setState(() {
+        filteredMatches = allMatches.where((match) {
+          return match.player1LastName.toLowerCase().contains(query) ||
+              match.player2LastName.toLowerCase().contains(query);
+        }).toList();
+        showAll = true; // Show all matches that match the query
+      });
+    }
   }
 
   @override
@@ -56,38 +91,47 @@ class _MatchListWidgetState extends State<MatchListWidget> {
           onRefresh: _fetchMatches,
           child: Column(
             children: [
-              FutureBuilder<Map<String, List<MatchModel>>>(
-                future: _matchesFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (snapshot.hasData) {
-                    final pendingMatches = snapshot.data!['pending_matches']!;
-                    final activeMatches = snapshot.data!['active_matches']!;
-                    return Expanded(
-                      child: ListView(
-                        children: [
-                          MatchList(
-                            title: 'Pending Matches',
-                            matches: pendingMatches,
-                          ),
-                          MatchList(
-                            title: 'Active Matches',
-                            matches: activeMatches,
-                          ),
-                        ],
-                      ),
-                    );
-                  } else {
-                    return const Center(child: Text('No matches found.'));
-                  }
-                },
-              ),
               Padding(
-                padding: const EdgeInsets.only(
-                    bottom: 16.0), // Add margin at the bottom
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: searchController,
+                  decoration: InputDecoration(
+                    labelText: 'Search Matches',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                ),
+              ),
+              isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : errorMessage != null
+                      ? Center(child: Text(errorMessage!))
+                      : Expanded(
+                          child: ListView(
+                            children: [
+                              MatchList(
+                                title: 'Matches',
+                                matches: showAll
+                                    ? filteredMatches
+                                    : filteredMatches.take(5).toList(),
+                              ),
+                              if (!showAll && filteredMatches.length > 5)
+                                TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      showAll = true;
+                                      filteredMatches = allMatches;
+                                    });
+                                  },
+                                  child: const Text('Show more'),
+                                ),
+                            ],
+                          ),
+                        ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.push(
