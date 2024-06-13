@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:darts_application/features/club_page/widgets/score_card.dart';
 
 class RecentScoresView extends StatelessWidget {
   const RecentScoresView({super.key});
@@ -9,10 +8,6 @@ class RecentScoresView extends StatelessWidget {
     return const Column(
       children: [
         Text("Coming soon!")
-        // Text('Recent Scores'),
-        // ScoreCard(scoreDetails: 'Player A vs Player B: 3-2'),
-        // SizedBox(height: 20),
-        // ScoreCard(scoreDetails: 'Player C vs Player D: 1-3'),
       ],
     );
   }
