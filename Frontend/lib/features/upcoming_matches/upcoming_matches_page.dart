@@ -113,7 +113,6 @@ class _UpcomingMatchesPageState extends State<UpcomingMatchesPage> {
                         subtitle: Text(
                             'Location: ${match['location']} - ${player1.lastName} vs ${player2.lastName}'),
                         trailing: IconButton(
-                          // color: darkColorScheme.onSecondary,
                           icon: const Icon(Icons.edit),
                           onPressed: () {
                             Navigator.of(context).push(
