@@ -1,7 +1,6 @@
 import 'package:mobx/mobx.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/match.dart';
-// ignore: implementation_imports
 import 'package:backend/src/finish_calculator.dart';
 
 part 'match_store.g.dart';
@@ -213,6 +212,7 @@ abstract class _MatchStore with Store {
           .rpc('create_leg', params: {'p_set_id': currentSetId});
       currentLegId = response[0]['leg_id'];
 
+      // Ensure both devices have the same starting player
       currentPlayerId = matchModel.startingPlayerId;
 
       currentScorePlayer1 = matchModel.startingScore;
@@ -222,6 +222,12 @@ abstract class _MatchStore with Store {
       lastFiveScoresPlayer2.clear();
 
       _updateThrowSuggestions();
+
+      // Notify the other device about the new leg
+      await _supabaseClient
+          .from('match')
+          .update({'starting_player_id': matchModel.startingPlayerId}).eq(
+              'id', matchModel.id);
     } catch (error) {
       errorMessage = 'Failed to start a new leg: $error';
     } finally {
@@ -483,6 +489,16 @@ abstract class _MatchStore with Store {
 
     currentScorePlayer1 = matchModel.startingScore;
     currentScorePlayer2 = matchModel.startingScore;
+
+    lastFiveScoresPlayer1.clear();
+    lastFiveScoresPlayer2.clear();
+    _updateThrowSuggestions();
+
+    // Notify the other device about the new leg
+    await _supabaseClient
+        .from('match')
+        .update({'starting_player_id': matchModel.startingPlayerId}).eq(
+            'id', matchModel.id);
   }
 
   Future<void> _checkSetWinner(String setWinnerId) async {
@@ -515,6 +531,8 @@ abstract class _MatchStore with Store {
       await _supabaseClient
           .from('match')
           .update({'winner_id': matchWinnerId}).eq('id', matchModel.id);
+      matchModel.winnerId = matchWinnerId; // Update local match model
+      matchEnded = true;
     } catch (error) {
       errorMessage = 'Failed to update match winner: $error';
     }
@@ -539,7 +557,6 @@ abstract class _MatchStore with Store {
             ? matchModel.player2Id
             : matchModel.player1Id;
 
-    // Update the starting player ID in the match table in the database
     _supabaseClient
         .from('match')
         .update({'starting_player_id': matchModel.startingPlayerId}).eq(
@@ -560,14 +577,11 @@ abstract class _MatchStore with Store {
           errorMessage = 'Failed to subscribe to scores: $error';
         });
 
-    // Additional subscriptions for other data updates
     _supabaseClient
         .from('leg')
         .stream(primaryKey: ['id'])
         .eq('set_id', currentSetId)
-        .listen((data) {
-          _restoreLatestScores();
-        })
+        .listen((data) {})
         .onError((error) {
           errorMessage = 'Failed to subscribe to leg updates: $error';
         });
@@ -578,6 +592,7 @@ abstract class _MatchStore with Store {
         .eq('match_id', matchId)
         .listen((data) {
           _calculateWins();
+          _checkForActiveSetOrCreateNew();
         })
         .onError((error) {
           errorMessage = 'Failed to subscribe to set updates: $error';
@@ -592,6 +607,8 @@ abstract class _MatchStore with Store {
             matchModel = MatchModel.fromJson(data.first);
             if (matchModel.winnerId != null) {
               _endMatch(matchModel.winnerId!);
+            } else {
+              _restoreLatestScores();
             }
           }
         })

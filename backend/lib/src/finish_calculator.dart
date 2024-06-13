@@ -6,8 +6,9 @@ class FinishCalculator {
   List<String> modifiers = ['error', '', 'D', 'T'];
 
   List<String>? getThrowSuggestion(int remainingScore, int dartsLeft) {
+    suggestions = [];
     print("start calculation");
-    if (remainingScore > 170) {
+    if (remainingScore > 170 || remainingScore <= 0) {
       return null;
     }
     findSolutions([], remainingScore, dartsLeft);
