@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:darts_application/stores/match_store.dart';
 
 class AnimatedAngledBox extends StatelessWidget {
   final bool isPlayer1;
-  final String suggestion;
+  final MatchStore matchStore;
 
   const AnimatedAngledBox({
     super.key,
     required this.isPlayer1,
-    required this.suggestion,
+    required this.matchStore,
   });
 
   @override
@@ -20,9 +22,13 @@ class AnimatedAngledBox extends StatelessWidget {
           height: 30, // Adjust height
           alignment: isPlayer1 ? Alignment.centerLeft : Alignment.centerRight,
           padding: EdgeInsets.only(left: isPlayer1 ? 10 : 0, right: isPlayer1 ? 0 : 10),
-          child: Text(
-            suggestion,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+          child: Observer(
+            builder: (_) {
+              return Text(
+                isPlayer1 ? matchStore.player1Suggestion : matchStore.player2Suggestion,
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+              );
+            },
           ),
         ),
       ),

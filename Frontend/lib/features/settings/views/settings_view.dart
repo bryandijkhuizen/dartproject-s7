@@ -96,10 +96,15 @@ class SettingsViewState extends State<SettingsView> {
                       onPressed: () {
                         context.push('/clubs');
                       },
-                      style: const ButtonStyle(
-                        elevation: WidgetStatePropertyAll(0),
-                        backgroundColor: WidgetStatePropertyAll(
-                          Color(0xFF444444),
+                      style: ButtonStyle(
+                        elevation: const WidgetStatePropertyAll(0),
+                        backgroundColor: WidgetStateProperty.resolveWith(
+                          (states) {
+                            if (states.contains(WidgetState.focused)) {
+                              return theme.colorScheme.secondary;
+                            }
+                            return const Color(0xFF444444);
+                          },
                         ),
                       ),
                       child: const Row(
