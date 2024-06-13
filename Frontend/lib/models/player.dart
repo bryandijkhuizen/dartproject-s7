@@ -11,6 +11,8 @@ class PlayerModel {
     required this.avatarId,
   });
 
+  String get fullName => "$firstName $lastName";
+
   factory PlayerModel.fromJson(Map<String, dynamic> json) {
     return PlayerModel(
       id: json['id'].toString(),
@@ -18,5 +20,15 @@ class PlayerModel {
       lastName: json['last_name'].toString(),
       avatarId: json['avatar_id'].toString(),
     );
+  }
+
+  factory PlayerModel.placeholderPlayer({
+    String id = "",
+    String firstName = "",
+    String lastName = "",
+    String avatarId = "",
+  }) {
+    return PlayerModel(
+        id: id, firstName: firstName, lastName: lastName, avatarId: avatarId);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:darts_application/stores/match_store.dart';
 
 class Numpad extends StatelessWidget {
@@ -8,32 +9,42 @@ class Numpad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: GridView.count(
-        crossAxisCount: 3,
-        childAspectRatio: 2.2,
-        mainAxisSpacing: 5,
-        crossAxisSpacing: 5,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        children: [
-          for (int i = 1; i <= 9; i++) numpadButton(i),
-          Container(),
-          numpadButton(0),
-          deleteButton(),
-        ],
-      ),
+    return Observer(
+      builder: (_) {
+        bool isDisabled = matchStore.matchEnded;
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          decoration: BoxDecoration(
+            color: isDisabled ? Colors.grey.withOpacity(0.5) : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: GridView.count(
+            crossAxisCount: 3,
+            childAspectRatio: 2.2,
+            mainAxisSpacing: 5,
+            crossAxisSpacing: 5,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              for (int i = 1; i <= 9; i++) numpadButton(i, isDisabled),
+              Container(),
+              numpadButton(0, isDisabled),
+              deleteButton(isDisabled),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  Widget numpadButton(int number) {
+  Widget numpadButton(int number, bool isDisabled) {
     return ElevatedButton(
-      onPressed: () {
+      onPressed: isDisabled ? null : () {
         matchStore.updateTemporaryScore(matchStore.temporaryScore + number.toString());
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFCD0612),
+        backgroundColor: isDisabled ? Colors.grey : const Color(0xFFCD0612),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -49,15 +60,15 @@ class Numpad extends StatelessWidget {
     );
   }
 
-  Widget deleteButton() {
+  Widget deleteButton(bool isDisabled) {
     return ElevatedButton(
-      onPressed: () {
+      onPressed: isDisabled ? null : () {
         if (matchStore.temporaryScore.isNotEmpty) {
           matchStore.updateTemporaryScore(matchStore.temporaryScore.substring(0, matchStore.temporaryScore.length - 1));
         }
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF921B22),
+        backgroundColor: isDisabled ? Colors.grey : const Color(0xFF921B22),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
