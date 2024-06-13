@@ -1,16 +1,19 @@
-import 'package:darts_application/components/generic_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:provider/provider.dart';
+import 'package:darts_application/components/generic_screen.dart';
+import 'package:darts_application/features/club_management/views/edit_club_info_view.dart';
 import 'package:darts_application/features/club_page/views/club_members_view.dart';
 import 'package:darts_application/features/club_page/views/upcoming_matches_view.dart';
 import 'package:darts_application/features/club_page/views/recent_scores_view.dart';
 import 'package:darts_application/features/club_management/views/current_members_manager_view.dart';
 import 'package:darts_application/features/club_management/views/new_members_manager_view.dart';
-import 'package:darts_application/stores/news_feed_store.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:provider/provider.dart';
-import 'package:darts_application/services/post_service.dart';
-
 import 'package:darts_application/features/home/news_feed_scroll_view.dart';
+import 'package:darts_application/stores/user_store.dart';
+import 'package:darts_application/stores/news_feed_store.dart';
+import 'package:darts_application/services/post_service.dart';
+import 'package:darts_application/models/permission_list.dart';
+import 'package:darts_application/models/permissions.dart';
 
 class ClubDetailsView extends StatelessWidget {
   final String clubId;
@@ -19,6 +22,9 @@ class ClubDetailsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    UserStore userStore = context.read();
+    Permissions permissions = userStore.permissions;
+
     return Provider(
       create: (_) => NewsFeedStore(context.read<PostService>()),
       child: Consumer<NewsFeedStore>(
@@ -60,42 +66,6 @@ class ClubDetailsView extends StatelessWidget {
                         child: ClubMembersView(),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    Card(
-                      elevation: 0,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const CurrentMembersManagerView(),
-                                  ),
-                                );
-                              },
-                              child: const Text('Current Members'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const NewMembersManagerView(),
-                                  ),
-                                );
-                              },
-                              child: const Text('New Members'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                     const SizedBox(
                       height: 12,
                     ),
@@ -128,6 +98,56 @@ class ClubDetailsView extends StatelessWidget {
                         child: RecentScoresView(),
                       ),
                     ),
+                    if (permissions
+                        .checkClubPermission(PermissionList.manageClubMembers))
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            height: 12,
+                          ),
+                          Text(
+                            'Club Management',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const NewMembersManagerView(),
+                                ),
+                              );
+                            },
+                            child: const Text('New Members'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const CurrentMembersManagerView(),
+                                ),
+                              );
+                            },
+                            child: const Text('Current Members'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const EditClubInfoView(),
+                                ),
+                              );
+                            },
+                            child: const Text('Edit club info'),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),
