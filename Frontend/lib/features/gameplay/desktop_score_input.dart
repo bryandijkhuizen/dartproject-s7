@@ -21,7 +21,7 @@ class DesktopScoreInput extends StatelessWidget {
                 builder: (_) {
                   return AnimatedAngledBox(
                     isPlayer1: true,
-                    suggestion: matchStore.showPlayer1Suggestion ? matchStore.player1Suggestion : '',
+                    matchStore: matchStore,
                   );
                 },
               ),
@@ -29,7 +29,7 @@ class DesktopScoreInput extends StatelessWidget {
                 builder: (_) {
                   return AnimatedAngledBox(
                     isPlayer1: false,
-                    suggestion: matchStore.showPlayer2Suggestion ? matchStore.player2Suggestion : '',
+                    matchStore: matchStore,
                   );
                 },
               ),

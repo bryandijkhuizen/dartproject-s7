@@ -35,79 +35,82 @@ class _UserManagementViewState extends State<UserManagementView> {
     ThemeData theme = Theme.of(context);
     UserStore userStore = context.read();
     return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 800),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            UserManagementHeader(
-              Supabase.instance.client,
-              onSearch: (String? searchedName, String? searchedRole) {
-                setState(() {
-                  // Update the search filter
-                  name = searchedName;
-                  role = searchedRole;
-                });
-              },
-            ),
-            FutureBuilder(
-              future: loadUsersData(userStore),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  if (snapshot.hasError) {
-                    return const Text("something went wrong");
-                  }
-                  if (snapshot.hasData) {
-                    return DataTable(
-                      headingRowColor:
-                          WidgetStatePropertyAll(theme.colorScheme.primary),
-                      headingTextStyle: const TextStyle(color: Colors.white),
-                      columnSpacing: 100,
-                      columns: const [
-                        DataColumn(
-                          label: Text('Name'),
-                        ),
-                        DataColumn(
-                          label: Text('Roles'),
-                        ),
-                        DataColumn(
-                          label: Text(""),
-                          numeric: true,
-                        ),
-                      ],
-                      rows: [
-                        for (var userObj in snapshot.data)
-                          DataRow(
-                            color:
-                                WidgetStatePropertyAll(Colors.grey.shade300),
-                            cells: [
-                              DataCell(
-                                Text(userObj["full_name"],
-                                    style: const TextStyle(color: Colors.black)),
-                              ),
-                              DataCell(
-                                Text(userObj["roles"].toString(),
-                                    style: const TextStyle(color: Colors.black)),
-                              ),
-                              DataCell(
-                                FilledButton(
-                                  onPressed: () {
-                                    context.go(
-                                        "/user-management/edit/${userObj["id"]}");
-                                  },
-                                  child: const Text("Edit"),
-                                ),
-                              ),
-                            ],
+      child: SingleChildScrollView(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 800),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              UserManagementHeader(
+                Supabase.instance.client,
+                onSearch: (String? searchedName, String? searchedRole) {
+                  print(searchedRole);
+                  setState(() {
+                    // Update the search filter
+                    name = searchedName;
+                    role = searchedRole;
+                  });
+                },
+              ),
+              FutureBuilder(
+                future: loadUsersData(userStore),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasError) {
+                      return const Text("something went wrong");
+                    }
+                    if (snapshot.hasData) {
+                      return DataTable(
+                        headingRowColor:
+                            WidgetStatePropertyAll(theme.colorScheme.primary),
+                        headingTextStyle: const TextStyle(color: Colors.white),
+                        columnSpacing: 100,
+                        columns: const [
+                          DataColumn(
+                            label: Text('Name'),
                           ),
-                      ],
-                    );
+                          DataColumn(
+                            label: Text('Roles'),
+                          ),
+                          DataColumn(
+                            label: Text(""),
+                            numeric: true,
+                          ),
+                        ],
+                        rows: [
+                          for (var userObj in snapshot.data)
+                            DataRow(
+                              color:
+                                  WidgetStatePropertyAll(Colors.grey.shade300),
+                              cells: [
+                                DataCell(
+                                  Text(userObj["full_name"],
+                                      style: const TextStyle(color: Colors.black)),
+                                ),
+                                DataCell(
+                                  Text(userObj["roles"] == null ? "No roles found" : userObj["roles"].toString(),
+                                      style: const TextStyle(color: Colors.black)),
+                                ),
+                                DataCell(
+                                  FilledButton(
+                                    onPressed: () {
+                                      context.go(
+                                          "/user-management/edit/${userObj["id"]}");
+                                    },
+                                    child: const Text("Edit"),
+                                  ),
+                                ),
+                              ],
+                            ),
+                        ],
+                      );
+                    }
                   }
-                }
-                return const CircularProgressIndicator();
-              },
-            ),
-          ],
+                  return const CircularProgressIndicator();
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

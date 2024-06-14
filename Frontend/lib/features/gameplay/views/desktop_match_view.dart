@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/stores/match_store.dart';
@@ -19,7 +20,7 @@ class DesktopMatchView extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            // Your routing logic
+            context.push('/matches');
           },
         ),
       ),
@@ -59,6 +60,10 @@ class DesktopMatchView extends StatelessWidget {
                     return _endOfMatchScreen(matchStore, context);
                   }
 
+                  if (matchStore.doubleAttemptsNeeded) {
+                    return _showCheckoutDialog(context, matchStore);
+                  }
+
                   return _gameScreen(matchStore);
                 }),
               );
@@ -88,7 +93,7 @@ class DesktopMatchView extends StatelessWidget {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              // Your routing logic
+              context.push('/matches/$matchId/gameplay');
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFCD0612),
@@ -139,7 +144,12 @@ class DesktopMatchView extends StatelessWidget {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              // Your routing logic
+              // perfect hotfix
+              while(context.canPop()){
+                context.pop();
+              }
+
+              context.go('/matches');
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text(
@@ -162,6 +172,77 @@ class DesktopMatchView extends StatelessWidget {
         Expanded(
           flex: 1,
           child: DesktopScoreInput(matchStore: matchStore),
+        ),
+      ],
+    );
+  }
+
+  Widget _showCheckoutDialog(BuildContext context, MatchStore matchStore) {
+    TextEditingController dartsController = TextEditingController();
+    TextEditingController attemptsController = TextEditingController();
+
+    return AlertDialog(
+      backgroundColor: Colors.grey[850],
+      title: const Text(
+        'Enter Checkout Details',
+        style: TextStyle(color: Colors.white),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: dartsController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: 'Darts for Checkout',
+              labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white.withOpacity(0.8)),
+              ),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+            ),
+            style: const TextStyle(color: Colors.white),
+          ),
+          TextField(
+            controller: attemptsController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: 'Double Attempts',
+              labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white.withOpacity(0.8)),
+              ),
+              focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+            ),
+            style: const TextStyle(color: Colors.white),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            matchStore.doubleAttemptsNeeded = false;
+            Navigator.of(context).pop();
+          },
+          child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+        ),
+        TextButton(
+          onPressed: () {
+            int dartsForCheckout = int.parse(dartsController.text);
+            int doubleAttempts = int.parse(attemptsController.text);
+            matchStore.recordScore(
+              int.parse(matchStore.temporaryScore),
+              dartsForCheckout: dartsForCheckout,
+              doubleAttempts: doubleAttempts,
+            );
+            matchStore.doubleAttemptsNeeded = false;
+            Navigator.of(context).pop();
+          },
+          child: const Text('Submit', style: TextStyle(color: Colors.white)),
         ),
       ],
     );

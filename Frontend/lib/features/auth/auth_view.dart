@@ -1,3 +1,4 @@
+import 'package:darts_application/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 import 'package:form_validator/form_validator.dart';
@@ -71,11 +72,22 @@ class AuthView extends StatelessWidget {
                         ),
                       ),
                       child: SupaEmailAuth(
+                        redirectTo: 'dartinmolema://',
                         onSignInComplete: (response) {
                           // app_router will handle redirecting the user inside the app
                         },
                         onSignUpComplete: (response) {
                           // app_router will handle redirecting the user inside the app
+                        },
+                        onPasswordResetEmailSent: () {
+                          if (context.mounted) {
+                            context.ShowSnackbar(
+                              const SnackBar(
+                                content: Text(
+                                    'Press the link in your email to reset your password.'),
+                              ),
+                            );
+                          }
                         },
                         metadataFields: [
                           MetaDataField(

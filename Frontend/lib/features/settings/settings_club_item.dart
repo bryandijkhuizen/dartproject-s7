@@ -21,17 +21,23 @@ class SettingsClubItem extends StatelessWidget {
       },
       child: Row(
         children: [
-          CircleAvatar(
-            backgroundImage: NetworkImage(club.bannerImageURL),
-            radius: iconSize / 2,
-            backgroundColor: theme.colorScheme.secondary,
+          Hero(
+            tag: club.bannerImageURL,
+            child: CircleAvatar(
+              backgroundImage: NetworkImage(club.bannerImageURL),
+              radius: iconSize / 2,
+              backgroundColor: theme.colorScheme.secondary,
+            ),
           ),
           SizedBox(
             width: iconSpacing,
           ),
           Text(club.name, style: theme.textTheme.bodyMedium),
           Expanded(child: Container()),
-          const Icon(Icons.chevron_right),
+          Icon(
+            Icons.chevron_right,
+            color: theme.colorScheme.onPrimary,
+          ),
         ],
       ),
     );
