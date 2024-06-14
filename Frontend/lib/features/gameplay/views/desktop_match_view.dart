@@ -1,7 +1,7 @@
-import 'package:darts_application/features/app_router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/stores/match_store.dart';
@@ -20,7 +20,7 @@ class DesktopMatchView extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            router.push('/matches');
+            context.push('/matches');
           },
         ),
       ),
@@ -93,7 +93,7 @@ class DesktopMatchView extends StatelessWidget {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              router.push('/matches/$matchId/gameplay');
+              context.push('/matches/$matchId/gameplay');
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFCD0612),
@@ -144,7 +144,12 @@ class DesktopMatchView extends StatelessWidget {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              router.push('/');
+              // perfect hotfix
+              while(context.canPop()){
+                context.pop();
+              }
+
+              context.go('/matches');
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text(
