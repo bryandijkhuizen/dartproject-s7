@@ -16,6 +16,10 @@ class MatchCard extends StatelessWidget {
     return FutureBuilder<String>(
       future: statisticsStore.getMatchResult(matchId),
       builder: (context, snapshot) {
+        //handle null as if there was no match
+        if (snapshot.data == null) {
+          return const SizedBox.shrink();
+        }
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
