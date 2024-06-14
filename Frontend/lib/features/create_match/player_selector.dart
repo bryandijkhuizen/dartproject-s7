@@ -23,7 +23,8 @@ class _PlayerSelectorState extends State<PlayerSelector> {
 
   List<PlayerModel> allPlayers = [];
   List<ClubMember> clubMembers = [];
-  List<dynamic> filteredList = [];
+  List<dynamic> filteredPlayers = [];
+  List<dynamic> filteredMembers = [];
 
   TextEditingController searchController = TextEditingController();
 
@@ -56,7 +57,7 @@ class _PlayerSelectorState extends State<PlayerSelector> {
 
         setState(() {
           allPlayers = players;
-          filteredList = players;
+          filteredPlayers = players;
         });
       } else {
         final response = await Supabase.instance.client
@@ -75,7 +76,7 @@ class _PlayerSelectorState extends State<PlayerSelector> {
             clubName = null;
           }
           clubMembers = members;
-          filteredList = members;
+          filteredMembers = members;
         });
       }
     } catch (e) {
@@ -87,11 +88,11 @@ class _PlayerSelectorState extends State<PlayerSelector> {
     String query = searchController.text.toLowerCase();
     setState(() {
       if (widget.isFriendly) {
-        filteredList = allPlayers.where((player) {
+        filteredPlayers = allPlayers.where((player) {
           return player.lastName.toLowerCase().contains(query);
         }).toList();
       } else {
-        filteredList = clubMembers.where((member) {
+        filteredMembers = clubMembers.where((member) {
           return member.lastName.toLowerCase().contains(query);
         }).toList();
       }
@@ -145,7 +146,7 @@ class _PlayerSelectorState extends State<PlayerSelector> {
       children: [
         TextField(
           controller: searchController,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Search',
             prefixIcon: Icon(Icons.search),
           ),
@@ -158,21 +159,30 @@ class _PlayerSelectorState extends State<PlayerSelector> {
             ),
           ),
         Flexible(
-          child: ListView(
+          child: ListView.builder(
             shrinkWrap: true,
-            children: filteredList.map((member) {
-              final name = widget.isFriendly
-                  ? (member as PlayerModel).lastName
-                  : (member as ClubMember).lastName;
-              final userId = widget.isFriendly
-                  ? (member as PlayerModel).id
-                  : (member as ClubMember).userId;
-              return ListTile(
-                title: Text(name),
-                onTap: () => updateSelected(userId),
-                selected: userId == selectedOne || userId == selectedTwo,
-              );
-            }).toList(),
+            itemCount: widget.isFriendly
+                ? filteredPlayers.length
+                : filteredMembers.length,
+            itemBuilder: (context, index) {
+              if (widget.isFriendly) {
+                final player = filteredPlayers[index] as PlayerModel;
+                return ListTile(
+                  title: Text(player.lastName),
+                  onTap: () => updateSelected(player.id),
+                  selected:
+                      player.id == selectedOne || player.id == selectedTwo,
+                );
+              } else {
+                final member = filteredMembers[index] as ClubMember;
+                return ListTile(
+                  title: Text(member.lastName),
+                  onTap: () => updateSelected(member.userId),
+                  selected: member.userId == selectedOne ||
+                      member.userId == selectedTwo,
+                );
+              }
+            },
           ),
         ),
       ],
