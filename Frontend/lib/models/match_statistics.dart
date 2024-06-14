@@ -144,6 +144,9 @@ class MatchStatisticsModel {
   int calculateLegsWon(int setId, String playerId) {
     int legsWon = 0;
     for (final leg in legDataBySet[setId]!) {
+      if (leg['winner_id'] == null) {
+        continue;
+      }
       if (leg['winner_id'] == playerId) {
         legsWon++;
       }
