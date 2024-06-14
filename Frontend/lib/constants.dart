@@ -1,12 +1,12 @@
 abstract class Constants {
   static const String supabaseUrl = String.fromEnvironment(
     'SUPABASE_URL',
-    defaultValue: 'https://wofmpmokrotlntuqjptl.supabase.co',
+    defaultValue: 'http://127.0.0.1:54321',
   );
 
   static const String supabaseAnonKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',
     defaultValue:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvZm1wbW9rcm90bG50dXFqcHRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTI5MTUwMjcsImV4cCI6MjAyODQ5MTAyN30.7hTbaWkxDQ-lKctP6wICrQiuPA1AwJrEFgYdVztkSdE',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
   );
 }
