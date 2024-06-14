@@ -27,6 +27,7 @@ class ClubDetailsView extends StatelessWidget {
   Widget build(BuildContext context) {
     UserStore userStore = context.read<UserStore>();
     Permissions permissions = userStore.permissions;
+    // ClubsStore clubsStore = context.read<ClubsStore>();
 
     return MultiProvider(
       providers: [
@@ -43,10 +44,13 @@ class ClubDetailsView extends StatelessWidget {
               ClubMembersStore(Supabase.instance.client, clubId: clubId),
           child: const ClubMembersView(),
         ),
+        // Provider<ClubsStore>(
+        //   create: (_) => ClubsStore(Supabase.instance.client, userStore)
+        // )
       ],
       child: Consumer3<NewsFeedStore, ClubUserStore, ClubsStore>(
         builder: (context, newsFeedStore, clubUserStore, clubsStore, _) {
-          Club club = clubsStore.clubs.firstWhere((club) => club.id == clubId);
+          Club club = clubsStore.getClubFromLists(clubId);
           clubUserStore.checkMembership();
 
           return Observer(
