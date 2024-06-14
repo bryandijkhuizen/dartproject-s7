@@ -2,6 +2,7 @@ import 'package:darts_application/components/scaffolding.dart';
 import 'package:darts_application/features/app_router/app_router_redirect.dart';
 import 'package:darts_application/features/auth/auth_notifier.dart';
 import 'package:darts_application/features/auth/auth_view.dart';
+import 'package:darts_application/features/club_page/views/club_details_view.dart';
 import 'package:darts_application/features/clubs/views/club_overview.dart';
 import 'package:darts_application/features/clubs/views/club_registration_view.dart';
 import 'package:darts_application/features/create_match/create_single_match_page.dart';
@@ -82,6 +83,13 @@ final clubsBranch = StatefulShellBranch(
         GoRoute(
           path: 'register',
           builder: (context, state) => const ClubRegistrationView(),
+        ),
+        GoRoute(
+          path: ':id',
+          builder: (context, state) {
+            final clubId = int.parse(state.pathParameters['id']!);
+            return ClubDetailsView(clubId: clubId);
+          }
         ),
       ],
     ),
