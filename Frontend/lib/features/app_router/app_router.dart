@@ -87,7 +87,7 @@ final clubsBranch = StatefulShellBranch(
         GoRoute(
           path: ':id',
           builder: (context, state) {
-            final clubId = state.pathParameters['id']!;
+            final clubId = int.parse(state.pathParameters['id']!);
             return ClubDetailsView(clubId: clubId);
           }
         ),

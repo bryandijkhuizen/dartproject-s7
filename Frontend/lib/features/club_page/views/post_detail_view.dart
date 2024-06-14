@@ -17,7 +17,7 @@ class PostDetailView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (post.imageUrl.isNotEmpty)
+            if (post.imageUrl != null)
               ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
                 child: Image.network(

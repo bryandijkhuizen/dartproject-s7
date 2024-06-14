@@ -11,36 +11,22 @@ class NewsFeedScrollView extends StatelessWidget {
   final List<Widget>? prefixSlivers;
   final List<Widget>? suffixSlivers;
   final bool enableShowMore;
+  final bool enableHeader;
 
   const NewsFeedScrollView({
     super.key,
     this.prefixSlivers,
     this.suffixSlivers,
     this.enableShowMore = false,
+    this.enableHeader = true,
   });
 
   @override
   Widget build(BuildContext context) {
     NewsFeedStore newsFeedStore = context.read();
     ThemeData theme = Theme.of(context);
-    return CustomScrollView(
-      slivers: [
-        ...?prefixSlivers,
-        SliverStickyHeader(
-          header: AppBar(
-            title: const Text('Latest news'),
-            actions: [
-              IconButton(
-                onPressed: () async {
-                  if (!newsFeedStore.loading) {
-                    await newsFeedStore.reloadPosts();
-                  }
-                },
-                icon: const Icon(Icons.refresh),
-              ),
-            ],
-          ),
-          sliver: Observer(
+
+    final postObserver = Observer(
             builder: (context) {
               if (newsFeedStore.loading) {
                 return const SliverToBoxAdapter(
@@ -130,8 +116,27 @@ class NewsFeedScrollView extends StatelessWidget {
                 ),
               );
             },
+          );
+
+    return CustomScrollView(
+      slivers: [
+        ...?prefixSlivers,
+        enableHeader ?  SliverStickyHeader(
+          header: AppBar(
+            title: const Text('Latest news'),
+            actions: [
+              IconButton(
+                onPressed: () async {
+                  if (!newsFeedStore.loading) {
+                    await newsFeedStore.reloadPosts();
+                  }
+                },
+                icon: const Icon(Icons.refresh),
+              ),
+            ],
           ),
-        ),
+          sliver: postObserver 
+        ): postObserver,
         ...?suffixSlivers,
       ],
     );

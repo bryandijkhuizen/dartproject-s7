@@ -8,7 +8,7 @@ class ClubUserStore = _ClubUserStore with _$ClubUserStore;
 abstract class _ClubUserStore with Store {
   final SupabaseClient _supabaseClient;
 
-  final String clubId;
+  final int clubId;
   final String userId;
 
   _ClubUserStore(this._supabaseClient,

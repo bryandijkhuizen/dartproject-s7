@@ -1,6 +1,8 @@
 import 'package:darts_application/features/club_management/views/current_members_manager_view.dart';
 import 'package:darts_application/features/club_page/stores/club_members_store.dart';
 import 'package:darts_application/features/club_page/stores/club_user_store.dart';
+import 'package:darts_application/models/club.dart';
+import 'package:darts_application/stores/clubs_store.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -17,7 +19,7 @@ import 'package:darts_application/models/permission_list.dart';
 import 'package:darts_application/models/permissions.dart';
 
 class ClubDetailsView extends StatelessWidget {
-  final String clubId;
+  final int clubId;
 
   const ClubDetailsView({super.key, required this.clubId});
 
@@ -29,7 +31,8 @@ class ClubDetailsView extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<NewsFeedStore>(
-          create: (_) => NewsFeedStore(context.read<PostService>()),
+          create: (_) =>
+              NewsFeedStore(context.read<PostService>())..clubIds = [clubId],
         ),
         Provider<ClubUserStore>(
           create: (_) => ClubUserStore(Supabase.instance.client,
@@ -41,8 +44,9 @@ class ClubDetailsView extends StatelessWidget {
           child: const ClubMembersView(),
         ),
       ],
-      child: Consumer2<NewsFeedStore, ClubUserStore>(
-        builder: (context, newsFeedStore, clubUserStore, _) {
+      child: Consumer3<NewsFeedStore, ClubUserStore, ClubsStore>(
+        builder: (context, newsFeedStore, clubUserStore, clubsStore, _) {
+          Club club = clubsStore.clubs.firstWhere((club) => club.id == clubId);
           clubUserStore.checkMembership();
 
           return Observer(
@@ -56,6 +60,16 @@ class ClubDetailsView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      if (club.bannerImageURL.isNotEmpty)
+                        Hero(
+                          tag: club.bannerImageURL,
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(12),
+                            ),
+                            child: Image.network(club.bannerImageURL),
+                          ),
+                        ),
                       if (!clubUserStore.isMember && !clubUserStore.isLoading)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -91,7 +105,10 @@ class ClubDetailsView extends StatelessWidget {
                         elevation: 0,
                         child: SizedBox(
                           height: 500,
-                          child: NewsFeedScrollView(enableShowMore: true),
+                          child: NewsFeedScrollView(
+                            enableShowMore: true,
+                            enableHeader: false,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 12),
