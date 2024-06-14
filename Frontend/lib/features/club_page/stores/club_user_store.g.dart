@@ -49,6 +49,15 @@ mixin _$ClubUserStore on _ClubUserStore, Store {
     return _$checkMembershipAsyncAction.run(() => super.checkMembership());
   }
 
+  late final _$applyForMembershipAsyncAction =
+      AsyncAction('_ClubUserStore.applyForMembership', context: context);
+
+  @override
+  Future<bool> applyForMembership() {
+    return _$applyForMembershipAsyncAction
+        .run(() => super.applyForMembership());
+  }
+
   @override
   String toString() {
     return '''

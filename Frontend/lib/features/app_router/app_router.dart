@@ -3,8 +3,6 @@ import 'package:darts_application/features/app_router/app_router_redirect.dart';
 import 'package:darts_application/features/auth/auth_notifier.dart';
 import 'package:darts_application/features/auth/auth_view.dart';
 import 'package:darts_application/features/club_page/views/club_details_view.dart';
-import 'package:darts_application/features/club_page/views/create_post_view.dart';
-import 'package:darts_application/features/club_page/views/edit_post_view.dart';
 import 'package:darts_application/features/clubs/views/club_overview.dart';
 import 'package:darts_application/features/clubs/views/club_registration_view.dart';
 import 'package:darts_application/features/create_match/create_single_match_page.dart';
@@ -91,23 +89,7 @@ final clubsBranch = StatefulShellBranch(
           builder: (context, state) {
             final clubId = state.pathParameters['id']!;
             return ClubDetailsView(clubId: clubId);
-          },
-          routes: <RouteBase>[
-            GoRoute(
-              path: 'create-post',
-              builder: (context, state) {
-                final clubId = state.pathParameters['id']!;
-                return CreatePostView(clubId: clubId);
-              },
-            ),
-            GoRoute(
-              path: 'edit-post/:postId',
-              builder: (context, state) {
-                final postId = state.pathParameters['postId']!;
-                return EditPostView(postId: postId);
-              },
-            ),
-          ],
+          }
         ),
       ],
     ),

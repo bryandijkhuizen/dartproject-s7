@@ -1,4 +1,5 @@
 import 'package:darts_application/features/club_management/views/current_members_manager_view.dart';
+import 'package:darts_application/features/club_page/stores/club_members_store.dart';
 import 'package:darts_application/features/club_page/stores/club_user_store.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:darts_application/components/generic_screen.dart';
 import 'package:darts_application/features/club_management/views/edit_club_info_view.dart';
 import 'package:darts_application/features/club_page/views/club_members_view.dart';
-import 'package:darts_application/features/club_page/views/upcoming_matches_view.dart';
-import 'package:darts_application/features/club_page/views/recent_scores_view.dart';
 import 'package:darts_application/features/club_management/views/new_members_manager_view.dart';
 import 'package:darts_application/features/home/news_feed_scroll_view.dart';
 import 'package:darts_application/stores/user_store.dart';
@@ -35,6 +34,11 @@ class ClubDetailsView extends StatelessWidget {
         Provider<ClubUserStore>(
           create: (_) => ClubUserStore(Supabase.instance.client,
               clubId: clubId, userId: userStore.currentUser!.id),
+        ),
+        Provider<ClubMembersStore>(
+          create: (_) =>
+              ClubMembersStore(Supabase.instance.client, clubId: clubId),
+          child: const ClubMembersView(),
         ),
       ],
       child: Consumer2<NewsFeedStore, ClubUserStore>(
@@ -104,25 +108,6 @@ class ClubDetailsView extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Text('Upcoming Matches',
-                          style: Theme.of(context).textTheme.titleMedium),
-                      const Card(
-                        elevation: 0,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 16.0),
-                          child: UpcomingMatchesView(),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text('Recent Scores',
-                          style: Theme.of(context).textTheme.titleMedium),
-                      const Card(
-                        elevation: 0,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 16.0),
-                          child: RecentScoresView(),
-                        ),
-                      ),
                       if (permissions.checkClubPermission(
                           PermissionList.manageClubMembers))
                         ClubManagementButtons(context),
