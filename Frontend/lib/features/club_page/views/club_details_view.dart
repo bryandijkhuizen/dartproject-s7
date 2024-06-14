@@ -56,8 +56,6 @@ class ClubDetailsView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text("<Club image here>"),
-                      const SizedBox(height: 24),
                       if (!clubUserStore.isMember && !clubUserStore.isLoading)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 12.0),
