@@ -85,12 +85,11 @@ final clubsBranch = StatefulShellBranch(
           builder: (context, state) => const ClubRegistrationView(),
         ),
         GoRoute(
-          path: ':id',
-          builder: (context, state) {
-            final clubId = int.parse(state.pathParameters['id']!);
-            return ClubDetailsView(clubId: clubId);
-          }
-        ),
+            path: ':id',
+            builder: (context, state) {
+              final clubId = int.parse(state.pathParameters['id']!);
+              return ClubDetailsView(clubId: clubId);
+            }),
       ],
     ),
   ],
@@ -162,6 +161,11 @@ final router = GoRouter(
                   GoRoute(
                     path: '/matches',
                     routes: <RouteBase>[
+                      GoRoute(
+                        path: 'create/single',
+                        builder: (context, state) =>
+                            const CreateSingleMatchPage(),
+                      ),
                       GoRoute(
                         path: ':matchId',
                         routes: [
