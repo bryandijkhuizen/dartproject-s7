@@ -46,7 +46,7 @@ class ClubDetailsView extends StatelessWidget {
       ],
       child: Consumer3<NewsFeedStore, ClubUserStore, ClubsStore>(
         builder: (context, newsFeedStore, clubUserStore, clubsStore, _) {
-          Club club = clubsStore.clubs.firstWhere((club) => club.id == clubId);
+          Club club = clubsStore.getClubFromLists(clubId);
           clubUserStore.checkMembership();
 
           return Observer(
