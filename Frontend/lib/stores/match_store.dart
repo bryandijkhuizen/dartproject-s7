@@ -599,7 +599,7 @@ abstract class _MatchStore with Store {
         .stream(primaryKey: ['id'])
         .eq('set_id', currentSetId)
         .order('id', ascending: false)
-        .listen((data) {
+        .listen((data) async {
           if (data.isNotEmpty) {
             var latestLeg = data.first;
             if (currentLegId != latestLeg['id']) {
@@ -608,6 +608,13 @@ abstract class _MatchStore with Store {
                 _restoreLatestScores();
                 _subscribeToTurnUpdates();
               }
+            }
+            var result = await _supabaseClient
+                .from('match')
+                .select('winner_id')
+                .eq('id', matchId);
+            if (result.first.values.first != null) {
+              _endMatch(matchModel.winnerId!);
             }
             _calculateWins();
           }
@@ -640,10 +647,14 @@ abstract class _MatchStore with Store {
         .stream(primaryKey: ['id'])
         .eq('id', matchId)
         .order('id', ascending: false)
-        .listen((data) {
+        .listen((data) async {
           if (data.isNotEmpty) {
             matchModel = MatchModel.fromJson(data.first);
-            if (matchModel.winnerId != null) {
+            var result = await _supabaseClient
+                .from('match')
+                .select('winner_id')
+                .eq('set_id', matchId);
+            if (result.first.isNotEmpty) {
               _endMatch(matchModel.winnerId!);
             } else {
               currentScorePlayer1 = matchModel.startingScore;
