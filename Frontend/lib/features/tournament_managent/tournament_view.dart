@@ -102,7 +102,7 @@ class _TournamentViewState extends State<TournamentView> {
     // Null check for clubId
     if (clubId == null) {
       // Check for system permissions and add buttons accordingly
-      if (match.player1Id != null && match.player2Id != null) {
+      if (match.player1Id != null && match.player2Id != null  && match.winnerId == null) {
         if (permissions.systemPermissions
             .contains(PermissionList.markInTournament.permissionName)) {
           trail.add(IconButton(
@@ -138,7 +138,7 @@ class _TournamentViewState extends State<TournamentView> {
       }
     } else {
       // Check club permissions and add buttons accordingly
-      if (match.player1Id != null && match.player2Id != null) {
+      if (match.player1Id != null && match.player2Id != null && match.winnerId == null) {
         if (permissions
                 .getClubIdByPermission(PermissionList.markInClubTournament) ==
             clubId) {
