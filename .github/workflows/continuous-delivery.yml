@@ -231,7 +231,7 @@ jobs:
       - name: Create DMG
         run: |
           mkdir -p $PWD/dmg
-          app_path="$PWD/Frontend/build/macos/Build/Products/Release/darts_application.app"
+          app_path="$PWD/Frontend/build/macos/Build/Products/Release/Dartin Molema.app"
           dmg_path="$PWD/dmg/DartinMolema-${{needs.get-release-version.outputs.version}}.dmg"
           hdiutil create "$dmg_path" -volname "DartinMolema-${{needs.get-release-version.outputs.version}}" -srcfolder "$app_path" -ov -format UDZO
 
