@@ -605,16 +605,9 @@ abstract class _MatchStore with Store {
             if (currentLegId != latestLeg['id']) {
               currentLegId = latestLeg['id'];
               if (currentLegId > 0) {
-                _restoreLatestScores();
+                await _restoreLatestScores();
                 _subscribeToTurnUpdates();
               }
-            }
-            var result = await _supabaseClient
-                .from('match')
-                .select('winner_id')
-                .eq('id', matchId);
-            if (result.first.values.first != null) {
-              _endMatch(matchModel.winnerId!);
             }
             _calculateWins();
           }
@@ -628,13 +621,13 @@ abstract class _MatchStore with Store {
         .stream(primaryKey: ['id'])
         .eq('match_id', matchId)
         .order('id', ascending: false)
-        .listen((data) {
+        .listen((data) async {
           if (data.isNotEmpty) {
             var latestSet = data.first;
             if (currentSetId != latestSet['id']) {
               currentSetId = latestSet['id'];
               _calculateWins();
-              _checkForActiveSetOrCreateNew();
+              await _checkForActiveSetOrCreateNew();
             }
           }
         });
@@ -650,11 +643,7 @@ abstract class _MatchStore with Store {
         .listen((data) async {
           if (data.isNotEmpty) {
             matchModel = MatchModel.fromJson(data.first);
-            var result = await _supabaseClient
-                .from('match')
-                .select('winner_id')
-                .eq('set_id', matchId);
-            if (result.first.isNotEmpty) {
+            if (matchModel.winnerId != null) {
               _endMatch(matchModel.winnerId!);
             } else {
               currentScorePlayer1 = matchModel.startingScore;
@@ -662,7 +651,7 @@ abstract class _MatchStore with Store {
               currentPlayerId = matchModel.startingPlayerId;
               lastFiveScoresPlayer1.clear();
               lastFiveScoresPlayer2.clear();
-              _fetchLegAndSetWins();
+              await _fetchLegAndSetWins();
               _updateThrowSuggestions();
             }
           }
