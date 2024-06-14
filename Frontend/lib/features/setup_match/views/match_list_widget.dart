@@ -1,8 +1,8 @@
-import 'package:darts_application/features/create_match/create_single_match_page.dart';
 import 'package:darts_application/features/setup_match/match_list.dart';
 import 'package:darts_application/features/setup_match/stores/match_setup_store.dart';
 import 'package:darts_application/stores/user_store.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:darts_application/models/match.dart';
 
@@ -134,11 +134,7 @@ class _MatchListWidgetState extends State<MatchListWidget> {
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const CreateSingleMatchPage()));
+                    context.go('/matches/create/single');
                   },
                   child: const Text('Create Match'),
                 ),
