@@ -105,4 +105,13 @@ abstract class _ClubsStore with Store {
     }
     loadingAssignedClubs = false;
   }
+
+  Club getClubFromLists(int clubId) {
+    return assignedClubs.firstWhere(
+      (club) => club.id == clubId,
+      orElse: () => clubs.firstWhere(
+        (club) => club.id == clubId,
+      ),
+    );
+  }
 }

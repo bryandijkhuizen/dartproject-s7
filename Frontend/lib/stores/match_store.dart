@@ -193,6 +193,7 @@ abstract class _MatchStore with Store {
       if (!isFirstLeg) {
         _switchStartingPlayer();
       }
+      
       isFirstLeg = false;
       currentPlayerId = matchModel.startingPlayerId;
       await _startNewLeg();
@@ -227,12 +228,15 @@ abstract class _MatchStore with Store {
 
       _updateThrowSuggestions();
 
+
+      // Notify the other device about the new leg
       await _supabaseClient
           .from('match')
           .update({'starting_player_id': matchModel.startingPlayerId}).eq(
               'id', matchModel.id);
 
       _subscribeToTurnUpdates();
+
     } catch (error) {
       errorMessage = 'Failed to start a new leg: $error';
     } finally {
@@ -297,6 +301,7 @@ abstract class _MatchStore with Store {
             lastFiveScoresPlayer1.add(scoreEntry);
           } else {
             lastFiveScoresPlayer2.add(scoreEntry);
+
           }
         }
 
@@ -308,6 +313,7 @@ abstract class _MatchStore with Store {
         currentPlayerId = latestTurn['player_id'] == matchModel.player1Id
             ? matchModel.player2Id
             : matchModel.player1Id;
+
 
         _updateThrowSuggestions();
       } else {
@@ -391,6 +397,7 @@ abstract class _MatchStore with Store {
 
     if (currentPlayerId == matchModel.player1Id) {
       showPlayer1Suggestion = true;
+
       final remainingScore =
           currentScorePlayer1 - (int.tryParse(temporaryScore) ?? 0);
       final player1SuggestionList =
@@ -398,6 +405,7 @@ abstract class _MatchStore with Store {
       player1Suggestion = player1SuggestionList?.join(', ') ?? '';
     } else {
       showPlayer2Suggestion = true;
+
       final remainingScore =
           currentScorePlayer2 - (int.tryParse(temporaryScore) ?? 0);
       final player2SuggestionList =
@@ -426,12 +434,14 @@ abstract class _MatchStore with Store {
     if (currentPlayerId == matchModel.player1Id) {
       currentScorePlayer1 = newScore is int ? newScore : int.parse(newScore);
       lastFiveScoresPlayer1.add(scoreEntry);
+
       if (lastFiveScoresPlayer1.length > 5) {
         lastFiveScoresPlayer1.removeAt(0);
       }
     } else {
       currentScorePlayer2 = newScore2 is int ? newScore2 : int.parse(newScore2);
       lastFiveScoresPlayer2.add(scoreEntry);
+
       if (lastFiveScoresPlayer2.length > 5) {
         lastFiveScoresPlayer2.removeAt(0);
       }
@@ -509,6 +519,7 @@ abstract class _MatchStore with Store {
             'id', matchModel.id);
 
     _subscribeToTurnUpdates();
+
   }
 
   Future<void> _checkSetWinner(String setWinnerId) async {
@@ -542,6 +553,7 @@ abstract class _MatchStore with Store {
           .from('match')
           .update({'winner_id': matchWinnerId}).eq('id', matchModel.id);
       matchModel.winnerId = matchWinnerId;
+
       matchEnded = true;
       _endMatch(matchWinnerId);
     } catch (error) {
@@ -579,6 +591,7 @@ abstract class _MatchStore with Store {
         matchModel.startingPlayerId == matchModel.player1Id
             ? matchModel.player2Id
             : matchModel.player1Id;
+
     _supabaseClient
         .from('match')
         .update({'starting_player_id': matchModel.startingPlayerId}).eq(
@@ -660,6 +673,7 @@ abstract class _MatchStore with Store {
         .eq('id', matchId)
         .order('id', ascending: false)
         .listen((data) async {
+
           if (data.isNotEmpty) {
             matchModel = MatchModel.fromJson(data.first);
             if (matchModel.winnerId != null) {

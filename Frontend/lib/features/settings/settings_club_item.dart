@@ -21,10 +21,13 @@ class SettingsClubItem extends StatelessWidget {
       },
       child: Row(
         children: [
-          CircleAvatar(
-            backgroundImage: NetworkImage(club.bannerImageURL),
-            radius: iconSize / 2,
-            backgroundColor: theme.colorScheme.secondary,
+          Hero(
+            tag: club.bannerImageURL,
+            child: CircleAvatar(
+              backgroundImage: NetworkImage(club.bannerImageURL),
+              radius: iconSize / 2,
+              backgroundColor: theme.colorScheme.secondary,
+            ),
           ),
           SizedBox(
             width: iconSpacing,
