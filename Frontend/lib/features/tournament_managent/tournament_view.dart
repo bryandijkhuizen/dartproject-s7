@@ -1,4 +1,4 @@
-import 'package:darts_application/features/create_match/single_match/edit_single_match_page.dart';
+import 'package:darts_application/features/create_match/edit_single_match_page.dart';
 import 'package:darts_application/features/setup_match/start_match.dart';
 import 'package:darts_application/models/match.dart';
 import 'package:darts_application/models/permission_list.dart';
@@ -35,7 +35,7 @@ class _TournamentViewState extends State<TournamentView> {
     UserStore userStore = context.read();
     Permissions permissions = userStore.permissions;
     return Scaffold(
-      appBar: AppBar(title: const Text('Tournament name')),
+      appBar: AppBar(title: const Text('Tournament')),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Center(
@@ -76,8 +76,12 @@ class _TournamentViewState extends State<TournamentView> {
                             ),
                           );
                         }
+                        if(pageList.isEmpty){
+                          return Text("No matches found");
+                        }
                         return Column(children: pageList);
                       }
+                      
                     }
                     return const CircularProgressIndicator();
                   },

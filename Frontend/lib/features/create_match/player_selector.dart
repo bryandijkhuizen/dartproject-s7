@@ -1,7 +1,6 @@
 import 'package:darts_application/models/player.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'package:darts_application/models/club_member.dart';
 
 class PlayerSelector extends StatefulWidget {
@@ -24,11 +23,16 @@ class _PlayerSelectorState extends State<PlayerSelector> {
 
   List<PlayerModel> allPlayers = [];
   List<ClubMember> clubMembers = [];
+  List<dynamic> filteredPlayers = [];
+  List<dynamic> filteredMembers = [];
+
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     fetchPlayers();
+    searchController.addListener(_filterList);
   }
 
   @override
@@ -52,11 +56,8 @@ class _PlayerSelectorState extends State<PlayerSelector> {
         }).toList();
 
         setState(() {
-          if (players.isNotEmpty) {
-            allPlayers = players;
-          } else {
-            allPlayers = [];
-          }
+          allPlayers = players;
+          filteredPlayers = players;
         });
       } else {
         final response = await Supabase.instance.client
@@ -75,11 +76,27 @@ class _PlayerSelectorState extends State<PlayerSelector> {
             clubName = null;
           }
           clubMembers = members;
+          filteredMembers = members;
         });
       }
     } catch (e) {
       print('Error fetching players: $e');
     }
+  }
+
+  void _filterList() {
+    String query = searchController.text.toLowerCase();
+    setState(() {
+      if (widget.isFriendly) {
+        filteredPlayers = allPlayers.where((player) {
+          return player.lastName.toLowerCase().contains(query);
+        }).toList();
+      } else {
+        filteredMembers = clubMembers.where((member) {
+          return member.lastName.toLowerCase().contains(query);
+        }).toList();
+      }
+    });
   }
 
   void updateSelected(String playerId) {
@@ -125,7 +142,15 @@ class _PlayerSelectorState extends State<PlayerSelector> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
+        TextField(
+          controller: searchController,
+          decoration: const InputDecoration(
+            labelText: 'Search',
+            prefixIcon: Icon(Icons.search),
+          ),
+        ),
         if (!widget.isFriendly && clubName != null)
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -133,22 +158,32 @@ class _PlayerSelectorState extends State<PlayerSelector> {
               'Showing members of club $clubName:',
             ),
           ),
-        ListView(
-          shrinkWrap: true,
-          children:
-              (widget.isFriendly ? allPlayers : clubMembers).map((member) {
-            final name = widget.isFriendly
-                ? (member as PlayerModel).lastName
-                : (member as ClubMember).lastName;
-            final userId = widget.isFriendly
-                ? (member as PlayerModel).id
-                : (member as ClubMember).userId;
-            return ListTile(
-              title: Text(name),
-              onTap: () => updateSelected(userId),
-              selected: userId == selectedOne || userId == selectedTwo,
-            );
-          }).toList(),
+        Flexible(
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: widget.isFriendly
+                ? filteredPlayers.length
+                : filteredMembers.length,
+            itemBuilder: (context, index) {
+              if (widget.isFriendly) {
+                final player = filteredPlayers[index] as PlayerModel;
+                return ListTile(
+                  title: Text(player.lastName),
+                  onTap: () => updateSelected(player.id),
+                  selected:
+                      player.id == selectedOne || player.id == selectedTwo,
+                );
+              } else {
+                final member = filteredMembers[index] as ClubMember;
+                return ListTile(
+                  title: Text(member.lastName),
+                  onTap: () => updateSelected(member.userId),
+                  selected: member.userId == selectedOne ||
+                      member.userId == selectedTwo,
+                );
+              }
+            },
+          ),
         ),
       ],
     );

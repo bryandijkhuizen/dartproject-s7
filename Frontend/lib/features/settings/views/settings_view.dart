@@ -1,5 +1,5 @@
 import 'package:darts_application/components/generic_screen.dart';
-import 'package:darts_application/features/settings/settings_club_card.dart';
+import 'package:darts_application/components/club_card.dart';
 import 'package:darts_application/features/settings/settings_header.dart';
 import 'package:darts_application/features/settings/settings_item.dart';
 import 'package:darts_application/stores/user_store.dart';
@@ -88,7 +88,7 @@ class SettingsViewState extends State<SettingsView> {
                     const SizedBox(
                       height: 12,
                     ),
-                    const SettingsClubCard(),
+                    const ClubCard(),
                     const SizedBox(
                       height: 8,
                     ),
@@ -96,10 +96,15 @@ class SettingsViewState extends State<SettingsView> {
                       onPressed: () {
                         context.push('/clubs');
                       },
-                      style: const ButtonStyle(
-                        elevation: WidgetStatePropertyAll(0),
-                        backgroundColor: WidgetStatePropertyAll(
-                          Color(0xFF444444),
+                      style: ButtonStyle(
+                        elevation: const WidgetStatePropertyAll(0),
+                        backgroundColor: WidgetStateProperty.resolveWith(
+                          (states) {
+                            if (states.contains(WidgetState.focused)) {
+                              return theme.colorScheme.secondary;
+                            }
+                            return const Color(0xFF444444);
+                          },
                         ),
                       ),
                       child: const Row(
