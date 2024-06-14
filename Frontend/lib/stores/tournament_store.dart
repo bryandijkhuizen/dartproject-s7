@@ -107,7 +107,7 @@ abstract class _TournamentStore with Store {
         PlayerModel? secondPlayer =
             players.isNotEmpty ? players.removeAt(0) : null;
 
-        newMatch = addMatch(
+        newMatch = getMatch(
           tournament.startTime,
           firstPlayer: firstPlayer,
           secondPlayer: secondPlayer,
@@ -116,7 +116,7 @@ abstract class _TournamentStore with Store {
           player2LastName: secondPlayer?.lastName,
         );
       } else {
-        newMatch = addMatch(
+        newMatch = getMatch(
           tournament.startTime,
           location: tournament.location,
           player1LastName: "",
@@ -132,7 +132,7 @@ abstract class _TournamentStore with Store {
     return matches;
   }
 
-  Match addMatch(
+  Match getMatch(
     DateTime date, {
     int? id,
     PlayerModel? firstPlayer,
